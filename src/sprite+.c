@@ -49,7 +49,7 @@ struct stColorSolver *getColorSolver(struct stSpriteSolver *instance, byte color
 int getSpriteCount(struct stSpriteSolver *instance);
 struct stScanlineCount getScanlineCount(struct stSpriteSolver *instance, int indexes[16]);
 int stSpriteSolverWrite(struct stSpriteSolver *instance, int *spriteIndex, FILE *sprFile, FILE *spatFile);
-int writeHeader(struct stSpriteSolver *instance, FILE *spatFile);
+int writeHeader(struct stSpriteSolver *instance, FILE *sprFile, FILE *spatFile);
 int writePadding(struct stSpriteSolver *instance, FILE *spatFile);
 void stSpriteSolverDone(struct stSpriteSolver *instance);
 
@@ -73,7 +73,7 @@ void addLayer(struct stRect **rects, int *count, struct stRect *src);
 
 void readPattern(struct stSprite *instance, struct stColorSolver *colorSolver, struct stRect *rect);
 void readAttributes(struct stSprite *instance, struct stColorSolver *colorSolver, int spriteIndex, struct stRect *rect);
-int writePattern(struct stSprite *instance, FILE *sprFile);
+int writePattern(struct stSprite *instance, struct stSprWriterPlus *cfg, FILE *sprFile);
 int writeAttributes(struct stSprite *instance, struct stSprWriterPlus *cfg, FILE *spatFile);
 
 /* Private function prototypes ----- DEBUG --------------------------------- */
@@ -90,7 +90,7 @@ void sprWriterPlusOptions() {
 	printf("\t-y<0..255>\tY offset (default: middle)\n");
 	printf("\t-p<0..4>\tattribute padding size (default: 1b)\n");
 	printf("\t-t<00..ff>\tterminator byte (default: 0xD0 (SPAT_END))\n");
-	printf("\t-b\tbinary spat output (default: asm)\n");
+	printf("\t-b\tbinary spr/spat output (default: asm)\n");
 	// printf("\t-vv\tVERY verbose execution\n"); // secret option (!^_^)
 }
 
@@ -105,7 +105,7 @@ void sprWriterPlusInit(struct stSprWriterPlus *this, int argc, char **argv) {
 	this->offsetY = 8;
 	this->attributePadding = 1;
 	this->terminator = SPAT_END;
-	this->binarySpatOutput = 0;
+	this->binaryOutput = 0;
 
 	// Read arguments
 	veryVerbose = argEquals(argc, argv, "-vv") != -1;
@@ -130,7 +130,7 @@ void sprWriterPlusInit(struct stSprWriterPlus *this, int argc, char **argv) {
 	if ((i = argStartsWith(argc, argv, "-t", 2)) != -1) {
 		this->terminator = hexadecimalInt(&(argv[i][2]));
 	}
-	this->binarySpatOutput = (argEquals(argc, argv, "-b") != -1);
+	this->binaryOutput = (argEquals(argc, argv, "-b") != -1);
 }
 
 void sprWriterPlusReadSprites(struct stSprWriterPlus *this, struct stBitmap *bitmap) {
@@ -165,7 +165,7 @@ int sprWriterPlusWrite(struct stSprWriterPlus *this, FILE *sprFile, FILE *spatFi
 		if (this->terminator == SPAT_END) spriteIndex = 0;
 	}
 
-	if ((!this->binarySpatOutput) && (!asmComment(spatFile, "EOF", 0))) return 2;
+	if ((!this->binaryOutput) && (!asmComment(spatFile, "EOF", 0))) return 2;
 
 	return 0;
 }
@@ -394,9 +394,9 @@ int stSpriteSolverWrite(struct stSpriteSolver *this, int *spriteIndex, FILE *spr
 
 	// Write pattern and attributes
 	int i = 0;
-	if (!writeHeader(this, spatFile)) goto out;
+	if (!writeHeader(this, sprFile, spatFile)) goto out;
 	for (j = 0, sprite = buffer; j < n; j++, sprite++) {
-		if (!writePattern(sprite, sprFile)) goto out;
+		if (!writePattern(sprite, this->cfg, sprFile)) goto out;
 		if (!writeAttributes(sprite, this->cfg, spatFile)) goto out;
 	}
 	if (!writePadding(this, spatFile)) goto out;
@@ -408,15 +408,27 @@ out:
 	return i;
 }
 
-int writeHeader(struct stSpriteSolver *this, FILE *spatFile) {
+int writeHeader(struct stSpriteSolver *this, FILE *sprFile, FILE *spatFile) {
 
-	if (this->cfg->binarySpatOutput) return 1;
+	if (this->cfg->binaryOutput) return 1;
 
+	int i = 0;
 	char *buffer = (char*) calloc(32, sizeof(char));
+	
+	// comment
 	sprintf(buffer, "%d sprite(s) at %d,%d", getSpriteCount(this), this->x0, this->y0);
-	int ret = asmComment(spatFile, buffer, 0);
+	if (!(i = asmComment(sprFile, buffer, 0))) goto out;
+	if (!(i = asmComment(spatFile, buffer, 0))) goto out;
 	free(buffer);
-	return ret;
+	
+	// label
+	sprintf(buffer, "@@SPRITE_%d_%d", this->x0, this->y0);
+	if (!(i = asmLabel(sprFile, buffer))) goto out;
+	if (!(i = asmLabel(spatFile, buffer))) goto out;
+out:
+	// Exit gracefully
+	free(buffer);
+	return i;
 }
 
 int writePadding(struct stSpriteSolver *this, FILE *spatFile) {
@@ -426,7 +438,7 @@ int writePadding(struct stSpriteSolver *this, FILE *spatFile) {
 	byte *paddingBuffer = (byte*) calloc(this->cfg->attributePadding, sizeof(byte));
 	paddingBuffer[0] = this->cfg->terminator;
 
-	return (this->cfg->binarySpatOutput)
+	return (this->cfg->binaryOutput)
 		? (fwrite(paddingBuffer, sizeof(byte), this->cfg->attributePadding, spatFile) == this->cfg->attributePadding)
 		: (asmComment(spatFile, "padding", 1)
 			&& asmBytes(spatFile, paddingBuffer, this->cfg->attributePadding)
@@ -664,14 +676,17 @@ void readAttributes(struct stSprite *this, struct stColorSolver *colorSolver, in
 	this->attributes[3] = (byte) (colorSolver->color);
 }
 
-int writePattern(struct stSprite *this, FILE *sprFile) {
+int writePattern(struct stSprite *this, struct stSprWriterPlus *cfg, FILE *sprFile) {
 
-	return fwrite(this->pattern, sizeof(byte), 32, sprFile) == 32;
+	return (cfg->binaryOutput)
+		? fwrite(this->pattern, sizeof(byte), 32, sprFile) == 32
+		: asmBytes(sprFile, this->pattern, 16)
+			&& asmBytes(sprFile, &(this->pattern[16]), 16);
 }
 
 int writeAttributes(struct stSprite *this, struct stSprWriterPlus *cfg, FILE *spatFile) {
 
-	return (cfg->binarySpatOutput)
+	return (cfg->binaryOutput)
 		? (fwrite(this->attributes, sizeof(byte), 4, spatFile) == 4)
 		: asmBytes(spatFile, this->attributes, 4);
 }

@@ -59,7 +59,7 @@ struct stSprWriterPlus {
 	int offsetY;
 	int attributePadding;
 	byte terminator;
-	int binarySpatOutput;
+	int binaryOutput;
 };
 
 /* Function prototypes ----------------------------------------------------- */

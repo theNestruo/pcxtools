@@ -29,6 +29,18 @@ out:
 	return i;
 }
 
+int asmLabel(FILE *file, char *string) {
+
+	int i = 0;
+	
+	char *buffer = append(string, ":");
+	if (fwrite(buffer, sizeof(char), strlen(buffer), file) != strlen(buffer)) goto out;
+	i = asmNewLine(file);
+out:
+	free(buffer);
+	return i;
+}
+
 int asmBytes(FILE *file, byte *bytes, int byteCount) {
 
 	int i = 0;

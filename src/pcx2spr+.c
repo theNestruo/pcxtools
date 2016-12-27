@@ -71,8 +71,8 @@ int main(int argc, char **argv) {
 	bitmapInit(&bitmap, argc, argv);
 	sprWriterPlusInit(&writer, argc, argv);
 
-	sprFilename = append(pcxFilename, ".spr");
-	spatFilename = append(pcxFilename, writer.binarySpatOutput ? ".spat" : ".spat.asm");
+	sprFilename = append(pcxFilename, writer.binaryOutput ? ".spr" : ".spr.asm");
+	spatFilename = append(pcxFilename, writer.binaryOutput ? ".spat" : ".spat.asm");
 	
 	if (verbose)
 		printf("Output files: %s, %s\n", sprFilename, spatFilename);
