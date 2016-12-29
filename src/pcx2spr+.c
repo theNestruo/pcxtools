@@ -94,13 +94,13 @@ int main(int argc, char **argv) {
 	
 	if (!dryRun) {
 		if (verbose)
-			printf("Writing output file...\n");
-		if (!(sprFile = fopen(sprFilename, "wb"))) {
+			printf("Writing output files...\n");
+		if (!(sprFile = fopen(sprFilename, writer.binaryOutput ? "wb" : "wt"))) {
 			printf("ERROR: Could not create %s.\n", sprFilename);
 			i = 14;
 			goto out;
 		}
-		if (!(spatFile = fopen(spatFilename, "wb"))) {
+		if (!(spatFile = fopen(spatFilename, writer.binaryOutput ? "wb" : "wt"))) {
 			printf("ERROR: Could not create %s.\n", spatFilename);
 			i = 15;
 			goto out;

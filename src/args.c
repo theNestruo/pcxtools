@@ -87,8 +87,9 @@ int endsWith(char *string, char *suffix) {
 char *append(char *a, char *b) {
 
 	char *result = (char*) calloc (strlen(a) + strlen(b) + 1, sizeof(char));
-	strcpy(result, a);
-	strcat(result, b);
+	sprintf(result, "%s%s", a, b);
+	// strcpy(result, a);
+	// strcat(result, b);
 	return result;
 }
 
@@ -97,7 +98,7 @@ int decimalInt(char *value) {
 	int ret;
 	for (ret = 0; *value; value++) {
 		ret *= 10;
-		ret += hexadecimalNibble(*value);
+		ret += decimalDigit(*value);
 	}
 	return ret;
 }
