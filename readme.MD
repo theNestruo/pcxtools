@@ -106,8 +106,24 @@ Order of options is non important. Unknown options will be silently ignored. If 
     Save SPATBL as binary file.
     Default is the more versatile ASCII assembly code file.
 
+## TMX2BIN only
+* `-t<0..255>` reorganize data as metatiles of <0..255>x<0..255> bytes
+    If not provided, the output data will be the same as it is in the TMX file.
+    If a metatile size is provided, the data will be scanned from left to right and from top to bottom in blocks of the specified size.
+    E.g.: Given a TMX with:
+    ```
+    123456
+    7890ab
+    cdefgh
+    ijklmn
+    ```
+    The default output will be ` 123456 7890ab cdefgh ijklmn` (spaces added for clarity).
+    A metatile size of 2 will output `1278 3490 56ab cdij efkl ghmn` (6 metatiles of 2x2 bytes).
+    If the width and/or height of the TMX data is not multiple of the specified size, extra data will be silently ignored.
+    Thus, a metatile size of 3 will output: `123789cde 4560abfgh` (2 metatiles of 3x3 bytes, rest of data ignored).
+
 ## Version history
-* 27/12/2016 v2.0
+* 28/12/2016 v2.0
     `PCX2SPR+` outputs ASCII assembly code
     `TMX2BIN` integrated into PCXTOOLS
 * 22/05/2014 v1.99c
@@ -128,7 +144,6 @@ Order of options is non important. Unknown options will be silently ignored. If 
 * [*] Improve source code.
 * `PCX2MSX[+]` Improve NAMTBL options (banks, etc.).
 * `PCX2MSX[+]` Output NAMTBL as assembly.
-* `TMX2BIN` Recover metatile support (present in the original, separated version)
 * `TMX2BIN` metatiles with different width and height.
 * `TMX2BIN` Multiple layers.
 

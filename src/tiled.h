@@ -30,9 +30,9 @@ struct stTiled {
 /* Function prototypes ----------------------------------------------------- */
 
 // Supported arguments:
-// -i		inverted. Flips bitmap vertically
-// -m		mirrored. Flips bitmap horizontally
-// -1..f	reorganize data as metatiles of <1..f>x<1..f> bytes (hexa)
+// // -i		inverted. Flips bitmap vertically
+// // -m		mirrored. Flips bitmap horizontally
+// -t<0..255>	reorganize data as metatiles of <0..255>x<0..255> bytes
 void tiledOptions();
 
 void tiledInit(struct stTiled *instance, int argc, char **argv);
