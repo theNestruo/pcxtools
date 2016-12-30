@@ -19,8 +19,8 @@
 
 void tiledOptions() {
 
-	// printf("\t-i\tinverted. Flips bitmap vertically\n");
-	// printf("\t-m\tmirrored. Flips bitmap horizontally\n");
+	// printf("\t-i\tinverted. Flips bitmap vertically\n"); // (not yet implemented)
+	// printf("\t-m\tmirrored. Flips bitmap horizontally\n"); // (not yet implemented)
 	printf("\t-t<0..255>\treorganize data as metatiles of <0..255>x<0..255> bytes\n");
 }
 
@@ -32,8 +32,8 @@ void tiledInit(struct stTiled *this, int argc, char **argv) {
 	this->metatileSize = 1;
 
 	// Read arguments
-	// this->isFlip = (argEquals(argc, argv, "-i") != -1);
-	// this->isMirror = (argEquals(argc, argv, "-m") != -1);
+	// this->isFlip = (argEquals(argc, argv, "-i") != -1); // (not yet implemented)
+	// this->isMirror = (argEquals(argc, argv, "-m") != -1); // (not yet implemented)
 	
 	int i;
 	if ((i = argStartsWith(argc, argv, "-t", 2)) != -1) {

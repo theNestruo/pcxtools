@@ -85,11 +85,10 @@ int endsWith(char *string, char *suffix) {
 }
 
 char *append(char *a, char *b) {
-
+	
 	char *result = (char*) calloc (strlen(a) + strlen(b) + 1, sizeof(char));
-	sprintf(result, "%s%s", a, b);
-	// strcpy(result, a);
-	// strcat(result, b);
+	strcpy(result, a);
+	strcat(result, b);
 	return result;
 }
 

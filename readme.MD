@@ -123,6 +123,8 @@ Order of options is non important. Unknown options will be silently ignored. If 
     Thus, a metatile size of 3 will output: `123789cde 4560abfgh` (2 metatiles of 3x3 bytes, rest of data ignored).
 
 ## Version history
+* 30/12/2016 v2.1
+    Fixed segmentation fault in `PCX2SPR+` when outputting ASCII assembly code
 * 28/12/2016 v2.0
     `PCX2SPR+` outputs ASCII assembly code
     `TMX2BIN` integrated into PCXTOOLS
@@ -151,7 +153,7 @@ Order of options is non important. Unknown options will be silently ignored. If 
 Coded by [theNestruo](theNestruo@gmail.com)
 
 * Original `PCX2MSX` was coded by Edward A. Robsy Petrus [25/12/2004]. `PCX2MSX` is inspired by that original version, but is not related with it in any other way.
-* [Tiled](http://www.mapeditor.org/) (c) 2008-2013 Thorbjørn Lindeijer.
+* [Tiled](http://www.mapeditor.org/) (c) 2008-2016 Thorbjørn Lindeijer.
 * Test graphics extracted from the original freeware version of [Ninja Senki](http://ninjasenki.com/) (c) 2010 Jonathan Lavigne.
 * `PCX2SPR+` demo sprites extracted from [Sydney Hunter and the Caverns of Death](http://www.studiopinagames.com/sydney.html) (c) 2011 Keith Erickson / Studio Piña
 

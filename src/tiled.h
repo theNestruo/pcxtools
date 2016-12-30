@@ -22,16 +22,16 @@ struct stTiled {
 	int height;
 	
 	// Arguments and options
-	// int isFlip;
-	// int isMirror;
+	// int isFlip; // (not yet implemented)
+	// int isMirror; // (not yet implemented)
 	int metatileSize;
 };
 
 /* Function prototypes ----------------------------------------------------- */
 
 // Supported arguments:
-// // -i		inverted. Flips bitmap vertically
-// // -m		mirrored. Flips bitmap horizontally
+// -i		inverted. Flips bitmap vertically // (not yet implemented)
+// -m		mirrored. Flips bitmap horizontally // (not yet implemented)
 // -t<0..255>	reorganize data as metatiles of <0..255>x<0..255> bytes
 void tiledOptions();
 

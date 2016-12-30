@@ -419,7 +419,6 @@ int writeHeader(struct stSpriteSolver *this, FILE *sprFile, FILE *spatFile) {
 	sprintf(buffer, "%d sprite(s) at %d,%d", getSpriteCount(this), this->x0, this->y0);
 	if (!(i = asmComment(sprFile, buffer, 0))) goto out;
 	if (!(i = asmComment(spatFile, buffer, 0))) goto out;
-	free(buffer);
 	
 	// label
 	sprintf(buffer, "@@SPRITE_%d_%d", this->x0, this->y0);
@@ -471,8 +470,10 @@ void findRects(struct stColorSolver *this) {
 		for (depth = 0; depth < this->rectsPerSolution; depth++)
 			if (!initRect(this, rects, depth))
 				break; // couldn't init for this size
-		if (depth < this->rectsPerSolution)
+		if (depth < this->rectsPerSolution) {
+			free(rects);
 			continue; // couldn't init for this size
+		}
 
 		do {
 			if (checkSolution(this, rects))

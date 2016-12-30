@@ -213,7 +213,7 @@ SPRATR_DATA:
 	.include "pcx2sprplus_demo\demo.pcx.spat.asm"
 
 SPRTBL_DATA:
-	.incbin	"pcx2sprplus_demo\demo.pcx.spr"
+	.include "pcx2sprplus_demo\demo.pcx.spr.asm"
 	SPRITE_COUNT equ ($ - SPRTBL_DATA) / 32
 
 ; =============================================================================
