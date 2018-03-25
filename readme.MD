@@ -57,7 +57,7 @@ Order of options is non important. Unknown options will be silently ignored. If 
 * `-b<0..7>` force bit <n> to be background (reset) on patterns
 * `-hl` force higher color to be foreground
 * `-lh` force lower color to be foreground
-    This four options allow some control on how patterns are created, and which color is foreground and which one is background.
+    These four options allow some control on how patterns are created, and which color is foreground and which one is background.
     Can be useful if colors are going to be set programatically (e.g.: fonts colored with FILVRM) or to improve compression results.
 
 ### PCX2MSX+ only
@@ -82,6 +82,9 @@ Order of options is non important. Unknown options will be silently ignored. If 
     Output is adjusted so it can be used in 8x8px sprites modes
 * ` -h` generate half sprites (8x16px, 16b per sprite)
     Processing order is adjusted so multicolored sprites are grouped by half sprites (8px width, 16px height)
+* `-hl` lower colors will have higher priority planes (default)
+* `-lh` higher colors will have higher priority planes
+    These two options allow some control on how the colors get ordered (namely, to avoid the flickering routines make flicker the brigther colors)
 
 ## PCX2SPR+ only
 * `-w<16..255>` sprite width (default: 16px)
@@ -123,6 +126,8 @@ Order of options is non important. Unknown options will be silently ignored. If 
     Thus, a metatile size of 3 will output: `123789cde 4560abfgh` (2 metatiles of 3x3 bytes, rest of data ignored).
 
 ## Version history
+* 25/03/2018 v2.2
+    -lh and -hl options in `PCX2SPR`
 * 30/12/2016 v2.1
     Fixed segmentation fault in `PCX2SPR+` when outputting ASCII assembly code
 * 28/12/2016 v2.0

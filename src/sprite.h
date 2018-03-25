@@ -33,6 +33,7 @@ struct stSprWriter {
 	// Arguments
 	int spriteWidth;
 	int spriteHeight;
+	int colorOrder;
 };
 
 /* Function prototypes ----------------------------------------------------- */

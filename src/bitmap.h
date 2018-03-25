@@ -24,7 +24,7 @@ typedef unsigned char byte;
 struct stBitmap {
 	// Bitmap container
 	byte *bitmap;
-	int width, height;
+	unsigned int width, height;
 	
 	// // Palette container
 	// struct stcolor *palette;

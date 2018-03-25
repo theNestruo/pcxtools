@@ -20,6 +20,8 @@ void sprWriterOptions() {
 
 	printf("\t-8\tgenerate 8x8px sprites\n");
 	printf("\t-h\tgenerate half sprites (8x16px, 16b per sprite)\n");
+	printf("\t-lh\tlower colors will have higher priority planes (default)\n");
+	printf("\t-hl\thigher colors will have higher priority planes\n");
 }
 
 void sprWriterInit(struct stSprWriter *this, int argc, char **argv) {
@@ -27,16 +29,19 @@ void sprWriterInit(struct stSprWriter *this, int argc, char **argv) {
 	// Init
 	this->groups = NULL;
 	this->groupCount = 0;
-	this->spriteWidth = 16;
-	this->spriteHeight = 16;
-
+	
 	// Read arguments
-	if (argEquals(argc, argv, "-8") != -1) {
-		this->spriteWidth = 8;
-		this->spriteHeight = 8;
-	} else if (argEquals(argc, argv, "-h") != -1) {
-		this->spriteWidth = 8;
-	}
+	this->spriteWidth =
+		  (argEquals(argc, argv, "-8") != -1) ? 8
+		: (argEquals(argc, argv, "-h") != -1) ? 8
+		: 16;
+	this->spriteHeight =
+		  (argEquals(argc, argv, "-8") != -1) ? 8
+		: 16;
+	this->colorOrder =
+		  (argEquals(argc, argv, "-lh") != -1) ? 1
+		: (argEquals(argc, argv, "-hl") != -1) ? -1
+		: 1;
 }
 
 void sprWriterReadSprites(struct stSprWriter *this, struct stBitmap *bitmap) {
@@ -116,8 +121,13 @@ void processSpriteGroup(struct stSprWriter *this, struct stSpriteGroup *group, s
 		for (y = 0; y < this->spriteHeight; y++, j++) { // for each line
 			for (x = 0; x < 8; x++) { // for each pixel
 				byte color = bitmapGet(bitmap, x0 + col + x, y0 + y);
-				if (color)
-					buffer[color - 1].pattern[j] |= (0x80 >> x);
+				if (color) {
+					color =
+						(this->colorOrder > 0) ? color - 1
+						: (this->colorOrder < 0) ? 15 - color
+						: color - 1;
+					buffer[color].pattern[j] |= (0x80 >> x);
+				}
 			}
 		}
 	}
