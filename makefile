@@ -121,16 +121,17 @@ test/charset.pcx.chr test/charset.pcx.clr: bin/$(PCX2MSX) test/charset.pcx
 # %.pcx.spr: %.pcx
 #	$(PCX2SPR) -v $<
 
-test\bigsprites.pcx.spat.asm test\bigsprites.pcx.spr.asm: bin\$(PCX2SPRPLUS) test\bigsprites.pcx
-	bin\$(PCX2SPRPLUS) -v -vv -w24 -h32 test\bigsprites.pcx
+test/bigsprites.pcx.spat.asm test/bigsprites.pcx.spr.asm: bin/$(PCX2SPRPLUS) test/bigsprites.pcx
+	bin/$(PCX2SPRPLUS) -v -vv -w24 -h32 test/bigsprites.pcx
 
-test\screen.tmx.bin: bin\$(TMX2BIN) test\screen.tmx
-	bin\$(TMX2BIN) -v test\screen.tmx
+test/screen.tmx.bin: bin/$(TMX2BIN) test/screen.tmx
+	bin/$(TMX2BIN) -v test/screen.tmx
 
-test\metatiles.tmx.bin: bin\$(TMX2BIN) test\metatiles.tmx
-	bin\$(TMX2BIN) -v -t2 test\metatiles.tmx
+test/metatiles.tmx.bin: bin/$(TMX2BIN) test/metatiles.tmx
+	bin/$(TMX2BIN) -v -t2 test/metatiles.tmx
 
-demo: bin\$(PCX2SPRPLUS) pcx2sprplus_demo\demo.pcx pcx2sprplus_demo\demo.asm
-	bin\$(PCX2SPRPLUS) -v -vv -w24 -h32 pcx2sprplus_demo\demo.pcx
-	asmsx pcx2sprplus_demo\demo.asm
-	cmd /c start pcx2sprplus_demo\demo.rom
+demo: bin/$(PCX2SPRPLUS) pcx2sprplus_demo/demo.pcx pcx2sprplus_demo/demo.asm
+	bin/$(PCX2SPRPLUS) -v -vv -w24 -h32 pcx2sprplus_demo/demo.pcx
+# Windows only:
+#	asmsx pcx2sprplus_demo/demo.asm
+#	cmd /c start pcx2sprplus_demo/demo.rom
