@@ -1,3 +1,6 @@
+[![Travis-CI](https://travis-ci.org/theNestruo/pcxtools.svg?branch=master)](https://travis-ci.org/theNestruo/pcxtools)
+[![CodeFactor](https://www.codefactor.io/repository/github/thenestruo/pcxtools/badge)](https://www.codefactor.io/repository/github/thenestruo/pcxtools)
+
 # PCXTOOLS: PCX2MSX[+], PCX2SPR[+] and TMX2BIN
 `PCX2MSX[+]` and `PCX2SPR[+]` are free command line tools to convert PCX images to TMS9918 (MSX-1 VDP) format (i.e. CHRTBL/CLRTBL/NAMTBL and SPRTBL/SPATBL-ready values).
 
@@ -158,8 +161,8 @@ Order of options is non important. Unknown options will be silently ignored. If 
 Coded by [theNestruo](theNestruo@gmail.com)
 
 * Original `PCX2MSX` was coded by Edward A. Robsy Petrus [25/12/2004]. `PCX2MSX` is inspired by that original version, but is not related with it in any other way.
-* [Tiled](http://www.mapeditor.org/) (c) 2008-2016 Thorbjørn Lindeijer.
+* [Tiled](http://www.mapeditor.org/) (c) 2008-2016 ThorbjÃ¸rn Lindeijer.
 * Test graphics extracted from the original freeware version of [Ninja Senki](http://ninjasenki.com/) (c) 2010 Jonathan Lavigne.
-* `PCX2SPR+` demo sprites extracted from [Sydney Hunter and the Caverns of Death](http://www.studiopinagames.com/sydney.html) (c) 2011 Keith Erickson / Studio Piña
+* `PCX2SPR+` demo sprites extracted from [Sydney Hunter and the Caverns of Death](http://www.studiopinagames.com/sydney.html) (c) 2011 Keith Erickson / Studio PiÃ±a
 
-Greetings to: Robsy, Iban Nieto, Jon Cortázar
+Greetings to: Robsy, Iban Nieto, Jon CortÃ¡zar
