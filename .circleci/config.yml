@@ -3,8 +3,9 @@ jobs:
   build:
     docker:
       - image: circleci/ruby:2.4.1
+    working_directory: /tmp
     steps:
       - checkout
       - run: make && make test
       - store_artifacts:
-        path: /bin/pcx2msx
+        path: /tmp/bin/pcx2msx
