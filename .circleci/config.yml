@@ -10,4 +10,4 @@ jobs:
       - run: make && make test
       
       - store_artifacts:
-          path: /bin/pcx2msx
+          path: bin/pcx2msx
