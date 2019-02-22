@@ -11,3 +11,15 @@ jobs:
       
       - store_artifacts:
           path: bin/pcx2msx
+          
+      - store_artifacts:
+          path: bin/pcx2spr
+          
+      - store_artifacts:
+          path: bin/pcx2msx+
+          
+      - store_artifacts:
+          path: bin/pcx2spr+
+          
+      - store_artifacts:
+          path: bin/tmx2bin
