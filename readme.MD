@@ -1,5 +1,5 @@
-[![CircleCI](https://circleci.com/gh/theNestruo/pcxtools.svg?style=svg)](https://circleci.com/gh/theNestruo/pcxtools)
 [![Travis-CI](https://travis-ci.org/theNestruo/pcxtools.svg?branch=master)](https://travis-ci.org/theNestruo/pcxtools)
+[![CircleCI](https://circleci.com/gh/theNestruo/pcxtools.svg?style=shield)](https://circleci.com/gh/theNestruo/pcxtools)
 [![CodeFactor](https://www.codefactor.io/repository/github/thenestruo/pcxtools/badge)](https://www.codefactor.io/repository/github/thenestruo/pcxtools)
 
 # PCXTOOLS: PCX2MSX[+], PCX2SPR[+] and TMX2BIN
