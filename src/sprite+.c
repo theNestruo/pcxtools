@@ -421,7 +421,7 @@ int writeHeader(struct stSpriteSolver *this, FILE *sprFile, FILE *spatFile) {
 	if (!(i = asmComment(spatFile, buffer, 0))) goto out;
 	
 	// label
-	sprintf(buffer, "@@SPRITE_%d_%d", this->x0, this->y0);
+	sprintf(buffer, ".SPRITE_%d_%d", this->x0, this->y0);
 	if (!(i = asmLabel(sprFile, buffer))) goto out;
 	if (!(i = asmLabel(spatFile, buffer))) goto out;
 out:

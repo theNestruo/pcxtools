@@ -1,0 +1,7 @@
+test/bigsprites.pcx.spat.asm
+test/bigsprites.pcx.spr.asm
+test/charset.pcx.chr
+test/charset.pcx.clr
+test/metatiles.tmx.bin
+test/screen.tmx.bin
+.vscode/ipch

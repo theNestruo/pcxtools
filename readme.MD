@@ -130,6 +130,8 @@ Order of options is non important. Unknown options will be silently ignored. If 
     Thus, a metatile size of 3 will output: `123789cde 4560abfgh` (2 metatiles of 3x3 bytes, rest of data ignored).
 
 ## Version history
+* 15/06/2019 v2.3
+    More standard Z80 Syntax in .asm output of `PCX2SPR+`
 * 25/03/2018 v2.2
     -lh and -hl options in `PCX2SPR`
 * 30/12/2016 v2.1

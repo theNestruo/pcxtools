@@ -45,7 +45,7 @@ int asmBytes(FILE *file, byte *bytes, int byteCount) {
 
 	int i = 0;
 	
-	char *init = "\t.db\t0x%02x", *cont = ", 0x%02x", *buffer = (char*) calloc(16, sizeof(char));
+	char *init = "\tdb\t0x%02x", *cont = ", 0x%02x", *buffer = (char*) calloc(16, sizeof(char));
 	int j;
 	byte *b;
 	for (j = 0, b = bytes; j < byteCount; j++, b++) {
