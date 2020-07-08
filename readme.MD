@@ -89,7 +89,7 @@ Order of options is non important. Unknown options will be silently ignored. If 
 * `-lh` higher colors will have higher priority planes
     These two options allow some control on how the colors get ordered (namely, to avoid the flickering routines make flicker the brigther colors)
 
-## PCX2SPR+ only
+### PCX2SPR+ only
 * `-w<16..255>` sprite width (default: 16px)
     Sprite width inside the spritesheet.
 * `-h<16..255>` sprite height (default: 16px)
@@ -112,7 +112,7 @@ Order of options is non important. Unknown options will be silently ignored. If 
     Save SPATBL as binary file.
     Default is the more versatile ASCII assembly code file.
 
-## TMX2BIN only
+### TMX2BIN only
 * `-t<0..255>` reorganize data as metatiles of <0..255>x<0..255> bytes
     If not provided, the output data will be the same as it is in the TMX file.
     If a metatile size is provided, the data will be scanned from left to right and from top to bottom in blocks of the specified size.
