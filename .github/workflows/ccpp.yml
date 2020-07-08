@@ -3,33 +3,19 @@ name: C/C++ CI
 on: [push]
 
 jobs:
-  build-win:
-    name: Windows build
-    runs-on: windows-latest   
+  build:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v1
     - name: make
       run: make
     - name: test
       run: make test
-      
-  ubuntu-win:
-    name: Linux build
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: make
-      run: make
-    - name: test
-      run: make test
-      
-  macos-win:
-    name: MacOS build
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: make
-      run: make
-    - name: test
-      run: make test
-      
+    - name: upload
+      uses: actions/upload-artifact@v1
+      with:
+        name: binaries
+        path: bin
