@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 
 #include "tiled.h"
 #include "args.h"
@@ -34,7 +34,7 @@ void tiledInit(struct stTiled *this, int argc, char **argv) {
 	// Read arguments
 	// this->isFlip = (argEquals(argc, argv, "-i") != -1); // (not yet implemented)
 	// this->isMirror = (argEquals(argc, argv, "-m") != -1); // (not yet implemented)
-	
+
 	int i;
 	if ((i = argStartsWith(argc, argv, "-t", 2)) != -1) {
 		this->metatileSize = decimalInt(&(argv[i][2]));
@@ -49,7 +49,7 @@ int tiledWrite(struct stTiled *this, FILE *binFile) {
 			? 1
 			: 0;
 	}
-		
+
 	// Metatile rearrangment or mirrored
 	int x, xMax, y, yMax, v;
 	byte *groupSrc, *tileSrc, *src;

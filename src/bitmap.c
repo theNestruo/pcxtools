@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 
 #include "bitmap.h"
 #include "args.h"
@@ -29,7 +29,7 @@
 		// { 204, 204, 204 }, // gray
 		// { 255, 255, 255 }  // white
 	// };
-	
+
 // struct stcolor paletteV9938[] = {
 		// {  0,   0,   0 }, // black
 		// { 36, 218,  36 }, // medium green
@@ -79,7 +79,7 @@ byte bitmapGet(struct stBitmap *this, int x0, int y0) {
 
 	if ((x0 < 0) || (y0 < 0) || (x0 >= this->width) || (y0 >= this->height))
 		return 0;
-	
+
 	int y = this->isFlip ? this->height - y0 - 1 : y0;
 	int x = this->isMirror ? this->width - x0 - 1 : x0;
 

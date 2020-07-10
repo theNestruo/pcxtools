@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 
 #include "args.h"
 #include "sprite.h"
@@ -29,7 +29,7 @@ void sprWriterInit(struct stSprWriter *this, int argc, char **argv) {
 	// Init
 	this->groups = NULL;
 	this->groupCount = 0;
-	
+
 	// Read arguments
 	this->spriteWidth =
 		  (argEquals(argc, argv, "-8") != -1) ? 8
@@ -66,7 +66,7 @@ int sprWriterWrite(struct stSprWriter *this, FILE *sprFile) {
 	int i;
 	struct stSpriteGroup *it;
 	for (i = 0, it = this->groups; i < this->groupCount; i++, it++) {
-	
+
 		// For each sprite...
 		int j;
 		struct stSprite *sprite;
@@ -82,13 +82,13 @@ void sprWriterDone(struct stSprWriter *this) {
 
 	if (!this->groups)
 		return;
-	
+
 	// For each group...
 	int i;
 	struct stSpriteGroup *it;
 	for (i = 0, it = this->groups; i < this->groupCount; i++, it++) {
 		if (!it->sprites) continue;
-	
+
 		// For each sprite...
 		int j;
 		struct stSprite *sprite;
@@ -107,14 +107,14 @@ void sprWriterDone(struct stSprWriter *this) {
 void processSpriteGroup(struct stSprWriter *this, struct stSpriteGroup *group, struct stBitmap *bitmap, int x0, int y0) {
 
 	int spriteSize = (this->spriteWidth / 8) * this->spriteHeight;
-	
+
 	// Create buffer and reset values
 	int i, j;
 	struct stSprite *buffer = (struct stSprite*) calloc(15, sizeof(struct stSprite));
 	for(i = 0; i < 15; i++) {
 		buffer[i].pattern = (byte*) calloc(spriteSize, sizeof(byte));
 	}
-	
+
 	// Create the pattern
 	int col, y, x;
 	for (col = 0, j = 0; col < this->spriteWidth; col += 8) { // for each 8px width column
@@ -131,7 +131,7 @@ void processSpriteGroup(struct stSprWriter *this, struct stSpriteGroup *group, s
 			}
 		}
 	}
-	
+
 	// Count patterns
 	group->spriteCount = 0;
 	for (i = 0; i < 15; i++) {
@@ -142,11 +142,11 @@ void processSpriteGroup(struct stSprWriter *this, struct stSpriteGroup *group, s
 			}
 		}
 	}
-	
+
 	// Blit patterns
 	if (!group->spriteCount) {
 		group->sprites = NULL;
-		
+
 	} else {
 		group->sprites = (struct stSprite*) calloc(group->spriteCount, sizeof(struct stSprite));
 		struct stSprite *src, *dest;
@@ -164,7 +164,7 @@ void processSpriteGroup(struct stSprWriter *this, struct stSpriteGroup *group, s
 			dest++;
 		}
 	}
-	
+
 	// Destroys buffer
 	for (i = 0; i < 15; i++) {
 		free(buffer[i].pattern);

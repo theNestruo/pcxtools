@@ -5,36 +5,36 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 
 #include "args.h"
 
 /* Function bodies --------------------------------------------------------- */
 
 int argFilename(int argc, char **argv) {
-	
+
 	int i = argNextFilename(argc, argv, 0);
 	return i;
 }
 
 int argNextFilename(int argc, char **argv, int last) {
-	
+
 	int i;
 	if (argv) for (i = last +1; i < argc; i++) {
 		char *arg = argv[i];
-		
+
 		if (arg && strlen(arg) && (arg[0] != '-')) {
 			// Found: not null, not empty, not a modifier
 			return i;
 		}
 	}
-	
+
 	// Not found
 	return -1;
 }
 
 int argEquals(int argc, char **argv, char *argstring) {
-	
+
 	int i;
 	if (argv && argstring) for (i = 1; i < argc; i++) {
 		char *arg = argv[i];
@@ -44,13 +44,13 @@ int argEquals(int argc, char **argv, char *argstring) {
 			return i;
 		}
 	}
-	
+
 	// Not found
 	return -1;
 }
 
 int argStartsWith(int argc, char **argv, char *argstring, int minlen) {
-	
+
 	int i;
 	if (argv && argstring) for (i = 1; i < argc; i++) {
 		char *arg = argv[i];
@@ -60,7 +60,7 @@ int argStartsWith(int argc, char **argv, char *argstring, int minlen) {
 			return i;
 		}
 	}
-	
+
 	// Not found
 	return -1;
 }
@@ -85,7 +85,7 @@ int endsWith(char *string, char *suffix) {
 }
 
 char *append(char *a, char *b) {
-	
+
 	char *result = (char*) calloc (strlen(a) + strlen(b) + 1, sizeof(char));
 	strcpy(result, a);
 	strcat(result, b);

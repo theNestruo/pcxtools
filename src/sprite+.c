@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 
 #include "args.h"
 #include "sprite+.h"
@@ -229,7 +229,7 @@ void solve(struct stSpriteSolver *this) {
 	do {
 		checkBetterSolution(this, tmp);
 	} while (nextSolution(this, tmp));
-	
+
 	if (!veryVerbose) return;
 
 	// Show best solution
@@ -266,12 +266,12 @@ int checkBetterSolution(struct stSpriteSolver *this, int indexes[16]) {
 			if (!(colorSolver = getColorSolver(this, color))) continue;
 			count += getColorScanlineCount(colorSolver, indexes[color], y);
 		}
-		
+
 		// worse? then quit
 		if (count > this->bestScanlineCount.value) {
 			return 0;
 		}
-		
+
 		// update
 		if (count > scanlineCount.value) {
 			scanlineCount.value = count;
@@ -280,7 +280,7 @@ int checkBetterSolution(struct stSpriteSolver *this, int indexes[16]) {
 		if (count == scanlineCount.value)
 			scanlineCount.scanlineCount++;
 	}
-	
+
 	if ((scanlineCount.value > this->bestScanlineCount.value) // worse spritesPerScanline
 		|| ((scanlineCount.value == this->bestScanlineCount.value) // same spritesPerScanline...
 			&& (scanlineCount.scanlineCount >= this->bestScanlineCount.scanlineCount))) // ...but worse scanlineCount
@@ -414,12 +414,12 @@ int writeHeader(struct stSpriteSolver *this, FILE *sprFile, FILE *spatFile) {
 
 	int i = 0;
 	char *buffer = (char*) calloc(32, sizeof(char));
-	
+
 	// comment
 	sprintf(buffer, "%d sprite(s) at %d,%d", getSpriteCount(this), this->x0, this->y0);
 	if (!(i = asmComment(sprFile, buffer, 0))) goto out;
 	if (!(i = asmComment(spatFile, buffer, 0))) goto out;
-	
+
 	// label
 	sprintf(buffer, ".SPRITE_%d_%d", this->x0, this->y0);
 	if (!(i = asmLabel(sprFile, buffer))) goto out;

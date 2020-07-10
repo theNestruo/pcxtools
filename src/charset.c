@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 
 #include "args.h"
 #include "bitmap.h"
@@ -73,7 +73,7 @@ int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *char
 	struct stBlock *itBlock;
 	for (y = 0, itBlock = charset->blocks; (y + TILE_HEIGHT) <= bitmap->height; y += TILE_HEIGHT) {
 		for (x = 0; (x + TILE_WIDTH) <= bitmap->width; x += TILE_WIDTH, itBlock++) {
-			
+
 			// For each line...
 			int i;
 			struct stLine *itLine;
@@ -83,7 +83,7 @@ int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *char
 			}
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -94,12 +94,12 @@ void charsetProcessorPostProcess(struct stCharsetProcessor *this, struct stChars
 		int i;
 		struct stBlock *itBlock;
 		for (i = 0, itBlock = charset->blocks; i < charset->blockCount; i++, itBlock++) {
-		
+
 			// For each line...
 			int j;
 			struct stLine *itLine;
 			for (j = 0, itLine = itBlock->line; j < TILE_HEIGHT; j++, itLine++) {
-				
+
 				// Apply current pattern mode
 				switch (this->patternMode & PATTERN_MODE_MASK) {
 				case PATTERN_MODE_FOREGROUND:
@@ -107,13 +107,13 @@ void charsetProcessorPostProcess(struct stCharsetProcessor *this, struct stChars
 					if (!(itLine->pattern & (1 << (this->patternMode & 0x07))))
 						negateAndSwap(itLine);
 					break;
-				
+
 				case PATTERN_MODE_BACKGROUND:
 					// Force background bit
 					if (itLine->pattern & (1 << (this->patternMode & 0x07)))
 						negateAndSwap(itLine);
 					break;
-					
+
 				case PATTERN_MODE_HIGH_LOW:
 					// Force higher color foreground
 					if ((itLine->color >> 4) < (itLine->color & 0x0f))
@@ -121,7 +121,7 @@ void charsetProcessorPostProcess(struct stCharsetProcessor *this, struct stChars
 					if ((itLine->pattern == 0xff) && ((itLine->color >> 4) < 2))
 						negateAndSwap(itLine); // WORKAROUND: color 0 or 1 always background
 					break;
-				
+
 				case PATTERN_MODE_LOW_HIGH:
 					// Force higher color background
 					if ((itLine->color & 0x0f) < (itLine->color >> 4))
@@ -149,7 +149,7 @@ int charsetProcessorWrite(struct stCharsetProcessor *this, struct stCharset *cha
 				return 3;
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -184,7 +184,7 @@ int isBlockEquals(struct stBlock *this, struct stBlock *that) {
 	for (i = 0, thisLine = this->line, thatLine = that->line; i < TILE_HEIGHT; i++, thisLine++, thatLine++)
 		if (!isLineEquals(thisLine, thatLine))
 			return 0;
-			
+
 	return 1;
 }
 
@@ -205,7 +205,7 @@ int patternMode(int isForeground, char bit) {
 
 	if ((bit < '0') || (bit > '7'))
 		return PATTERN_MODE_UNSET;
-	
+
 	return (isForeground ? PATTERN_MODE_FOREGROUND : PATTERN_MODE_BACKGROUND)
 		| (bit - '0');
 }
@@ -215,7 +215,7 @@ int readLine(struct stCharsetProcessor *this, struct stLine *line, struct stBitm
 	int i, j;
 	byte colors[TILE_WIDTH];
 	byte pattern = 0x00, fgcolor = 0xff, bgcolor = 0xff;
-	
+
 	// Read the colors
 	for (i = 0; i < TILE_WIDTH; i++) {
 		colors[i] = bitmapGet(bitmap, x + i, y);
@@ -246,7 +246,7 @@ int readLine(struct stCharsetProcessor *this, struct stLine *line, struct stBitm
 			return 1;
 		}
 	}
-	
+
 	// Line read
 	if (fgcolor == 0xff) fgcolor = 0;
 	if (bgcolor == 0xff) bgcolor = 0;
@@ -267,7 +267,7 @@ int isLineEquals(struct stLine *thisLine, struct stLine *thatLine) {
 	for (i = 0; i < TILE_WIDTH; i++)
 		if (colorAtBit(thisLine, i) != colorAtBit(thatLine, i))
 			return 0;
-			
+
 	return 1;
 }
 

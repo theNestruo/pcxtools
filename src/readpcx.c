@@ -2,10 +2,10 @@
  * Support routines reading PCX files
  * Coded by theNestruo
  */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 
 #include "args.h"
 #include "readpcx.h"
@@ -45,17 +45,17 @@ int pcxReaderRead(FILE *file, struct stBitmap *bitmap) {
 
 	if (!file)
 		return 1;
-		
+
 	if (!bitmap)
 		return 2;
-	
+
 	// Reads the header
 	struct stPcxHeader header;
 	if (fread(&header, sizeof(struct stPcxHeader), 1, file) != 1) {
 		printf("ERROR: Could not read header.\n");
 		return 3;
 	}
-	
+
 	// Validate header
 	if (header.id != 0x0a) {
 		printf("ERROR: Wrong PCX signature. Found %d, expected %d.\n", header.id, 0x0a);
@@ -69,18 +69,18 @@ int pcxReaderRead(FILE *file, struct stBitmap *bitmap) {
 		printf("ERROR: Wrong PCX econding. Found %d, expected %d.\n", header.encoding, 1);
 		return 6;
 	}
-	
+
 	// Allocate space for the bitmap
 	bitmap->width = (int) header.xMax - (int) header.xMin + 1;
 	bitmap->height = (int) header.yMax - (int) header.yMin + 1;
 	bitmap->bitmap = (byte*) calloc(bitmap->width * bitmap->height, sizeof(byte));
-	
+
 	// Unpack the PCX
 	int y, x;
 	for (y = 0; y < bitmap->height; y++) {
 		for (x = 0; x < header.bytesWidth; ) {
 			byte data, runLength;
-			
+
 			// Read data byte
 			if (fread(&data, 1, 1, file) != 1) {
 				printf("ERROR: Could not read byte.\n");
@@ -97,7 +97,7 @@ int pcxReaderRead(FILE *file, struct stBitmap *bitmap) {
 					return 8;
 				}
 			}
-			
+
 			// Unpack
 			while (runLength--) {
 				// (skip extra padding pixels)
@@ -108,7 +108,7 @@ int pcxReaderRead(FILE *file, struct stBitmap *bitmap) {
 			}
 		}
 	}
-	
+
 	// // VGA palette ID
 	// byte paletteId;
 	// if (fread(&paletteId, 1, 1, file) != 1) {
@@ -119,13 +119,13 @@ int pcxReaderRead(FILE *file, struct stBitmap *bitmap) {
 		// printf("ERROR: Wrong VGA palette ID. Found %d, expected %d.\n", paletteId, 0x0c);
 		// return 10;
 	// }
-	
+
 	// // VGA palette
 	// bitmap->palette = (struct stcolor*) malloc(16 * sizeof(struct stcolor));
 	// if (fread(bitmap->palette, sizeof(struct stcolor), 16, file) != 16) {
 		// printf("ERROR: Could not read palette.\n");
 		// return 11;
 	// }
-	
+
 	return 0;
 }

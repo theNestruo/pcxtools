@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 
 #include "args.h"
 #include "nametable.h"
@@ -56,7 +56,7 @@ void nameTableProcessorGenerate(struct stNameTableProcessor *this,
 	// Initial namtbl
 	nametable->namtblSize = charset->blockCount;
 	nametable->namtbl = (int*) calloc(nametable->namtblSize, sizeof(int));
-	
+
 	// For each block...
 	int i, b, c, blockCount, *it;
 	struct stBlock *src, *dest;
@@ -79,7 +79,7 @@ void nameTableProcessorGenerate(struct stNameTableProcessor *this,
 		dest++;
 	}
 	reallocateBlocks(charset, blockCount);
-	
+
 	if (this->generateBlank && (this->blankAt <= charset->blockCount)) {
 		// Allocate
 		reallocateBlocks(charset, charset->blockCount + 1);
@@ -99,11 +99,11 @@ void nameTableProcessorGenerate(struct stNameTableProcessor *this,
 
 void nameTableProcessorGenerateUsing(struct stNameTableProcessor *this,
 		struct stNameTable *nametable, struct stCharset *charset, struct stCharset *screen) {
-		
+
 	// Initial namtbl
 	nametable->namtblSize = screen->blockCount;
 	nametable->namtbl = (int*) calloc(nametable->namtblSize, sizeof(int));
-	
+
 	// For each block...
 	int i, j, *it;
 	struct stBlock *block;
@@ -114,16 +114,16 @@ void nameTableProcessorGenerateUsing(struct stNameTableProcessor *this,
 }
 
 void nameTableProcessorApplyTo(struct stNameTable *nametable, struct stCharset *charset) {
-	
+
 	int i, expected, blockCount, *it;
 	struct stBlock *src, *dest;
-	
+
 	for (i = expected = 0, blockCount = 0, src = dest = charset->blocks, it = nametable->namtbl;
 			(i < charset->blockCount) && (i < nametable->namtblSize); i++, src++, it++) {
 		// Empty or repeated in master pcx
 		if ((*it == -1) || (*it < expected))
 			continue;
-			
+
 		// Not empty nor repeated in master pcx: move (compact blocks)
 		if (src != dest) memcpy(dest, src, sizeof(struct stBlock));
 		blockCount++;
@@ -142,7 +142,7 @@ void nameTableProcessorPostProcess(struct stNameTableProcessor *this, struct stN
 }
 
 int nameTableProcessorWrite(struct stNameTableProcessor *this, struct stNameTable *nametable, FILE *namFile) {
-	
+
 	int i, *it;
 	byte b;
 	for (i = 0, it = nametable->namtbl; i < nametable->namtblSize; i++, it++) {
@@ -170,7 +170,7 @@ void reallocateBlocks(struct stCharset *charset, int newBlockCount) {
 
 	if (newBlockCount == charset->blockCount)
 		return;
-		
+
 	charset->blockCount = newBlockCount;
 	if (newBlockCount) {
 		// Reallocate space for the blocks
@@ -186,9 +186,9 @@ void reallocateBlocks(struct stCharset *charset, int newBlockCount) {
 
 	// // Nothing to optimize
 	// if (line->color == optColor) return;
-	
+
 	// byte swappedColor = ((optColor & 0x0f) << 4) | (optColor >> 4);
-	
+
 	// switch (this->patternMode & PATTERN_MODE_MASK) {
 	// default:
 		// if (line->color == swappedColor) {
@@ -197,7 +197,7 @@ void reallocateBlocks(struct stCharset *charset, int newBlockCount) {
 			// return;
 		// }
 		// // (falls through)
-		
+
 	// case PATTERN_MODE_HIGH_LOW:
 	// case PATTERN_MODE_LOW_HIGH:
 		// // Cannot swap if two colors
@@ -212,7 +212,7 @@ void reallocateBlocks(struct stCharset *charset, int newBlockCount) {
 			// return;
 		// }
 		// // (falls through)
-		
+
 	// case PATTERN_MODE_FOREGROUND:
 	// case PATTERN_MODE_BACKGROUND:
 		// // Cannot swap, cannot set/reset bits
@@ -226,15 +226,15 @@ void reallocateBlocks(struct stCharset *charset, int newBlockCount) {
 		// }
 		// return;
 	// }
-	
-	
-	
-	
-	
+
+
+
+
+
 
 	// int allowSetReset = ((this->patternMode & PATTERN_MODE_MASK) != PATTERN_MODE_FOREGROUND)
 			// && ((this->patternMode & PATTERN_MODE_MASK) != PATTERN_MODE_BACKGROUND);
-	
+
 	// // Optimize 0x00 pattern
 	// if (line->pattern == 0x00) {
 		// if ((line->color & 0x0f) == (optColor & 0x0f)) {
@@ -248,7 +248,7 @@ void reallocateBlocks(struct stCharset *charset, int newBlockCount) {
 		// }
 		// return;
 	// }
-	
+
 	// // Optimize 0xff pattern
 	// if (line->pattern == 0xff) {
 		// if ((line->color >> 4) == (optColor >> 4)) {
@@ -262,9 +262,9 @@ void reallocateBlocks(struct stCharset *charset, int newBlockCount) {
 		// }
 		// return;
 	// }
-	
+
 	// int allowSwap = (this->patternMode & PATTERN_MODE_MASK) == PATTERN_MODE_UNSET;
-	
+
 	// // Optimize other pattern
 	// if (allowSwap
 			// && ((line->color & 0x0f) == (optColor >> 4))
@@ -273,7 +273,7 @@ void reallocateBlocks(struct stCharset *charset, int newBlockCount) {
 		// line->color = optColor;
 		// return;
 	// }
-	
+
 	// return;
 // }
 
@@ -288,7 +288,7 @@ void reallocateBlocks(struct stCharset *charset, int newBlockCount) {
 		// // if (line->pattern == 0xff)
 			// // return (line->color >> 4) == (optColor >> 4);
 		// // return 0;
-		
+
 	// // default:
 		// // // Allow swap
 		// // if (line->pattern == 0x00)
@@ -317,7 +317,7 @@ void reallocateBlocks(struct stCharset *charset, int newBlockCount) {
 		// // line->color = optColor;
 		// // return;
 	// // }
-	
+
 	// // negateAndSwap(line);
 	// // line->color = optColor; // should be unnecesary
 // // }

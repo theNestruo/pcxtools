@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 
 #include "args.h"
 #include "output.h"
@@ -20,7 +20,7 @@ int asmNewLine(FILE *file) {
 int asmComment(FILE *file, char *string, int inner) {
 
 	int i = 0;
-	
+
 	char *buffer = append(inner ? "\t; " : "; ", string);
 	if (fwrite(buffer, sizeof(char), strlen(buffer), file) != strlen(buffer)) goto out;
 	i = asmNewLine(file);
@@ -32,7 +32,7 @@ out:
 int asmLabel(FILE *file, char *string) {
 
 	int i = 0;
-	
+
 	char *buffer = append(string, ":");
 	if (fwrite(buffer, sizeof(char), strlen(buffer), file) != strlen(buffer)) goto out;
 	i = asmNewLine(file);
@@ -44,7 +44,7 @@ out:
 int asmBytes(FILE *file, byte *bytes, int byteCount) {
 
 	int i = 0;
-	
+
 	char *init = "\tdb\t0x%02x", *cont = ", 0x%02x", *buffer = (char*) calloc(16, sizeof(char));
 	int j;
 	byte *b;
