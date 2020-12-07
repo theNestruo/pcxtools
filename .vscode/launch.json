@@ -8,10 +8,10 @@
 			"name": "(gdb) Launch",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/bin/png2msx.exe",
+			"program": "${workspaceFolder}\\bin\\png2msx.exe",
 			"args": [
 				"-v",
-				"test/charset.png"
+				"test\\test.png"
 			],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",

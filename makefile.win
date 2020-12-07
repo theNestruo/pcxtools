@@ -5,13 +5,31 @@
 CCOMPILER=gcc
 # CCOMPILER_OPTIONS=-Wall -O3
 CCOMPILER_OPTIONS=-Wall -ggdb
-PCX2MSX=pcx2msx.exe
-PCX2SPR=pcx2spr.exe
-PCX2MSXPLUS=pcx2msx+.exe
-PCX2SPRPLUS=pcx2spr+.exe
-PNG2MSX=png2msx.exe
-TMX2BIN=tmx2bin.exe
+PCX2MSX=bin\pcx2msx.exe
+PCX2SPR=bin\pcx2spr.exe
+PCX2MSXPLUS=bin\pcx2msx+.exe
+PCX2SPRPLUS=bin\pcx2spr+.exe
+PNG2MSX=bin\png2msx.exe
+TMX2BIN=bin\tmx2bin.exe
 REMOVE=cmd /c del
+
+#
+# file lists
+#
+
+TESTS=\
+	test\charset.pcx.chr \
+	test\charset.pcx.clr \
+	test\charset.png.chr \
+	test\charset.png.clr \
+	test\bigsprites.pcx.spat.asm \
+	test\bigsprites.pcx.spr.asm \
+	test\screen.tmx.bin \
+	test\metatiles.tmx.bin
+
+#
+# main makefile
+#
 
 include makefile.common
 
