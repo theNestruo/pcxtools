@@ -10,6 +10,13 @@
 
 /* Function prototypes ----------------------------------------------------- */
 
+// Supported arguments:
+// -e	index color by euclidean distance (default)
+// -w	index color by weighted distance
+void pngReaderOptions();
+
+void pngReaderInit(int argc, char **argv);
+
 int pngReaderRead(char *pngFilename, struct stBitmap *bitmap);
 
 #endif // READPNG_H_INCLUDED

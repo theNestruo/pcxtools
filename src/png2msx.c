@@ -76,6 +76,7 @@ int main(int argc, char **argv) {
 	struct stNameTable nameTable = {0};
 
 	// Read main file
+	pngReaderInit(argc, argv);
 	bitmapInit(&bitmap, argc, argv);
 	charsetProcessorInit(&charsetProcessor, argc, argv);
 	if ((i = readCharset(&charsetProcessor, &charset, &bitmap, pngFilename, verbose)))
@@ -196,16 +197,17 @@ void showUsage() {
 
 	showTitle();
 	printf("Usage:\n");
-	printf("\tPNG2MSX [options] mainPng\n");
-	printf("\tPNG2MSX [options] mainPng [extraPng...]\n");
-	printf("\tPNG2MSX [options] mainPng -n [screensPng...]\n");
+	printf("\tPNG2MSX [options] charset.png\n");
+	printf("\tPNG2MSX [options] charset.png [extra.png ...]\n");
+	printf("\tPNG2MSX [options] charset.png -n [screen.png ...]\n");
 	printf("where:\n");
-	printf("\tmainPng\tinput PNG file\n");
-	printf("\textraPng\textra input PNG files: secondary charsets\n");
-	printf("\textraPng\textra input PNG files: screens to map\n");
+	printf("\tcharset.png\tinput PNG file\n");
+	printf("\textra.png\tadditional input PNG files: extra charsets\n");
+	printf("\tscreen.png\tadditional input PNG files: screens to map\n");
 	printf("options are:\n");
 	printf("\t-v\tverbose execution\n");
 	printf("\t-d\tdry run. Doesn't write output files\n");
+	pngReaderOptions();
 	bitmapOptions();
 	charsetProcessorOptions();
 	nameTableProcessorOptions();

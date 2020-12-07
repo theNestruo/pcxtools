@@ -3,8 +3,8 @@
 #
 
 CCOMPILER=gcc
-# CCOMPILER_OPTIONS=-Wall -O3
-CCOMPILER_OPTIONS=-Wall -ggdb
+CCOMPILER_OPTIONS=-Wall -O3
+# CCOMPILER_OPTIONS=-Wall -ggdb
 PCX2MSX=bin\pcx2msx.exe
 PCX2SPR=bin\pcx2spr.exe
 PCX2MSXPLUS=bin\pcx2msx+.exe
