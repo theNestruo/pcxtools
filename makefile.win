@@ -10,6 +10,8 @@ PCX2SPR=bin\pcx2spr.exe
 PCX2MSXPLUS=bin\pcx2msx+.exe
 PCX2SPRPLUS=bin\pcx2spr+.exe
 PNG2MSX=bin\png2msx.exe
+PNG2SPR=bin\png2spr.exe
+PNG2SPRPLUS=bin\png2spr+.exe
 TMX2BIN=bin\tmx2bin.exe
 REMOVE=cmd /c del
 
@@ -24,6 +26,8 @@ TESTS=\
 	test\charset.png.clr \
 	test\bigsprites.pcx.spat.asm \
 	test\bigsprites.pcx.spr.asm \
+	test\bigsprites.png.spat.asm \
+	test\bigsprites.png.spr.asm \
 	test\screen.tmx.bin \
 	test\metatiles.tmx.bin
 
