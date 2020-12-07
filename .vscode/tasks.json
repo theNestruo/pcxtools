@@ -6,7 +6,7 @@
 		{
 			"label": "make",
 			"type": "shell",
-			"command": "mingw32-make",
+			"command": "mingw32-make -f makefile.win",
 			"group": {
 				"kind": "build",
 				"isDefault": true

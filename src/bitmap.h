@@ -14,25 +14,14 @@ typedef unsigned char byte;
 
 /* Data structures --------------------------------------------------------- */
 
-// struct stcolor {
-
-	// byte r;
-	// byte g;
-	// byte b;
-// };
-
 struct stBitmap {
 	// Bitmap container
 	byte *bitmap;
 	unsigned int width, height;
-	
-	// // Palette container
-	// struct stcolor *palette;
-	
+
 	// Arguments and options
 	int isFlip;
 	int isMirror;
-	byte (*reindexer) (byte);
 };
 
 /* Function prototypes ----------------------------------------------------- */
@@ -40,7 +29,6 @@ struct stBitmap {
 // Supported arguments:
 // -i	inverted. Flips bitmap vertically
 // -m	mirrored. Flips bitmap horizontally
-// -ps	palette is backwards (PhotoShop quirk)
 void bitmapOptions();
 
 void bitmapInit(struct stBitmap *instance, int argc, char **argv);

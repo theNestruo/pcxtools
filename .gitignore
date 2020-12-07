@@ -1,7 +1,14 @@
+bin/pcx2msx.exe
+bin/pcx2msx+.exe
+bin/pcx2spr.exe
+bin/pcx2spr+.exe
+bin/png2msx.exe
+bin/tmx2bin.exe
 test/bigsprites.pcx.spat.asm
 test/bigsprites.pcx.spr.asm
 test/charset.pcx.chr
 test/charset.pcx.clr
+test/charset.png.chr
+test/charset.png.clr
 test/metatiles.tmx.bin
 test/screen.tmx.bin
-.vscode/ipch

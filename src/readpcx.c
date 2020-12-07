@@ -39,6 +39,10 @@ struct stPcxHeader {
 	byte padding[54]; // Up to 128 bytes
 };
 
+/* Private function prototypes --------------------------------------------- */
+
+byte autoPalette(byte value);
+
 /* Function bodies --------------------------------------------------------- */
 
 int pcxReaderRead(FILE *file, struct stBitmap *bitmap) {
@@ -102,30 +106,21 @@ int pcxReaderRead(FILE *file, struct stBitmap *bitmap) {
 			while (runLength--) {
 				// (skip extra padding pixels)
 				if (x < bitmap->width) {
-					bitmap->bitmap[bitmap->width * y + x] = data;
+					bitmap->bitmap[bitmap->width * y + x] = autoPalette(data);
 				}
 				x++;
 			}
 		}
 	}
 
-	// // VGA palette ID
-	// byte paletteId;
-	// if (fread(&paletteId, 1, 1, file) != 1) {
-		// printf("ERROR: Could not read VGA palette ID.\n");
-		// return 9;
-	// }
-	// if (paletteId != 0x0c) {
-		// printf("ERROR: Wrong VGA palette ID. Found %d, expected %d.\n", paletteId, 0x0c);
-		// return 10;
-	// }
-
-	// // VGA palette
-	// bitmap->palette = (struct stcolor*) malloc(16 * sizeof(struct stcolor));
-	// if (fread(bitmap->palette, sizeof(struct stcolor), 16, file) != 16) {
-		// printf("ERROR: Could not read palette.\n");
-		// return 11;
-	// }
-
 	return 0;
+}
+
+/* Private function bodies ------------------------------------------------- */
+
+byte autoPalette(byte value) {
+
+	return (value < 0x80)
+		? value
+		: (0xff - value); // palette is backwards (PhotoShop quirk)
 }

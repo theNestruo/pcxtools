@@ -1,18 +1,34 @@
 [![C/C++ CI](https://github.com/theNestruo/pcxtools/workflows/C/C++%20CI/badge.svg)](https://github.com/theNestruo/pcxtools/actions)
 [![CodeFactor](https://www.codefactor.io/repository/github/thenestruo/pcxtools/badge)](https://www.codefactor.io/repository/github/thenestruo/pcxtools)
 
-# PCXTOOLS: PCX2MSX[+], PCX2SPR[+] and TMX2BIN
-`PCX2MSX[+]` and `PCX2SPR[+]` are free command line tools to convert PCX images to TMS9918 (MSX-1 VDP) format (i.e. CHRTBL/CLRTBL/NAMTBL and SPRTBL/SPATBL-ready values).
+# PCXTOOLS: PNG2MSX, PCX2MSX[+], PCX2SPR[+] and TMX2BIN
+`PNG2MSX` is a free command line tools to convert PNG images to TMS9918 (MSX-1 VDP) format (i.e. CHRTBL/CLRTBL/NAMTBL-ready values).
+
+~~`PCX2MSX[+]`~~ and `PCX2SPR[+]` are free command line tools to convert PCX images to TMS9918 (MSX-1 VDP) format (i.e. CHRTBL/CLRTBL/NAMTBL and SPRTBL/SPATBL-ready values).
 
 `TMX2BIN` is a free command line tool to convert Tiled maps to binary.
+
+## Deprecation notice
+~~`PCX2MSX[+]`~~ has been replaced by `PNG2MSX`, will not be further maintained, and may be removed in future versions.
 
 ## Usage
 Exit code will be zero if ok and non-zero if there was an error. This allows using this programs in makefiles, command chains, etc.
 
-### PCX2MSX[+] and PCX2SPR[+]
+### PNG2MSX
 From command line, type:
-* `PCX2MSX [options] pcxFilename`
-* `PCX2MSX+ [options] pcxFilename [pcxFilename...]`
+* `PNG2MSX+ [options] pngFilename [pngFilename...]`
+
+`pngFilename` is the name of the input PNG file.
+
+Please note that:
+* Extra pixels (width or height not multiple of 8 or 16) will be ignored (this behaviour differs to the original PCX2MSX)
+
+The output files will have the same name as `pngFilename` plus an additional extension (.chr, .clr or .nam). If files exist with the same name, they will be overwritten.
+
+### ~~PCX2MSX[+]~~ and PCX2SPR[+]
+From command line, type:
+* ~~`PCX2MSX [options] pcxFilename`~~
+* ~~`PCX2MSX+ [options] pcxFilename [pcxFilename...]`~~
 * `PCX2SPR [options] pcxFilename`
 * `PCX2SPR+ [options] pcxFilename`
 
@@ -46,13 +62,13 @@ Order of options is non important. Unknown options will be silently ignored. If 
 * `-d` dry run
     Doesn't write output files. Useful to just validate input PCX files
 
-### PCX2MSX[+] and PCX2SPR[+] 
+### PNG2MSX, ~~PCX2MSX[+]~~ and PCX2SPR[+]
 * `-i` inverted
     Flips bitmap vertically.
 * `-m` mirrored
     Flips bitmap horizontally.
 
-### PCX2MSX[+]
+### PNG2MSX and ~~PCX2MSX[+]~~
 * `-il` ignore line on color collision
     Continue processing the file even if collisions are found. Offending lines will be have 0x00 both as pattern and color.
     Can be useful in combination with `-d` to check all the collisions at once.
@@ -63,7 +79,7 @@ Order of options is non important. Unknown options will be silently ignored. If 
     These four options allow some control on how patterns are created, and which color is foreground and which one is background.
     Can be useful if colors are going to be set programatically (e.g.: fonts colored with FILVRM) or to improve compression results.
 
-### PCX2MSX+ only
+### PNG2MSX and ~~PCX2MSX+~~
 * `-n<00..ff>` generate NAMTBL [starting at value <n>]
     Generates NAMTBL.
     If various PCX files are provided, NAMTBL is generated from the additional files, mapped against blocks of the first PCX file.
@@ -129,6 +145,8 @@ Order of options is non important. Unknown options will be silently ignored. If 
     Thus, a metatile size of 3 will output: `123789cde 4560abfgh` (2 metatiles of 3x3 bytes, rest of data ignored).
 
 ## Version history
+* 07/12/2020 v3.0-alpha
+    `PNG2MSX` initial version, forked from `PCX2MSX+`
 * 15/06/2019 v2.3
     More standard Z80 Syntax in .asm output of `PCX2SPR+`
 * 25/03/2018 v2.2
@@ -163,7 +181,8 @@ Order of options is non important. Unknown options will be silently ignored. If 
 Coded by [theNestruo](theNestruo@gmail.com)
 
 * Original `PCX2MSX` was coded by Edward A. Robsy Petrus [25/12/2004]. `PCX2MSX` is inspired by that original version, but is not related with it in any other way.
-* [Tiled](http://www.mapeditor.org/) (c) 2008-2016 Thorbjørn Lindeijer.
+* [Tiled](http://www.mapeditor.org/) (c) 2008-2020 Thorbjørn Lindeijer.
+* [LodePNG](https://lodev.org/lodepng/) (c) 2005-2019 by Lode Vandevenne.
 * Test graphics extracted from the original freeware version of [Ninja Senki](http://ninjasenki.com/) (c) 2010 Jonathan Lavigne.
 * `PCX2SPR+` demo sprites extracted from [Sydney Hunter and the Caverns of Death](http://www.studiopinagames.com/sydney.html) (c) 2011 Keith Erickson / Studio Piña
 

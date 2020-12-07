@@ -2,6 +2,9 @@
 	"editor.insertSpaces": false,
 	"editor.tabSize": 4,
 	"editor.rulers": [
-		120
-	]
+		80, 120
+	],
+	"files.associations": {
+		"makefile.*": "makefile"
+	}
 }

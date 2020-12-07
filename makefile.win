@@ -1,0 +1,25 @@
+#
+# commands
+#
+
+CCOMPILER=gcc
+# CCOMPILER_OPTIONS=-Wall -O3
+CCOMPILER_OPTIONS=-Wall -ggdb
+PCX2MSX=pcx2msx.exe
+PCX2SPR=pcx2spr.exe
+PCX2MSXPLUS=pcx2msx+.exe
+PCX2SPRPLUS=pcx2spr+.exe
+PNG2MSX=png2msx.exe
+TMX2BIN=tmx2bin.exe
+REMOVE=cmd /c del
+
+include makefile.common
+
+#
+# Windows only test targets
+#
+
+# demo: bin/$(PCX2SPRPLUS) pcx2sprplus_demo/demo.pcx pcx2sprplus_demo/demo.asm
+# 	bin/$(PCX2SPRPLUS) -v -vv -w24 -h32 pcx2sprplus_demo/demo.pcx
+#	asmsx pcx2sprplus_demo/demo.asm
+#	cmd /c start pcx2sprplus_demo/demo.rom
