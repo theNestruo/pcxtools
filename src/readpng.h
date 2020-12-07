@@ -12,7 +12,7 @@
 
 // Supported arguments:
 // -e	index color by euclidean distance (default)
-// -w	index color by weighted distance
+// -g	index color by weighted distance
 void pngReaderOptions();
 
 void pngReaderInit(int argc, char **argv);

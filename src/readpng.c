@@ -139,7 +139,7 @@ int (*distance) (struct stColor *color, byte r, byte g, byte b, byte a) = euclid
 void pngReaderOptions() {
 
 	printf("\t-e\tindex color by euclidean distance (default)\n");
-	printf("\t-w\tindex color by weighted distance\n");
+	printf("\t-g\tindex color by weighted distance\n");
 }
 
 void pngReaderInit(int argc, char **argv) {
@@ -147,7 +147,7 @@ void pngReaderInit(int argc, char **argv) {
 	// Read arguments
 	if (argEquals(argc, argv, "-e") != -1)
 		distance = euclideanDistance;
-	if (argEquals(argc, argv, "-w") != -1)
+	if (argEquals(argc, argv, "-g") != -1)
 		distance = weightedDistance;
 }
 

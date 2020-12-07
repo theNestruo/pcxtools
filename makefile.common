@@ -78,13 +78,13 @@ $(PCX2SPRPLUS): src/pcx2spr+.c $(COMMON_DEPS_C) $(COMMON_DEPS_PCX_C) src/sprite+
 	$(CCOMPILER) $(CCOMPILER_OPTIONS) $< $(COMMON_DEPS_C) $(COMMON_DEPS_PCX_C) src/sprite+.c src/output.c -o $@
 
 $(PNG2MSX): src/png2msx.c $(COMMON_DEPS_C) $(COMMON_DEPS_PNG_C) src/charset.c src/nametable.c $(COMMON_DEPS_H) $(COMMON_DEPS_PNG_H) src/charset.h src/nametable.h
-	$(CCOMPILER) $(CCOMPILER_OPTIONS) $< $(COMMON_DEPS_C) $(COMMON_DEPS_PNG_C) src/charset.c src/nametable.c -o $@
+	$(CCOMPILER) $(CCOMPILER_OPTIONS_PNG) $< $(COMMON_DEPS_C) $(COMMON_DEPS_PNG_C) src/charset.c src/nametable.c -o $@
 
 $(PNG2SPR): src/png2spr.c $(COMMON_DEPS_C) $(COMMON_DEPS_PNG_C) src/sprite.c $(COMMON_DEPS_H) $(COMMON_DEPS_PNG_H) src/sprite.h
-	$(CCOMPILER) $(CCOMPILER_OPTIONS) $< $(COMMON_DEPS_C) $(COMMON_DEPS_PNG_C) src/sprite.c -o $@
+	$(CCOMPILER) $(CCOMPILER_OPTIONS_PNG) $< $(COMMON_DEPS_C) $(COMMON_DEPS_PNG_C) src/sprite.c -o $@
 
 $(PNG2SPRPLUS): src/png2spr+.c $(COMMON_DEPS_C) $(COMMON_DEPS_PNG_C) src/sprite+.c src/output.c $(COMMON_DEPS_H) $(COMMON_DEPS_PNG_H) src/sprite.h src/sprite+.h src/output.h
-	$(CCOMPILER) $(CCOMPILER_OPTIONS) $< $(COMMON_DEPS_C) $(COMMON_DEPS_PNG_C) src/sprite+.c src/output.c -o $@
+	$(CCOMPILER) $(CCOMPILER_OPTIONS_PNG) $< $(COMMON_DEPS_C) $(COMMON_DEPS_PNG_C) src/sprite+.c src/output.c -o $@
 
 $(TMX2BIN): src/tmx2bin.c $(COMMON_DEPS_C) $(COMMON_DEPS_TMX_C) $(COMMON_DEPS_H) $(COMMON_DEPS_TMX_H)
 	$(CCOMPILER) $(CCOMPILER_OPTIONS) $< $(COMMON_DEPS_C) $(COMMON_DEPS_TMX_C) -o $@

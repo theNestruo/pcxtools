@@ -47,7 +47,7 @@ Order of options is non important. Unknown options will be silently ignored. If 
 * `-d` dry run
     Doesn't write output files. Useful to just validate input PCX files
 * `-e` index color by euclidean distance (this is the default)
-* `-w` index color by weighted distance
+* `-g` index color by weighted distance
 
 ### PNG2MSX, and PCX2SPR[+]
 * `-i` inverted

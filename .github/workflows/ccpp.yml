@@ -8,7 +8,7 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
-    - run: make compile test
+    - run: make -f makefile.win compile test
     - uses: actions/upload-artifact@v1
       with:
         name: windows-binaries
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - run: make compile test
+    - run: make -f makefile.linux compile test
     - uses: actions/upload-artifact@v1
       with:
         name: linux-binaries
@@ -30,7 +30,7 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v1
-    - run: make compile test
+    - run: make -f makefile.macos compile test
     - uses: actions/upload-artifact@v1
       with:
         name: macos-binaries
