@@ -1,7 +1,7 @@
 [![C/C++ CI](https://github.com/theNestruo/pcxtools/workflows/C/C++%20CI/badge.svg)](https://github.com/theNestruo/pcxtools/actions)
 [![CodeFactor](https://www.codefactor.io/repository/github/thenestruo/pcxtools/badge)](https://www.codefactor.io/repository/github/thenestruo/pcxtools)
 
-# PCXTOOLS: PNG2MSX, PCX2MSX[+], PCX2SPR[+] and TMX2BIN
+# PCXTOOLS: PNG2MSX, PNGSPR[+] and TMX2BIN
 `PNG2MSX` and `PNG2SPR[+]` are free command line tools to convert PNG images to TMS9918 (MSX-1 VDP) format (i.e. CHRTBL/CLRTBL/NAMTBL-ready values, and SPRTBL/SPATBL-ready values).
 
 `TMX2BIN` is a free command line tool to convert Tiled maps to binary.
@@ -45,11 +45,11 @@ Order of options is non important. Unknown options will be silently ignored. If 
 * `-v` verbose execution
     By default, only exceptional output (warnings and error) is written. Use `-v` to see the differents parts of the process
 * `-d` dry run
-    Doesn't write output files. Useful to just validate input PCX files
+    Doesn't write output files. Useful to just validate input PNG files
 * `-e` index color by euclidean distance (this is the default)
 * `-g` index color by weighted distance
 
-### PNG2MSX, and PCX2SPR[+]
+### PNG2MSX, and PNG2SPR[+]
 * `-i` inverted
     Flips bitmap vertically.
 * `-m` mirrored
@@ -67,7 +67,7 @@ Order of options is non important. Unknown options will be silently ignored. If 
     Can be useful if colors are going to be set programatically (e.g.: fonts colored with FILVRM) or to improve compression results.
 * `-n<00..ff>` generate NAMTBL [starting at value <n>]
     Generates NAMTBL.
-    If various PCX files are provided, NAMTBL is generated from the additional files, mapped against blocks of the first PCX file.
+    If various PNG files are provided, NAMTBL is generated from the additional files, mapped against blocks of the first PNG file.
     If optional index value is specified, name table will be generated to load the character definition after that index (e.g.: tileset loaded without overwriting ASCII font).
     Usually to be used in combination with `-rm` and/or `-rr`.
 * `-bb<00..ff>` blank block at position <nn>

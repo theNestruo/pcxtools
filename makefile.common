@@ -13,6 +13,18 @@ TOOLS=\
 	$(PNG2SPRPLUS) \
 	$(TMX2BIN)
 
+TESTS=\
+	test/charset.pcx.chr \
+	test/charset.pcx.clr \
+	test/charset.png.chr \
+	test/charset.png.clr \
+	test/bigsprites.pcx.spat.asm \
+	test/bigsprites.pcx.spr.asm \
+	test/bigsprites.png.spat.asm \
+	test/bigsprites.png.spr.asm \
+	test/screen.tmx.bin \
+	test/metatiles.tmx.bin
+
 COMMON_DEPS_C=\
 	src/args.c
 
@@ -53,9 +65,6 @@ default: compile
 
 clean:
 	$(REMOVE) $(TOOLS)
-
-cleanTest:
-	$(REMOVE) $(TESTS)
 
 compile: $(TOOLS)
 
