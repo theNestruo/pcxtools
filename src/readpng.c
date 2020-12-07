@@ -13,7 +13,7 @@
 #define LODEPNG_NO_COMPILE_ENCODER
 #define LODEPNG_NO_COMPILE_CPP
 #define LODEPNG_COMPILE_DISK
-#include "lodepng\lodepng.h"
+#include "lodepng/lodepng.h"
 
 /* Types ------------------------------------------------------------------- */
 
