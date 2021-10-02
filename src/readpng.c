@@ -204,7 +204,7 @@ byte paletteIndex(byte r, byte g, byte b, byte a) {
 	struct stColor *closestColor = 0;
 	int minDistance = -1;
 	for (i = 0, it = palette; i < paletteLength; i++, it++) {
-		int dist = weightedDistance(it, r, g, b, a);
+		int dist = distance(it, r, g, b, a);
 		if (dist < 0) continue;
 		if (dist == 0) return it->index;
 		if ((minDistance == -1) || (dist < minDistance)) {

@@ -5,6 +5,7 @@
  * Original tool coded by Edward A. Robsy Petrus [25/12/2004]
  *
  * Version history:
+ * 02/10/2021  v3.0         Fixed -e and -g options being ignored
  * 07/12/2020  v3.0-alpha   forked from PCX2MSX+
  */
 

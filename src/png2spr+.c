@@ -4,6 +4,7 @@
  * Coded by theNestruo.
  *
  * Version history:
+ * 02/10/2021  v3.0         Fixed -e and -g options being ignored
  * 07/12/2020  v3.0-alpha   forked from PCX2SPR+
  */
 

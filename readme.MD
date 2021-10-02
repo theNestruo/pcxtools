@@ -283,6 +283,8 @@ Transparent pixels are indexed from the following values:
 </table>
 
 ## Version history
+* 02/10/2021 v3.0
+    * Fixed -e and -g options being ignored in `PNG2MSX` and `PNG2SPR[+]`
 * 07/12/2020 v3.0-alpha
     * `PNG2MSX` initial version, forked from `PCX2MSX+`
     * `PNG2SPR[+]` initial versions, forked from `PCX2SPR[+]`
