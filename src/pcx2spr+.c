@@ -8,7 +8,7 @@
  * 13/04/2013  v1.99b suboptimal solutions fixed
  * 28/03/2013  v1.99 first version
  */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,7 +21,7 @@
 /* Global vars ------------------------------------------------------------- */
 
 int titleShown = 0;
-int verbose = 0; // see sprite+.c
+int verbose = 0;
 
 /* Function prototypes ----------------------------------------------------- */
 
@@ -49,34 +49,34 @@ int main(int argc, char **argv) {
 
 	int i = 0, argi = 0;
 	int dryRun = 0;
-	
+
 	// Parse main arguments
 	if ((verbose = (argEquals(argc, argv, "-v") != -1)))
 		showTitle();
 	dryRun = argEquals(argc, argv, "-d") != -1;
-	
+
 	if ((argi = argFilename(argc, argv)) != -1)
 		pcxFilename = argv[argi];
-	
+
 	if (!pcxFilename) {
 		showUsage();
 		i = 12;
 		goto out;
 	}
-	
+
 	if (verbose)
 		printf("Input file: %s\n", pcxFilename);
-	
+
 	// Initializes bitmap container and chr/clr processor
 	bitmapInit(&bitmap, argc, argv);
 	sprWriterPlusInit(&writer, argc, argv);
 
 	sprFilename = append(pcxFilename, writer.binaryOutput ? ".spr" : ".spr.asm");
 	spatFilename = append(pcxFilename, writer.binaryOutput ? ".spat" : ".spat.asm");
-	
+
 	if (verbose)
 		printf("Output files: %s, %s\n", sprFilename, spatFilename);
-	
+
 	// Main code
 	if (verbose)
 		printf("Reading input file...\n");
@@ -87,11 +87,11 @@ int main(int argc, char **argv) {
 	}
 	if ((i = pcxReaderRead(pcxFile, &bitmap)))
 		goto out;
-		
+
 	if (verbose)
 		printf("Processing sprites...\n");
 	sprWriterPlusReadSprites(&writer, &bitmap);
-	
+
 	if (!dryRun) {
 		if (verbose)
 			printf("Writing output files...\n");
@@ -110,10 +110,10 @@ int main(int argc, char **argv) {
 			goto out;
 		}
 	}
-	
+
 	if (verbose)
 		printf("Done!\n");
-	
+
 out:
 	// Exit gracefully
 	if (sprFilename) free(sprFilename);

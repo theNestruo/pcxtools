@@ -4,6 +4,7 @@
  * Coded by theNestruo.
  *
  * Version history:
+ * 06/03/2022  v3.1          Automatic palette detection
  * 02/10/2021  v3.0         Fixed -e and -g options being ignored
  * 07/12/2020  v3.0-alpha   forked from PCX2SPR
  */
@@ -20,6 +21,7 @@
 /* Global vars ------------------------------------------------------------- */
 
 int titleShown = 0;
+int verbose = 0;
 
 /* Function prototypes ----------------------------------------------------- */
 
@@ -43,7 +45,7 @@ int main(int argc, char **argv) {
 	struct stSprWriter writer = {0};
 
 	int i = 0, argi = 0;
-	int verbose = 0, dryRun = 0;
+	int dryRun = 0;
 
 	// Parse main arguments
 	if ((verbose = (argEquals(argc, argv, "-v") != -1)))

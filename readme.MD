@@ -282,7 +282,11 @@ Transparent pixels are indexed from the following values:
 </tr>
 </table>
 
+Since version 3.1 `PNG2MSX` and `PNG2SPR[+]` try to autodetect the closest palette, then use the autodetected palette to match the colors, ignoring the other palettes. This behaviour attempts to minimize color clashes between different palettes (particularly _medium blue_ and _dark blue_), but can lead to unexpected results if colors from different palettes are mixed in one image.
+
 ## Version history
+* 06/03/2022 v3.1
+    * Automatic palette detection in `PNG2MSX` and `PNG2SPR[+]`
 * 02/10/2021 v3.0
     * Fixed -e and -g options being ignored in `PNG2MSX` and `PNG2SPR[+]`
 * 07/12/2020 v3.0-alpha

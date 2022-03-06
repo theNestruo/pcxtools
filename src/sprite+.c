@@ -24,7 +24,7 @@
 
 /* Global vars ------------------------------------------------------------- */
 
-extern int verbose; // see pcx2spr+.c
+extern int verbose;
 int veryVerbose;
 
 /* Private data structures ------------------------------------------------- */
