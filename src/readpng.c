@@ -141,7 +141,7 @@ struct stColor wikipediaTms9918Palette[] = {
 /* Global vars ------------------------------------------------------------- */
 
 extern int verbose;
-int veryVerbose;
+extern int veryVerbose;
 
 /* Private function prototypes --------------------------------------------- */
 
@@ -169,8 +169,6 @@ void pngReaderInit(int argc, char **argv) {
 		distance = euclideanDistance;
 	if (argEquals(argc, argv, "-g") != -1)
 		distance = weightedDistance;
-	veryVerbose = argEquals(argc, argv, "-vv") != -1;
-	verbose |= veryVerbose;
 }
 
 int pngReaderRead(char *pngFilename, struct stBitmap *bitmap) {

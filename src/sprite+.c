@@ -25,7 +25,7 @@
 /* Global vars ------------------------------------------------------------- */
 
 extern int verbose;
-int veryVerbose;
+extern int veryVerbose;
 
 /* Private data structures ------------------------------------------------- */
 
@@ -108,9 +108,6 @@ void sprWriterPlusInit(struct stSprWriterPlus *this, int argc, char **argv) {
 	this->binaryOutput = 0;
 
 	// Read arguments
-	veryVerbose = argEquals(argc, argv, "-vv") != -1;
-	verbose |= veryVerbose;
-
 	int i;
 	if ((i = argStartsWith(argc, argv, "-w", 2)) != -1) {
 		this->spriteWidth = decimalInt(&(argv[i][2]));
