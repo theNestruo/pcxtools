@@ -138,6 +138,29 @@ struct stColor wikipediaTms9918Palette[] = {
 			{ 0xFF, 0xFF, 0xFF, 0xFF, 15 }  // white
 		};
 
+struct stColor yaziohPalette[] = {
+			// transparent values
+			{ 0x00, 0x00, 0x00, 0x00,  0 }, // actually transparent
+			{ 0xFF, 0x00, 0xFF, 0xFF,  0 }, // fuchsia
+			{ 0x40, 0x40, 0x40, 0xFF,  0 }, // dark grey (PCX2MSX reference files)
+			// Yazioh palette
+			{ 0x00, 0x00, 0x00, 0xFF,  1 }, // black
+			{ 0x3E, 0xB8, 0x49, 0xFF,  2 }, // medium green
+			{ 0x74, 0xD0, 0x7D, 0xFF,  3 }, // light green
+			{ 0x59, 0x55, 0xE0, 0xFF,  4 }, // dark blue
+			{ 0x80, 0x76, 0xF1, 0xFF,  5 }, // light blue
+			{ 0xB9, 0x5E, 0x51, 0xFF,  6 }, // dark red
+			{ 0x65, 0xDB, 0xEF, 0xFF,  7 }, // cyan
+			{ 0xDB, 0x65, 0x59, 0xFF,  8 }, // medium red
+			{ 0xFF, 0x89, 0x7D, 0xFF,  9 }, // light red
+			{ 0xCC, 0xC3, 0x5E, 0xFF, 10 }, // dark yellow
+			{ 0xDE, 0xD0, 0x87, 0xFF, 11 }, // light yellow
+			{ 0x3A, 0xA2, 0x41, 0xFF, 12 }, // dark green
+			{ 0xB7, 0x66, 0xB5, 0xFF, 13 }, // magenta
+			{ 0xCC, 0xCC, 0xCC, 0xFF, 14 }, // gray
+			{ 0xFF, 0xFF, 0xFF, 0xFF, 15 }  // white
+		};
+
 /* Global vars ------------------------------------------------------------- */
 
 extern int verbose;
@@ -198,6 +221,7 @@ int pngReaderRead(char *pngFilename, struct stBitmap *bitmap) {
 			: palette == meiseiV9938Palette ? "V9938 palette, from hap's meisei emulator"
 			: palette == reidracToshibaPalette ? "TOSHIBA palette, from reidrac's MSX Pixel Tools"
 			: palette == wikipediaTms9918Palette ? "TI TMS9918 palette, according Wikipedia"
+			: palette == yaziohPalette ? "Yazioh palette"
 			: "unknown palette");
 
 	// Allocate space for the bitmap
@@ -247,6 +271,11 @@ struct stColor* guessPalette(unsigned int pngWidth, unsigned int pngHeight, byte
 	if (veryVerbose) printf("Distance %u: TI TMS9918 palette, according Wikipedia\n", dist);
 	if (dist == 0) return wikipediaTms9918Palette;
 	if (dist < minDistance) closestPalette = wikipediaTms9918Palette;
+
+	dist = paletteDistance(yaziohPalette, pngWidth, pngHeight, pngImage);
+	if (veryVerbose) printf("Distance %u: Yazioh palette\n", dist);
+	if (dist == 0) return yaziohPalette;
+	if (dist < minDistance) closestPalette = yaziohPalette;
 
 	return closestPalette;
 }
