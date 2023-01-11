@@ -1,9 +1,8 @@
 ## Version history
 
-* 11/01/2023 v3.3
-    * Additional palette in `PNG2MSX` and `PNG2SPR[+]`
-* 29/12/2022 v3.2
+* 11/01/2023 v3.2
     * Multibank support in `TMX2BIN`
+    * Additional palette in `PNG2MSX` and `PNG2SPR[+]`
 * 06/03/2022 v3.1
     * Automatic palette detection in `PNG2MSX` and `PNG2SPR[+]`
 * 02/10/2021 v3.0
