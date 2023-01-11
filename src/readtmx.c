@@ -1,9 +1,9 @@
 /*
  * Support routines reading Tiled (TMX) files
  * Coded by theNestruo
- * Tiled (c) 2008-2013 Thorbjørn Lindeijer [http://www.mapeditor.org/]
+ * Tiled (c) 2008-2013 Thorbjï¿½rn Lindeijer [http://www.mapeditor.org/]
  */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,11 +19,25 @@ char* readProperty(char *tag, char *propertyName);
 
 /* Function bodies --------------------------------------------------------- */
 
-int tmxReaderRead(FILE *file, struct stTiled *tiled) {
+void tmxReaderOptions() {
+
+	printf("\t-b\tmultibank charset support\n");
+}
+
+void tmxReaderInit(struct stTmxReader *this, int argc, char **argv) {
+
+	// Init
+	this->isMultibankCharset = 0;
+
+	// Read arguments
+	this->isMultibankCharset = (argEquals(argc, argv, "-b") != -1);
+}
+
+int tmxReaderRead(struct stTmxReader *this, FILE *file, struct stTiled *tiled) {
 
 	if (!file)
 		return 1;
-		
+
 	if (!tiled)
 		return 2;
 
@@ -32,7 +46,7 @@ int tmxReaderRead(FILE *file, struct stTiled *tiled) {
 	// Allocate buffer
 	int bufferSize = 1024; // should be enough (for control lines)
 	char *buffer = malloc(bufferSize), *line;
-	
+
 	// Reads the header: XML
 	if (!(line = fgets(buffer, bufferSize, file))) {
 		printf("ERROR: Could not read XML header.\n");
@@ -44,7 +58,7 @@ int tmxReaderRead(FILE *file, struct stTiled *tiled) {
 		i = 4;
 		goto out;
 	}
-	
+
 	// Reads the header: TMX
 	if (!(line = fgets(buffer, bufferSize, file))) {
 		printf("ERROR: Could not read TMX header.\n");
@@ -56,7 +70,7 @@ int tmxReaderRead(FILE *file, struct stTiled *tiled) {
 		i = 6;
 		goto out;
 	}
-	
+
 	// Searches for the tag "layer"
 	for(;;) {
 		if (!(line = fgets(buffer, bufferSize, file))) {
@@ -68,7 +82,7 @@ int tmxReaderRead(FILE *file, struct stTiled *tiled) {
 			break;
 		}
 	}
-		
+
 	// Read layer properties
 	char *height, *width, *name, *encoding;
 	if ((!(height = readProperty(line, "height")))
@@ -106,12 +120,12 @@ int tmxReaderRead(FILE *file, struct stTiled *tiled) {
 		i = 13;
 		goto out;
 	}
-	
+
 	// Allocate space for the data
 	bufferSize = tiled->width * 4 + 16;
 	buffer = realloc(buffer, bufferSize); // "nnn," per byte and some margin
 	tiled->data = (byte*) malloc(tiled->width * tiled->height);
-	
+
 	int y;
 	byte *dest = tiled->data;
 	for (y = 0; y < tiled->height; y++) {
@@ -120,7 +134,7 @@ int tmxReaderRead(FILE *file, struct stTiled *tiled) {
 			i = 14;
 			goto out;
 		}
-		
+
 		int x, val;
 		char *token;
 		for (x = 0, token = strtok(line, ",");
@@ -132,13 +146,18 @@ int tmxReaderRead(FILE *file, struct stTiled *tiled) {
 				goto out;
 			}
 			val = atoi(token);
-			if (val > 256) {
+			if (val < 256) {
+				*dest = (byte) (val - 1);
+
+			} else if (this->isMultibankCharset) {
+				*dest = (byte) ((val % 256) - 1);
+
+			} else {
 				printf("WARNING: Byte overflow at %d,%d: %d...\n", x, y, val);
 			}
-			*dest = (byte) (val - 1);
 		}
 	}
-	
+
 out:
 	free(buffer);
 	return i;
@@ -155,7 +174,7 @@ out:
  */
 char* readProperty(char *tag, char *propertyName) {
 
-	char *property, *from, *to; 
+	char *property, *from, *to;
 	if (!(property = strstr(tag, propertyName))) {
 		return NULL;
 	}
@@ -167,6 +186,6 @@ char* readProperty(char *tag, char *propertyName) {
 		return NULL;
 	}
 	to[0] = '\0';
-	
+
 	return from;
 }

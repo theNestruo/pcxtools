@@ -9,8 +9,22 @@
 
 #include "tiled.h"
 
+/* Data structures --------------------------------------------------------- */
+
+// Tiled (TMX) reader
+struct stTmxReader {
+	// Arguments and options
+	int isMultibankCharset;
+};
+
 /* Function prototypes ----------------------------------------------------- */
 
-int tmxReaderRead(FILE *file, struct stTiled *tiled);
+// Supported arguments:
+// -b		multibank charset support
+void tmxReaderOptions();
+
+void tmxReaderInit(struct stTmxReader *instance, int argc, char **argv);
+
+int tmxReaderRead(struct stTmxReader *instance, FILE *file, struct stTiled *tiled);
 
 #endif // READTMX_H_INCLUDED

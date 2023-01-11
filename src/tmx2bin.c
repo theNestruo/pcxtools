@@ -1,13 +1,13 @@
 /*
  * TMX2BIN is a free tool to convert Tiled maps to binary
  * Coded by theNestruo
- * Tiled (c) 2008-2013 Thorbjørn Lindeijer [http://www.mapeditor.org/]
+ * Tiled (c) 2008-2013 Thorbjï¿½rn Lindeijer [http://www.mapeditor.org/]
  *
  * Version history:
  * 26/12/2016  v0.2  Integrated into PCXTOOLS suite
  * 31/03/2013  v0.1  Initial version
  */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,32 +39,34 @@ int main(int argc, char **argv) {
 	char *binFilename = NULL;
 	FILE *tmxFile = NULL;
 	FILE *binFile = NULL;
+	struct stTmxReader tmxReader = {0};
 	struct stTiled tiled = {0};
-	
+
 	int i = 0, argi = 0;
 	int dryRun = 0;
-	
+
 	// Parse main arguments
 	if ((verbose = (argEquals(argc, argv, "-v") != -1)))
 		showTitle();
 	dryRun = argEquals(argc, argv, "-d") != -1;
-	
+
 	if ((argi = argFilename(argc, argv)) != -1)
 		tmxFilename = argv[argi];
-	
+
 	if (!tmxFilename) {
 		showUsage();
 		i = 12;
 		goto out;
 	}
-	
+
 	if (verbose)
 		printf("Input file: %s\n", tmxFilename);
-	
-	// Initializes container
+
+	// Initializes reader and container
+	tmxReaderInit(&tmxReader, argc, argv);
 	tiledInit(&tiled, argc, argv);
 	binFilename = append(tmxFilename, ".bin");
-	
+
 	if (verbose)
 		printf("Output file: %s\n", binFilename);
 
@@ -76,9 +78,9 @@ int main(int argc, char **argv) {
 		i = 13;
 		goto out;
 	}
-	if ((i = tmxReaderRead(tmxFile, &tiled)))
+	if ((i = tmxReaderRead(&tmxReader, tmxFile, &tiled)))
 		goto out;
-	
+
 	if (!dryRun) {
 		if (verbose)
 			printf("Writing output file...\n");
@@ -93,10 +95,10 @@ int main(int argc, char **argv) {
 			goto out;
 		}
 	}
-	
+
 	if (verbose)
 		printf("Done!\n");
-	
+
 out:
 	// Exit gracefully
 	if (binFilename) free(binFilename);
@@ -133,5 +135,6 @@ void showUsage() {
 	printf("options are:\n");
 	printf("\t-v\tverbose execution\n");
 	printf("\t-d\tdry run. Doesn't write output files\n");
+	tmxReaderOptions();
 	tiledOptions();
 }
