@@ -2,12 +2,8 @@
  * PCX2SPR is a free tool to convert PCX images to MSX-1 VDP sprites
  * (i.e. SPRTBL-ready values).
  * Coded by theNestruo.
- *
- * Version history:
- * 09/10/2013  v0.99 removed -ps option (now, palette detection is automatic)
- * 15/06/2013  v0.9  first version sharing code with PCX2MSX
  */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -45,32 +41,32 @@ int main(int argc, char **argv) {
 
 	int i = 0, argi = 0;
 	int verbose = 0, dryRun = 0;
-	
+
 	// Parse main arguments
 	if ((verbose = (argEquals(argc, argv, "-v") != -1)))
 		showTitle();
 	dryRun = argEquals(argc, argv, "-d") != -1;
-	
+
 	if ((argi = argFilename(argc, argv)) != -1) {
 		pcxFilename = argv[argi];
 		sprFilename = append(argv[argi], ".spr");
 	}
-	
+
 	if (!pcxFilename) {
 		showUsage();
 		i = 12;
 		goto out;
 	}
-	
+
 	if (verbose) {
 		printf("Input file: %s\nOutput file: %s\n",
 			pcxFilename, sprFilename);
 	}
-	
+
 	// Initializes bitmap container and chr/clr processor
 	bitmapInit(&bitmap, argc, argv);
 	sprWriterInit(&writer, argc, argv);
-	
+
 	// Main code
 	if (verbose)
 		printf("Reading input file...\n");
@@ -81,11 +77,11 @@ int main(int argc, char **argv) {
 	}
 	if ((i = pcxReaderRead(pcxFile, &bitmap)))
 		goto out;
-		
+
 	if (verbose)
 		printf("Processing sprites...\n");
 	sprWriterReadSprites(&writer, &bitmap);
-	
+
 	if (!dryRun) {
 		if (verbose)
 			printf("Writing output file...\n");
@@ -99,10 +95,10 @@ int main(int argc, char **argv) {
 			goto out;
 		}
 	}
-	
+
 	if (verbose)
 		printf("Done!\n");
-	
+
 out:
 	// Exit gracefully
 	if (sprFilename) free(sprFilename);
@@ -120,6 +116,7 @@ void showTitle() {
 	if (titleShown)
 		return;
 	printf("PCX2SPR: A tool to convert PCX images to TMS9918 sprites\n");
+	printf("Deprecation notice: please consider using PNG2SPR instead\n");
 	titleShown = 1;
 }
 

@@ -2,11 +2,6 @@
  * PCX2SPR+ is a free tool to extract MSX-1 VDP sprites from PCX images
  * (i.e. SPRTBL-ready values) with extra options
  * Coded by theNestruo.
- *
- * Version history:
- * 22/05/2014  v1.99c algorithm completely rewritten
- * 13/04/2013  v1.99b suboptimal solutions fixed
- * 28/03/2013  v1.99 first version
  */
 
 #include <stdio.h>
@@ -135,6 +130,7 @@ void showTitle() {
 	if (titleShown)
 		return;
 	printf("PCX2SPR+: A tool to extract MSX-1 VDP sprites from PCX images\n");
+	printf("Deprecation notice: please consider using PNG2SPR+ instead\n");
 	titleShown = 1;
 }
 

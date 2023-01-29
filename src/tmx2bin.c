@@ -2,10 +2,6 @@
  * TMX2BIN is a free tool to convert Tiled maps to binary
  * Coded by theNestruo
  * Tiled (c) 2008-2013 Thorbj�rn Lindeijer [http://www.mapeditor.org/]
- *
- * Version history:
- * 26/12/2016  v0.2  Integrated into PCXTOOLS suite
- * 31/03/2013  v0.1  Initial version
  */
 
 #include <stdio.h>

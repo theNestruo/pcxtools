@@ -2,14 +2,8 @@
  * PCX2MSX is a free tool to convert PCX images to TMS9918 format (MSX-1 VDP)
  * Coded by theNestruo.
  * Original tool coded by Edward A. Robsy Petrus [25/12/2004]
- *
- * Version history:
- * 21/12/2013  v1.0   simplified; moved NAMTBL options to fork PCX2MSX+
- * 09/10/2013  v0.99  removed -ps option (now, palette detection is automatic)
- *                    added NAMTBL options
- * 15/06/2013  v0.9   first version sharing code with PCX2SPR
  */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,28 +49,28 @@ int main(int argc, char **argv) {
 	if ((verbose = (argEquals(argc, argv, "-v") != -1)))
 		showTitle();
 	dryRun = argEquals(argc, argv, "-d") != -1;
-		
+
 	if ((argi = argFilename(argc, argv)) != -1) {
 		pcxFilename = argv[argi];
 		chrFilename = append(argv[argi], ".chr");
 		clrFilename = append(argv[argi], ".clr");
 	}
-	
+
 	if (!pcxFilename) {
 		showUsage();
 		i = 12;
 		goto out;
 	}
-	
+
 	if (verbose) {
 		printf("Input file: %s\nOutput files: %s, %s\n",
 			pcxFilename, chrFilename, clrFilename);
 	}
-	
+
 	// Initializes bitmap container and chr/clr processor
 	bitmapInit(&bitmap, argc, argv);
 	charsetProcessorInit(&processor, argc, argv);
-	
+
 	// Main code
 	if (verbose)
 		printf("Reading input file...\n");
@@ -87,13 +81,13 @@ int main(int argc, char **argv) {
 	}
 	if ((i = pcxReaderRead(pcxFile, &bitmap)))
 		goto out;
-		
+
 	if (verbose)
 		printf("Processing blocks...\n");
 	if ((i = charsetProcessorRead(&processor, &charset, &bitmap)))
 		goto out;
 	charsetProcessorPostProcess(&processor, &charset);
-	
+
 	if (!dryRun) {
 		if (verbose)
 			printf("Writing output files...\n");
@@ -114,10 +108,10 @@ int main(int argc, char **argv) {
 			goto out;
 		}
 	}
-	
+
 	if (verbose)
 		printf("Done!\n");
-	
+
 out:
 	// Exit gracefully
 	if (chrFilename) free(chrFilename);
@@ -138,6 +132,7 @@ void showTitle() {
 	if (titleShown)
 		return;
 	printf("PCX2MSX: A tool to convert PCX images to TMS9918 format\n");
+	printf("Deprecation notice: please consider using PNG2MSX instead\n");
 	titleShown = 1;
 }
 

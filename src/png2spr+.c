@@ -2,11 +2,6 @@
  * PNG2SPR+ is a free tool to extract MSX-1 VDP sprites from PNG images
  * (i.e. SPRTBL-ready values) with extra options
  * Coded by theNestruo.
- *
- * Version history:
- * 06/03/2022  v3.1          Automatic palette detection
- * 02/10/2021  v3.0         Fixed -e and -g options being ignored
- * 07/12/2020  v3.0-alpha   forked from PCX2SPR+
  */
 
 #include <stdio.h>
