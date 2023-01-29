@@ -92,6 +92,8 @@ int main(int argc, char **argv) {
 		nameTableProcessorGenerate(&nameTableProcessor, &nameTable, &charset);
 		charsetProcessorPostProcess(&charsetProcessor, &charset);
 
+		if (verbose) printf("Block count: %d (%d bytes)\n", charset.blockCount, charset.blockCount * 8);
+
 		if (dryRun)
 			break;
 
