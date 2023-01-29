@@ -1,5 +1,7 @@
 ## Version history
 
+* 29/01/2023 v3.3
+    * Block count output in `PNG2MSX`
 * 11/01/2023 v3.2
     * Multibank support in `TMX2BIN`
     * Additional palette in `PNG2MSX` and `PNG2SPR[+]`
