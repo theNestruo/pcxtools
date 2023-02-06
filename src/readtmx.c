@@ -146,7 +146,7 @@ int tmxReaderRead(struct stTmxReader *this, FILE *file, struct stTiled *tiled) {
 				goto out;
 			}
 			val = atoi(token);
-			if (val < 256) {
+			if (val - 1 < 256) {
 				*dest = (byte) (val - 1);
 
 			} else if (this->isMultibankCharset) {

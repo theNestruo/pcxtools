@@ -1,5 +1,7 @@
 ## Version history
 
+* 06/02/2023 v3.3.1
+    * Fixes edge case in `TMX2BIN`
 * 29/01/2023 v3.3
     * Block count output in `PNG2MSX`
 * 11/01/2023 v3.2
