@@ -1,0 +1,58 @@
+name: make and upload
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build-windows:
+    name: Windows build
+    runs-on: windows-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: make (Windows)
+      run: make -f makefile.win compile test
+
+    - name: Upload nightly build
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-binaries
+        path: bin
+
+  build-linux:
+    name: Linux build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: make (Linux)
+      run: make -f makefile.linux compile test
+
+    - name: Upload nightly build
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-binaries
+        path: bin
+
+  build-macos:
+    name: MacOS build
+    runs-on: macos-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: make (MacOS)
+      run: make -f makefile.macos compile test
+
+    - name: Upload nightly build
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-binaries
+        path: bin
