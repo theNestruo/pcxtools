@@ -1,5 +1,7 @@
 ## Version history
 
+* 18/08/2024 v3.4
+    * LodePNG updated to latest version (20230410)
 * 06/02/2023 v3.3.1
     * Fixes edge case in `TMX2BIN`
 * 29/01/2023 v3.3

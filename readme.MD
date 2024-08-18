@@ -342,7 +342,7 @@ Coded by [theNestruo](mailto:theNestruo@gmail.com)
 
 * Original `PCX2MSX` was coded by Edward A. Robsy Petrus \[25/12/2004\]. `PCX2MSX` is inspired by that original version, but is not related with it in any other way.
 * [Tiled](http://www.mapeditor.org/) (c) 2008-2020 Thorbjørn Lindeijer.
-* [LodePNG](https://lodev.org/lodepng/) (c) 2005-2019 by Lode Vandevenne.
+* [LodePNG](https://lodev.org/lodepng/) (c) 2005-2023 by Lode Vandevenne.
 * Test graphics extracted from the original freeware version of [Ninja Senki](http://ninjasenki.com/) (c) 2010 Jonathan Lavigne.
 * `PNG2SPR+` demo sprites extracted from [Sydney Hunter and the Caverns of Death](http://www.studiopinagames.com/sydney.html) (c) 2011 Keith Erickson / Studio Pi&ntilde;a
 
