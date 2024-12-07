@@ -22,6 +22,8 @@ void sprWriterOptions() {
 	printf("\t-h\tgenerate half sprites (8x16px, 16b per sprite)\n");
 	printf("\t-lh\tlower colors will have higher priority planes (default)\n");
 	printf("\t-hl\thigher colors will have higher priority planes\n");
+	printf("\t-th\ttraverse spritesheet horizontally, then vertically (default)\n");
+	printf("\t-tv\ttraverse spritesheet vertically, then horizontally\n");
 }
 
 void sprWriterInit(struct stSprWriter *this, int argc, char **argv) {
@@ -42,6 +44,10 @@ void sprWriterInit(struct stSprWriter *this, int argc, char **argv) {
 		  (argEquals(argc, argv, "-lh") != -1) ? 1
 		: (argEquals(argc, argv, "-hl") != -1) ? -1
 		: 1;
+	this->traverseHorizontally =
+		  (argEquals(argc, argv, "-th") != -1) ? 1
+		: (argEquals(argc, argv, "-tv") != -1) ? 0
+		: 1;
 }
 
 void sprWriterReadSprites(struct stSprWriter *this, struct stBitmap *bitmap) {
@@ -51,9 +57,17 @@ void sprWriterReadSprites(struct stSprWriter *this, struct stBitmap *bitmap) {
 
 	int y, x;
 	struct stSpriteGroup *it;
-	for (y = 0, it = this->groups; (y + this->spriteHeight) <= bitmap->height; y += this->spriteHeight) {
-		for (x = 0; (x + this->spriteWidth) <= bitmap->width; x += this->spriteWidth, it++) {
-			processSpriteGroup(this, it, bitmap, x, y);
+	if (this->traverseHorizontally) {
+		for (y = 0, it = this->groups; (y + this->spriteHeight) <= bitmap->height; y += this->spriteHeight) {
+			for (x = 0; (x + this->spriteWidth) <= bitmap->width; x += this->spriteWidth, it++) {
+				processSpriteGroup(this, it, bitmap, x, y);
+			}
+		}
+	} else {
+		for (x = 0, it = this->groups; (x + this->spriteWidth) <= bitmap->width; x += this->spriteWidth) {
+			for (y = 0; (y + this->spriteHeight) <= bitmap->height; y += this->spriteHeight, it++) {
+				processSpriteGroup(this, it, bitmap, x, y);
+			}
 		}
 	}
 }

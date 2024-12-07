@@ -104,11 +104,13 @@ Order of options is non important. Unknown options will be silently ignored. If 
 
 * `-8` generate 8x8px sprites
     Output is adjusted so it can be used in 8x8px sprites modes
-* ` -h` generate half sprites (8x16px, 16b per sprite)
+* `-h` generate half sprites (8x16px, 16b per sprite)
     Processing order is adjusted so multicolored sprites are grouped by half sprites (8px width, 16px height)
 * `-hl` lower colors will have higher priority planes (default)
 * `-lh` higher colors will have higher priority planes
     These two options allow some control on how the colors get ordered (namely, to avoid the flickering routines make flicker the brigther colors)
+* `-th` traverse spritesheet horizontally, then vertically (default)
+* `-tv` traverse spritesheet vertically, then horizontally
 
 ### PNG2SPR+ only
 

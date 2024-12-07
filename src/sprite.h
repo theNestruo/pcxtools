@@ -29,18 +29,21 @@ struct stSprWriter {
 	// Data container
 	struct stSpriteGroup *groups;
 	int groupCount;
-	
+
 	// Arguments
 	int spriteWidth;
 	int spriteHeight;
 	int colorOrder;
+	int traverseHorizontally;
 };
 
 /* Function prototypes ----------------------------------------------------- */
 
 // Supported arguments:
 // -8	generate 8x8px sprites
-// -h	generate half sprites (8x16px, 16b per sprite
+// -h	generate half sprites (8x16px, 16b per sprite)
+// -hl  lower colors will have higher priority planes (default)
+// -lh  higher colors will have higher priority planes
 void sprWriterOptions();
 
 void sprWriterInit(struct stSprWriter *instance, int argc, char **argv);

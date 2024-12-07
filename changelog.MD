@@ -1,5 +1,7 @@
 ## Version history
 
+* 07/12/2024 v3.5
+    * -th and -tv options in `PNG2SPR`
 * 18/08/2024 v3.4
     * LodePNG updated to latest version (20230410)
 * 06/02/2023 v3.3.1
