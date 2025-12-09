@@ -40,6 +40,7 @@ struct stCharsetProcessor {
 	// Arguments
 	int ignoreCollision;
 	int patternMode;
+	int optimize;
 };
 
 /* Function prototypes ----------------------------------------------------- */

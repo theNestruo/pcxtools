@@ -1,6 +1,13 @@
 bin/*.exe
+
 test/*.spat.asm
 test/*.spr.asm
 test/*.tmx.bin
 test/*.chr
 test/*.clr
+
+pcx2sprplus_demo/*.spat.asm
+pcx2sprplus_demo/*.spr.asm
+
+png2sprplus_demo/*.spat.asm
+png2sprplus_demo/*.spr.asm

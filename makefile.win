@@ -21,12 +21,3 @@ REMOVE=cmd /c del
 #
 
 include makefile.common
-
-#
-# Windows only test targets
-#
-
-# demo: bin/$(PCX2SPRPLUS) pcx2sprplus_demo/demo.pcx pcx2sprplus_demo/demo.asm
-# 	bin/$(PCX2SPRPLUS) -v -vv -w24 -h32 pcx2sprplus_demo/demo.pcx
-#	asmsx pcx2sprplus_demo/demo.asm
-#	cmd /c start pcx2sprplus_demo/demo.rom

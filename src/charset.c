@@ -28,6 +28,12 @@ void negateAndSwap(struct stLine *line);
 int isLineEquals(struct stLine *line, struct stLine *other);
 byte colorAtBit(struct stLine *line, char bit);
 
+void postProcessPattern(struct stCharsetProcessor *instance, struct stBlock *block);
+void postProcessOptimize(struct stCharsetProcessor *instance, struct stBlock *block);
+int isOptimizable(struct stLine *line);
+int applyDirectOptimization(struct stLine *line, struct stLine *reference);
+int applySwappedOptimization(struct stLine *line, struct stLine *reference);
+
 /* Function bodies --------------------------------------------------------- */
 
 // Supported arguments:
@@ -43,6 +49,7 @@ void charsetProcessorOptions() {
 	printf("\t-lh\tforce lower color to be foreground\n");
 	printf("\t-f<0..7>\tforce bit <n> to be foreground (set) on patterns\n");
 	printf("\t-b<0..7>\tforce bit <n> to be background (reset) on patterns\n");
+	printf("\t-o\tattempt to optimize CLRTBL for compression\n");
 }
 
 void charsetProcessorInit(struct stCharsetProcessor *this, int argc, char **argv) {
@@ -60,6 +67,7 @@ void charsetProcessorInit(struct stCharsetProcessor *this, int argc, char **argv
 		: (argEquals(argc, argv, "-hl") != -1) ? PATTERN_MODE_HIGH_LOW
 		: (argEquals(argc, argv, "-lh") != -1) ? PATTERN_MODE_LOW_HIGH
 		: PATTERN_MODE_UNSET;
+	this->optimize = (argEquals(argc, argv, "-o") != -1);
 }
 
 int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *charset, struct stBitmap *bitmap) {
@@ -94,45 +102,127 @@ void charsetProcessorPostProcess(struct stCharsetProcessor *this, struct stChars
 		int i;
 		struct stBlock *itBlock;
 		for (i = 0, itBlock = charset->blocks; i < charset->blockCount; i++, itBlock++) {
+			postProcessPattern(this, itBlock);
+		}
+	}
 
-			// For each line...
-			int j;
-			struct stLine *itLine;
-			for (j = 0, itLine = itBlock->line; j < TILE_HEIGHT; j++, itLine++) {
+	if (this->optimize) {
+		// For each block...
+		int i;
+		struct stBlock *itBlock;
+		for (i = 0, itBlock = charset->blocks; i < charset->blockCount; i++, itBlock++) {
+			postProcessOptimize(this, itBlock);
+		}
+	}
+}
 
-				// Apply current pattern mode
-				switch (this->patternMode & PATTERN_MODE_MASK) {
-				case PATTERN_MODE_FOREGROUND:
-					// Force foreground bit
-					if (!(itLine->pattern & (1 << (this->patternMode & 0x07))))
-						negateAndSwap(itLine);
+void postProcessPattern(struct stCharsetProcessor *this, struct stBlock *block) {
+
+	// For each line...
+	int i;
+	struct stLine *itLine;
+	for (i = 0, itLine = block->line; i < TILE_HEIGHT; i++, itLine++) {
+
+		// Apply current pattern mode
+		switch (this->patternMode & PATTERN_MODE_MASK) {
+		case PATTERN_MODE_FOREGROUND:
+			// Force foreground bit
+			if (!(itLine->pattern & (1 << (this->patternMode & 0x07))))
+				negateAndSwap(itLine);
+			break;
+
+		case PATTERN_MODE_BACKGROUND:
+			// Force background bit
+			if (itLine->pattern & (1 << (this->patternMode & 0x07)))
+				negateAndSwap(itLine);
+			break;
+
+		case PATTERN_MODE_HIGH_LOW:
+			// Force higher color foreground
+			if ((itLine->color >> 4) < (itLine->color & 0x0f))
+				negateAndSwap(itLine);
+			if ((itLine->pattern == 0xff) && ((itLine->color >> 4) < 2))
+				negateAndSwap(itLine); // WORKAROUND: color 0 or 1 always background
+			break;
+
+		case PATTERN_MODE_LOW_HIGH:
+			// Force higher color background
+			if ((itLine->color & 0x0f) < (itLine->color >> 4))
+				negateAndSwap(itLine);
+			if ((itLine->pattern == 0x00) && ((itLine->color & 0x0f) == 15))
+				negateAndSwap(itLine); // WORKAROUND: color 15 always foreground
+			break;
+		}
+	}
+}
+
+void postProcessOptimize(struct stCharsetProcessor *this, struct stBlock *block) {
+
+	int i;
+	for (i = 0; i < TILE_HEIGHT; i++) {
+		struct stLine *line = &(block->line[i]);
+		if (!isOptimizable(line))
+			continue;
+
+		int j;
+		for (j = 1; j < TILE_HEIGHT; j++) {
+
+			// Try to optimize using the following lines
+			if (i + j < TILE_HEIGHT) {
+				struct stLine *ref = &(block->line[i + j]);
+				if (applyDirectOptimization(line, ref)
+						|| applySwappedOptimization(line, ref))
 					break;
+			}
 
-				case PATTERN_MODE_BACKGROUND:
-					// Force background bit
-					if (itLine->pattern & (1 << (this->patternMode & 0x07)))
-						negateAndSwap(itLine);
+			// Try to optimize using the previous lines
+			if (i - j >= 0) {
+				struct stLine *ref = &(block->line[i - j]);
+				if (applyDirectOptimization(line, ref)
+						|| applySwappedOptimization(line, ref))
 					break;
-
-				case PATTERN_MODE_HIGH_LOW:
-					// Force higher color foreground
-					if ((itLine->color >> 4) < (itLine->color & 0x0f))
-						negateAndSwap(itLine);
-					if ((itLine->pattern == 0xff) && ((itLine->color >> 4) < 2))
-						negateAndSwap(itLine); // WORKAROUND: color 0 or 1 always background
-					break;
-
-				case PATTERN_MODE_LOW_HIGH:
-					// Force higher color background
-					if ((itLine->color & 0x0f) < (itLine->color >> 4))
-						negateAndSwap(itLine);
-					if ((itLine->pattern == 0x00) && ((itLine->color & 0x0f) == 15))
-						negateAndSwap(itLine); // WORKAROUND: color 15 always foreground
-					break;
-				}
 			}
 		}
 	}
+}
+
+int isOptimizable(struct stLine *line) {
+
+	return (line->pattern == 0x00) || (line->pattern == 0xff);
+}
+
+int applyDirectOptimization(struct stLine *line, struct stLine *reference) {
+
+	// (sanity check)
+	if (!isOptimizable(line) || isOptimizable(reference))
+		return 0;
+
+	int valid = line->pattern == 0x00
+		? (line->color & 0x0f) == (reference->color & 0x0f)
+		: (line->color >> 4) == (reference->color >> 4);
+
+	if (valid)
+		line->color = reference->color;
+
+	return valid;
+}
+
+int applySwappedOptimization(struct stLine *line, struct stLine *reference) {
+
+	// (sanity check)
+	if (!isOptimizable(line) || isOptimizable(reference))
+		return 0;
+
+	int valid = line->pattern == 0x00
+		? (line->color & 0x0f) == (reference->color >> 4)
+		: (line->color >> 4) == (reference->color & 0x0f);
+
+	if (valid) {
+		line->pattern ^= 0xff;
+		line->color = reference->color;
+	}
+
+	return valid;
 }
 
 int charsetProcessorWrite(struct stCharsetProcessor *this, struct stCharset *charset, FILE *chrFile, FILE *clrFile) {
@@ -274,6 +364,6 @@ int isLineEquals(struct stLine *thisLine, struct stLine *thatLine) {
 byte colorAtBit(struct stLine *line, char bit) {
 
 	return (line->pattern & (0x01 << bit))
-		? ((line->color & 0xf0) >> 4)
+		? (line->color >> 4)
 		: (line->color & 0x0f);
 }

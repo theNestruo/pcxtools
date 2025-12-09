@@ -23,9 +23,7 @@ TESTS=\
 	test/bigsprites.png.spat.asm \
 	test/bigsprites.png.spr.asm \
 	test/screen.tmx.bin \
-	test/metatiles.tmx.bin \
-	test/test-pal.png.chr \
-	test/test-pal.png.clr
+	test/metatiles.tmx.bin
 
 COMMON_DEPS_C=\
 	src/args.c
@@ -52,7 +50,7 @@ COMMON_DEPS_PCX_H=\
 
 COMMON_DEPS_PNG_H=\
 	src/bitmap.h \
-	src/readpcx.h \
+	src/readpng.h \
 	src/lodepng/lodepng.h
 
 COMMON_DEPS_TMX_H=\
@@ -71,6 +69,8 @@ clean:
 compile: $(TOOLS)
 
 test: compile $(TESTS)
+
+demos: demopcx demopng
 
 #
 # main targets
@@ -125,5 +125,8 @@ test/metatiles.tmx.bin: $(TMX2BIN) test/metatiles.tmx
 test/test-pal.png.chr test/test-pal.png.clr: $(PNG2MSX) test/test-pal.png
 	$(PNG2MSX) -v test/test-pal.png
 
-demo: $(PCX2SPRPLUS) pcx2sprplus_demo/demo.pcx pcx2sprplus_demo/demo.asm
+demopcx: $(PCX2SPRPLUS) pcx2sprplus_demo/demo.pcx pcx2sprplus_demo/demo.asm
 	$(PCX2SPRPLUS) -v -vv -w24 -h32 pcx2sprplus_demo/demo.pcx
+
+demopng: $(PNG2SPRPLUS) png2sprplus_demo/demo.png png2sprplus_demo/demo.asm
+	$(PNG2SPRPLUS) -v -vv -w24 -h32 png2sprplus_demo/demo.png
