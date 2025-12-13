@@ -23,7 +23,7 @@ jobs:
       run: make -f makefile.win compile test
 
     - name: Upload nightly build
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: windows-binaries
         path: bin
@@ -40,7 +40,7 @@ jobs:
       run: make -f makefile.linux compile test
 
     - name: Upload nightly build
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: linux-binaries
         path: bin
@@ -57,7 +57,7 @@ jobs:
       run: make -f makefile.macos compile test
 
     - name: Upload nightly build
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: macos-binaries
         path: bin
