@@ -1,4 +1,4 @@
-[![C/C++ CI](https://github.com/theNestruo/pcxtools/workflows/C/C++%20CI/badge.svg)](https://github.com/theNestruo/pcxtools/actions)
+[![CI and nightly build](https://github.com/theNestruo/pcxtools/actions/workflows/on-main-push-ci-nightly.yml/badge.svg)](https://github.com/theNestruo/pcxtools/actions/workflows/on-main-push-ci-nightly.yml)
 [![CodeFactor](https://www.codefactor.io/repository/github/thenestruo/pcxtools/badge)](https://www.codefactor.io/repository/github/thenestruo/pcxtools)
 
 # PCXTOOLS: PNG2MSX, PNGSPR\[+\] and TMX2BIN
