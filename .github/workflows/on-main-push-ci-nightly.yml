@@ -1,4 +1,4 @@
-name: ci and upload nightly on branches
+name: CI and nightly build
 
 permissions:
   contents: read
@@ -7,8 +7,7 @@ permissions:
 on:
   push:
     branches:
-    - master
-    - preview
+    - main
 
 jobs:
   build-windows:
@@ -20,7 +19,7 @@ jobs:
       uses: actions/checkout@v6
 
     - name: make (Windows)
-      run: make -f makefile.win compile test
+      run: make -f windows.makefile compile test
 
     - name: Upload nightly build
       uses: actions/upload-artifact@v6
@@ -37,7 +36,7 @@ jobs:
       uses: actions/checkout@v6
 
     - name: make (Linux)
-      run: make -f makefile.linux compile test
+      run: make -f linux.makefile compile test
 
     - name: Upload nightly build
       uses: actions/upload-artifact@v6
@@ -54,7 +53,7 @@ jobs:
       uses: actions/checkout@v6
 
     - name: make (MacOS)
-      run: make -f makefile.macos compile test
+      run: make -f macos.makefile compile test
 
     - name: Upload nightly build
       uses: actions/upload-artifact@v6

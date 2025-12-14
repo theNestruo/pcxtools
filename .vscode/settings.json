@@ -1,6 +1,6 @@
 {
 	"files.associations": {
-		"makefile.*": "makefile"
+		"*.makefile": "makefile"
 	},
 	//
 	"editor.insertSpaces": false,

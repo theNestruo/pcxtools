@@ -20,4 +20,4 @@ REMOVE=cmd /c del
 # main makefile
 #
 
-include makefile.common
+include shared.makefile

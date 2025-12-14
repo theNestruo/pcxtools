@@ -6,11 +6,12 @@
 		{
 			"label": "make",
 			"type": "shell",
-			"command": "mingw32-make -f makefile.win",
+			"command": "mingw32-make -f windows.makefile",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
+			"problemMatcher": "$gcc",
 			"presentation": {
 				"echo": true,
 				"reveal": "silent",

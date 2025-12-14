@@ -104,16 +104,16 @@ $(TMX2BIN): src/tmx2bin.c $(COMMON_DEPS_C) $(COMMON_DEPS_TMX_C) $(COMMON_DEPS_H)
 # test targets
 #
 
-test/charset.pcx.chr test/charset.pcx.clr: $(PCX2MSX) test/charset.pcx
+test/charset.pcx.chr test/charset.pcx.clr &: $(PCX2MSX) test/charset.pcx
 	$(PCX2MSX) -v test/charset.pcx
 
-test/charset.png.chr test/charset.png.clr: $(PNG2MSX) test/charset.png
+test/charset.png.chr test/charset.png.clr &: $(PNG2MSX) test/charset.png
 	$(PNG2MSX) -v test/charset.png
 
-test/bigsprites.pcx.spat.asm test/bigsprites.pcx.spr.asm: $(PCX2SPRPLUS) test/bigsprites.pcx
+test/bigsprites.pcx.spat.asm test/bigsprites.pcx.spr.asm &: $(PCX2SPRPLUS) test/bigsprites.pcx
 	$(PCX2SPRPLUS) -v -vv -w24 -h32 test/bigsprites.pcx
 
-test/bigsprites.png.spat.asm test/bigsprites.png.spr.asm: $(PNG2SPRPLUS) test/bigsprites.png
+test/bigsprites.png.spat.asm test/bigsprites.png.spr.asm &: $(PNG2SPRPLUS) test/bigsprites.png
 	$(PNG2SPRPLUS) -v -vv -w24 -h32 test/bigsprites.png
 
 test/screen.tmx.bin: $(TMX2BIN) test/screen.tmx
@@ -122,7 +122,7 @@ test/screen.tmx.bin: $(TMX2BIN) test/screen.tmx
 test/metatiles.tmx.bin: $(TMX2BIN) test/metatiles.tmx
 	$(TMX2BIN) -v -t2 test/metatiles.tmx
 
-test/test-pal.png.chr test/test-pal.png.clr: $(PNG2MSX) test/test-pal.png
+test/test-pal.png.chr test/test-pal.png.clr &: $(PNG2MSX) test/test-pal.png
 	$(PNG2MSX) -v test/test-pal.png
 
 demopcx: $(PCX2SPRPLUS) pcx2sprplus_demo/demo.pcx pcx2sprplus_demo/demo.asm

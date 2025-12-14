@@ -342,13 +342,13 @@ As the MSX palette is not well defined, with several emulators using slightly di
 </tr>
 </table>
 
-<sup>1</sup> TI TMS9918 palette, according Wikipedia (https://en.wikipedia.org/wiki/Texas_Instruments_TMS9918#Colors)
+<sup>1</sup> TI TMS9918 palette, according Wikipedia [wikipedia.org/wiki/Texas_Instruments_TMS9918#Colors](https://en.wikipedia.org/wiki/Texas_Instruments_TMS9918#Colors)
 
 <sup>2</sup> TI TMS9219 and V9938 palettes from hap's meisei emulator
 
-<sup>3</sup> Palette used by pixel artist <a href="https://twitter.com/Yazioh">@Yazioh</a>, because of reasons
+<sup>3</sup> Palette used by pixel artist [@Yazioh](https://twitter.com/Yazioh), because of reasons
 
-<sup>4</sup> TOSHIBA palette from reidrac's MSX Pixel Tools (https://github.com/reidrac/msx-pixel-tools)
+<sup>4</sup> TOSHIBA palette from reidrac's MSX Pixel Tools [github.com/reidrac/msx-pixel-tools](https://github.com/reidrac/msx-pixel-tools)
 
 Transparent pixels are indexed from the following values:
 
