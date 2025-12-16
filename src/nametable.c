@@ -97,7 +97,7 @@ void nameTableProcessorGenerate(struct stNameTableProcessor *this,
 	}
 }
 
-void nameTableProcessorGenerateUsing(struct stNameTableProcessor *__UNUSED_PARAM(this),
+void nameTableProcessorGenerateUsing(struct stNameTableProcessor __UNUSED_PARAM(*this),
 		struct stNameTable *nametable, struct stCharset *charset, struct stCharset *screen) {
 
 	// Initial namtbl
@@ -153,7 +153,7 @@ int nameTableProcessorWrite(struct stNameTableProcessor *this, struct stNameTabl
 	return 0;
 }
 
-void nameTableProcessorDone(struct stNameTableProcessor *__UNUSED_PARAM(this)) {
+void nameTableProcessorDone(struct stNameTableProcessor __UNUSED_PARAM(*this)) {
 
 	// nothing to do here
 }

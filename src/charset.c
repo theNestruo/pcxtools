@@ -157,7 +157,7 @@ void postProcessPattern(struct stCharsetProcessor *this, struct stBlock *block) 
 	}
 }
 
-void postProcessOptimize(struct stCharsetProcessor *__UNUSED_PARAM(this), struct stBlock *block) {
+void postProcessOptimize(struct stCharsetProcessor __UNUSED_PARAM(*this), struct stBlock *block) {
 
 	int i;
 	for (i = 0; i < TILE_HEIGHT; i++) {
@@ -226,7 +226,7 @@ int applySwappedOptimization(struct stLine *line, struct stLine *reference) {
 	return valid;
 }
 
-int charsetProcessorWrite(struct stCharsetProcessor *__UNUSED_PARAM(this), struct stCharset *charset, FILE *chrFile, FILE *clrFile) {
+int charsetProcessorWrite(struct stCharsetProcessor __UNUSED_PARAM(*this), struct stCharset *charset, FILE *chrFile, FILE *clrFile) {
 
 	int i, j;
 	struct stBlock *it;
@@ -244,7 +244,7 @@ int charsetProcessorWrite(struct stCharsetProcessor *__UNUSED_PARAM(this), struc
 	return 0;
 }
 
-void charsetProcessorDone(struct stCharsetProcessor *__UNUSED_PARAM(this)) {
+void charsetProcessorDone(struct stCharsetProcessor __UNUSED_PARAM(*this)) {
 
 	// nothing to do here
 }
