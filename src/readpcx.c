@@ -80,7 +80,7 @@ int pcxReaderRead(FILE *file, struct stBitmap *bitmap) {
 	bitmap->bitmap = (byte*) calloc(bitmap->width * bitmap->height, sizeof(byte));
 
 	// Unpack the PCX
-	int y, x;
+	unsigned int y, x;
 	for (y = 0; y < bitmap->height; y++) {
 		for (x = 0; x < header.bytesWidth; ) {
 			byte data, runLength;

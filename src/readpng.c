@@ -230,10 +230,10 @@ int pngReaderRead(char *pngFilename, struct stBitmap *bitmap) {
 	bitmap->bitmap = (byte*) calloc(bitmap->width * bitmap->height, sizeof(byte));
 
 	// Populates the bitmap
-	int y, x;
+	unsigned int y;
 	byte *source, *target;
 	for (source = pngImage, target = bitmap->bitmap, y = 0; y < bitmap->height; y++) {
-		for (x = 0; x < bitmap->width; x++) {
+		for (unsigned int x = 0; x < bitmap->width; x++) {
 			byte r = *(source++);
 			byte g = *(source++);
 			byte b = *(source++);
@@ -283,7 +283,7 @@ struct stColor* guessPalette(unsigned int pngWidth, unsigned int pngHeight, byte
 int paletteDistance(struct stColor palette[], unsigned int pngWidth, unsigned int pngHeight, byte *pngImage) {
 
 	int totalDistance = 0;
-	int y, x;
+	unsigned int y, x;
 	byte *source;
 	for (source = pngImage, y = 0; y < pngHeight; y++) {
 		for (x = 0; x < pngWidth; x++) {

@@ -135,7 +135,7 @@ void sprWriterPlusReadSprites(struct stSprWriterPlus *this, struct stBitmap *bit
 	this->spriteCount = ((int) (bitmap->width / this->spriteWidth)) * ((int) (bitmap->height / this->spriteHeight));
 	this->sprites = (struct stSpriteSolver*) calloc(this->spriteCount, sizeof(struct stSpriteSolver));
 
-	int x, y;
+	unsigned int x, y;
 	struct stSpriteSolver *solver;
 	for (y = 0, solver = this->sprites; (y + this->spriteHeight) <= bitmap->height; y += this->spriteHeight) {
 		for (x = 0; (x + this->spriteWidth) <= bitmap->width; x += this->spriteWidth, solver++) {
@@ -435,7 +435,7 @@ int writePadding(struct stSpriteSolver *this, FILE *spatFile) {
 	paddingBuffer[0] = this->cfg->terminator;
 
 	return (this->cfg->binaryOutput)
-		? (fwrite(paddingBuffer, sizeof(byte), this->cfg->attributePadding, spatFile) == this->cfg->attributePadding)
+		? (fwrite(paddingBuffer, sizeof(byte), this->cfg->attributePadding, spatFile) == (size_t) this->cfg->attributePadding)
 		: (asmComment(spatFile, "padding", 1)
 			&& asmBytes(spatFile, paddingBuffer, this->cfg->attributePadding)
 			&& asmNewLine(spatFile));
@@ -691,7 +691,7 @@ int writeAttributes(struct stSprite *this, struct stSprWriterPlus *cfg, FILE *sp
 
 /* Private function bodies ----- DEBUG ------------------------------------- */
 
-void debugSolution(struct stColorSolver *this, struct stRect *rects, int size) {
+void debugSolution(struct stColorSolver *__UNUSED_PARAM(this), struct stRect *rects, int size) {
 
 	int i;
 	struct stRect *rect;

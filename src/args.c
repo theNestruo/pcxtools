@@ -49,7 +49,7 @@ int argEquals(int argc, char **argv, char *argstring) {
 	return -1;
 }
 
-int argStartsWith(int argc, char **argv, char *argstring, int minlen) {
+int argStartsWith(int argc, char **argv, char *argstring, size_t minlen) {
 
 	int i;
 	if (argv && argstring) for (i = 1; i < argc; i++) {

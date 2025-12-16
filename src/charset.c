@@ -42,6 +42,7 @@ int applySwappedOptimization(struct stLine *line, struct stLine *reference);
 // -lh		force lower color to be foreground
 // -f<0..7>	force bit <n> to be foreground (set) on patterns
 // -b<0..7>	force bit <n> to be background (reset) on patterns
+// -o       attempt to optimize CLRTBL for compression
 void charsetProcessorOptions() {
 
 	printf("\t-il\tignore line on color collision\n");
@@ -77,7 +78,7 @@ int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *char
 	charset->blocks = (struct stBlock*) calloc(charset->blockCount, sizeof(struct stBlock));
 
 	// For each block...
-	int x, y;
+	unsigned int x, y;
 	struct stBlock *itBlock;
 	for (y = 0, itBlock = charset->blocks; (y + TILE_HEIGHT) <= bitmap->height; y += TILE_HEIGHT) {
 		for (x = 0; (x + TILE_WIDTH) <= bitmap->width; x += TILE_WIDTH, itBlock++) {
@@ -156,7 +157,7 @@ void postProcessPattern(struct stCharsetProcessor *this, struct stBlock *block) 
 	}
 }
 
-void postProcessOptimize(struct stCharsetProcessor *this, struct stBlock *block) {
+void postProcessOptimize(struct stCharsetProcessor *__UNUSED_PARAM(this), struct stBlock *block) {
 
 	int i;
 	for (i = 0; i < TILE_HEIGHT; i++) {
@@ -225,7 +226,7 @@ int applySwappedOptimization(struct stLine *line, struct stLine *reference) {
 	return valid;
 }
 
-int charsetProcessorWrite(struct stCharsetProcessor *this, struct stCharset *charset, FILE *chrFile, FILE *clrFile) {
+int charsetProcessorWrite(struct stCharsetProcessor *__UNUSED_PARAM(this), struct stCharset *charset, FILE *chrFile, FILE *clrFile) {
 
 	int i, j;
 	struct stBlock *it;
@@ -243,7 +244,7 @@ int charsetProcessorWrite(struct stCharsetProcessor *this, struct stCharset *cha
 	return 0;
 }
 
-void charsetProcessorDone(struct stCharsetProcessor *this) {
+void charsetProcessorDone(struct stCharsetProcessor *__UNUSED_PARAM(this)) {
 
 	// nothing to do here
 }

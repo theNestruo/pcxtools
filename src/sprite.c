@@ -55,7 +55,7 @@ void sprWriterReadSprites(struct stSprWriter *this, struct stBitmap *bitmap) {
 	this->groupCount = ((int) (bitmap->width / this->spriteWidth)) * ((int) (bitmap->height / this->spriteHeight));
 	this->groups = (struct stSpriteGroup*) calloc(this->groupCount, sizeof(struct stSpriteGroup));
 
-	int y, x;
+	unsigned int y, x;
 	struct stSpriteGroup *it;
 	if (this->traverseHorizontally) {
 		for (y = 0, it = this->groups; (y + this->spriteHeight) <= bitmap->height; y += this->spriteHeight) {
@@ -74,7 +74,7 @@ void sprWriterReadSprites(struct stSprWriter *this, struct stBitmap *bitmap) {
 
 int sprWriterWrite(struct stSprWriter *this, FILE *sprFile) {
 
-	int spriteSize = (this->spriteWidth / 8) * this->spriteHeight;
+	size_t spriteSize = (this->spriteWidth / 8) * this->spriteHeight;
 
 	// For each group...
 	int i;

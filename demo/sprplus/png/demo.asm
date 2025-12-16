@@ -210,10 +210,10 @@ CONTROL_SPRTBL_DATA:
 	CONTROL_SPRTBL_DATA_SIZE equ $ - CONTROL_SPRTBL_DATA
 
 SPRATR_DATA:
-	.include "png2sprplus_demo\demo.png.spat.asm"
+	.include "demo/sprplus/png/demo.png.spat.asm"
 
 SPRTBL_DATA:
-	.include "png2sprplus_demo\demo.png.spr.asm"
+	.include "demo/sprplus/png/demo.png.spr.asm"
 	SPRITE_COUNT equ ($ - SPRTBL_DATA) / 32
 
 ; =============================================================================

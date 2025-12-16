@@ -5,7 +5,7 @@
 ; -----------------------------------------------------------------------------
 
 	USE_CONTROL_SPRITES	equ 1
-	
+
 ; BIOS entry points
 	.bios
 
@@ -43,7 +43,7 @@
 	.page	1
 	.rom
 	.start	INIT
-	
+
 INIT:
 ; reset interrupt mode & stack pointer
 	di
@@ -65,7 +65,7 @@ INIT:
 ; screen ,,0
 	xor	a
 	ld	[CLIKSW], a
-	
+
 	call	ENASCR
 MAIN_LOOP:
 ; init control sprites
@@ -80,13 +80,13 @@ MAIN_LOOP:
 	ld	[spratr_ram_cursor], hl
 	ld	a, SPRITE_COUNT
 	ld	[sprite_count], a
-	
+
 BLIT_GROUP:
 	ld	hl, SPRTBL + CONTROL_SPRTBL_DATA_SIZE ; skips control sprites
 	ld	[sprtbl_vram_cursor], hl
 	ld	hl, SPRATR
 	ld	[spratr_vram_cursor], hl
-	
+
 BLIT_ONE:
 ; SPRATR
 	ld	de, [spratr_ram_cursor]
@@ -135,13 +135,13 @@ BLIT_ONE:
 	ld	hl, [sprtbl_vram_cursor]
 	add	hl, bc
 	ld	[sprtbl_vram_cursor], hl
-	
+
 ; update counter
 	ld	hl, sprite_count
 	dec	[hl]
-; next sprite	
+; next sprite
 	jr	BLIT_ONE
-	
+
 GROUP_END:
 IFDEF USE_CONTROL_SPRITES
 ; blit control sprites
@@ -151,11 +151,11 @@ IFDEF USE_CONTROL_SPRITES
 	ld	bc, CONTROL_SPRATR_DATA_SIZE
 	call	LDIRVM
 	pop	de
-	
+
 ELSE
 ; blit the SPAT_END
 	call	WRTVRM
-	
+
 ENDIF
 
 	inc	de
@@ -172,7 +172,7 @@ PAUSE_LOOP:
 	jp	nz, BLIT_GROUP ; yes
 ; no
 	jp	MAIN_LOOP
-	
+
 ; =============================================================================
 CONTROL_SPRATR_DATA:
 	.db	72 -1,	148,	$00,	5
@@ -189,7 +189,7 @@ CONTROL_SPRATR_DATA:
 	.db	104 -1,	220,	$0c,	8
 	.db	SPAT_END
 	CONTROL_SPRATR_DATA_SIZE equ $ - CONTROL_SPRATR_DATA
-	
+
 CONTROL_SPRTBL_DATA:
 	.db	$FF, $FF, $C0, $CF, $CF, $CF, $CF, $CF
 	.db	$C0, $C7, $FF, $FF, $C7, $E0, $FF, $FF
@@ -210,10 +210,10 @@ CONTROL_SPRTBL_DATA:
 	CONTROL_SPRTBL_DATA_SIZE equ $ - CONTROL_SPRTBL_DATA
 
 SPRATR_DATA:
-	.include "pcx2sprplus_demo\demo.pcx.spat.asm"
+	.include "demo/sprplus/pcx/demo.pcx.spat.asm"
 
 SPRTBL_DATA:
-	.include "pcx2sprplus_demo\demo.pcx.spr.asm"
+	.include "demo/sprplus/pcx/demo.pcx.spr.asm"
 	SPRITE_COUNT equ ($ - SPRTBL_DATA) / 32
 
 ; =============================================================================
@@ -225,7 +225,7 @@ SPRTBL_DATA:
 ;
 
 	.org	$e000
-	
+
 spratr_ram_cursor:
 	.word
 sprtbl_ram_cursor:

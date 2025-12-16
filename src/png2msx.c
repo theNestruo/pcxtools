@@ -32,11 +32,11 @@ int veryVerbose = 0;
 void showTitle();
 void showUsage();
 int readCharset(struct stCharsetProcessor *charsetProcessor,
-	struct stCharset *charset, struct stBitmap *bitmap, char *pngFilename, int verbose);
+	struct stCharset *charset, struct stBitmap *bitmap, char *pngFilename);
 int writeCharset(struct stCharsetProcessor *charsetProcessor,
-	struct stCharset *charset, char *pngFilename, int verbose);
+	struct stCharset *charset, char *pngFilename);
 int writeNameTable(struct stNameTableProcessor *nameTableProcessor,
-	struct stNameTable *nameTable, char *pngFilename, int verbose);
+	struct stNameTable *nameTable, char *pngFilename);
 
 /* Entry point ------------------------------------------------------------- */
 
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
 	pngReaderInit(argc, argv);
 	bitmapInit(&bitmap, argc, argv);
 	charsetProcessorInit(&charsetProcessor, argc, argv);
-	if ((i = readCharset(&charsetProcessor, &charset, &bitmap, pngFilename, verbose)))
+	if ((i = readCharset(&charsetProcessor, &charset, &bitmap, pngFilename)))
 		goto out;
 
 	// Do the work
@@ -97,11 +97,11 @@ int main(int argc, char **argv) {
 		if (dryRun)
 			break;
 
-		if ((i = writeCharset(&charsetProcessor, &charset, pngFilename, verbose)))
+		if ((i = writeCharset(&charsetProcessor, &charset, pngFilename)))
 			goto out;
 		if (generateNameTable) {
 			nameTableProcessorPostProcess(&nameTableProcessor, &nameTable);
-			if ((i = writeNameTable(&nameTableProcessor, &nameTable, pngFilename, verbose)))
+			if ((i = writeNameTable(&nameTableProcessor, &nameTable, pngFilename)))
 				goto out;
 		}
 		break;
@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
 			pngFilename = argv[argi];
 			bitmapDone(&bitmap); // (free previous file resources)
 			charsetDone(&screenCharset); // (free previous file resources)
-			if ((i = readCharset(&charsetProcessor, &screenCharset, &bitmap, pngFilename, verbose)))
+			if ((i = readCharset(&charsetProcessor, &screenCharset, &bitmap, pngFilename)))
 				goto out;
 
 			// Generate
@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
 			// Write
 			nameTableProcessorPostProcess(&nameTableProcessor, &nameTable);
 			if (!dryRun)
-				if ((i = writeNameTable(&nameTableProcessor, &nameTable, pngFilename, verbose)))
+				if ((i = writeNameTable(&nameTableProcessor, &nameTable, pngFilename)))
 					goto out;
 		}
 		break;
@@ -143,7 +143,7 @@ int main(int argc, char **argv) {
 		// First file
 		charsetProcessorPostProcess(&charsetProcessor, &charset);
 		if (!dryRun)
-			if ((i = writeCharset(&charsetProcessor, &charset, pngFilename, verbose)))
+			if ((i = writeCharset(&charsetProcessor, &charset, pngFilename)))
 				goto out;
 
 		// Next files
@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
 			pngFilename = argv[argi];
 			bitmapDone(&bitmap); // (free previous file resources)
 			charsetDone(&charset); // (free previous file resources)
-			if ((i = readCharset(&charsetProcessor, &charset, &bitmap, pngFilename, verbose)))
+			if ((i = readCharset(&charsetProcessor, &charset, &bitmap, pngFilename)))
 				goto out;
 
 			// Apply first file nametable
@@ -161,7 +161,7 @@ int main(int argc, char **argv) {
 			// Write
 			charsetProcessorPostProcess(&charsetProcessor, &charset);
 			if (!dryRun)
-				if ((i = writeCharset(&charsetProcessor, &charset, pngFilename, verbose)))
+				if ((i = writeCharset(&charsetProcessor, &charset, pngFilename)))
 					goto out;
 		}
 
@@ -217,7 +217,7 @@ void showUsage() {
 }
 
 int readCharset(struct stCharsetProcessor *charsetProcessor, struct stCharset *charset,
-	struct stBitmap *bitmap, char *pngFilename, int verbose) {
+	struct stBitmap *bitmap, char *pngFilename) {
 
 	int i = 0;
 
@@ -234,7 +234,7 @@ out:
 	return i;
 }
 
-int writeCharset(struct stCharsetProcessor *charsetProcessor, struct stCharset *charset, char *pngFilename, int verbose) {
+int writeCharset(struct stCharsetProcessor *charsetProcessor, struct stCharset *charset, char *pngFilename) {
 
 	int i = 0;
 
@@ -274,7 +274,7 @@ out:
 	return i;
 }
 
-int writeNameTable(struct stNameTableProcessor *nameTableProcessor, struct stNameTable *nameTable, char *pngFilename, int verbose) {
+int writeNameTable(struct stNameTableProcessor *nameTableProcessor, struct stNameTable *nameTable, char *pngFilename) {
 
 	int i = 0;
 

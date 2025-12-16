@@ -32,11 +32,11 @@ void bitmapInit(struct stBitmap *this, int argc, char **argv) {
 
 byte bitmapGet(struct stBitmap *this, int x0, int y0) {
 
-	if ((x0 < 0) || (y0 < 0) || (x0 >= this->width) || (y0 >= this->height))
+	if ((x0 < 0) || (y0 < 0) || (x0 >= (int) this->width) || (y0 >= (int) this->height))
 		return 0;
 
-	int y = this->isFlip ? this->height - y0 - 1 : y0;
-	int x = this->isMirror ? this->width - x0 - 1 : x0;
+	int y = this->isFlip   ? ((int) this->height) - y0 - 1 : y0;
+	int x = this->isMirror ? ((int) this->width ) - x0 - 1 : x0;
 
 	byte index = this->bitmap[x + y * this->width];
 	if (index > 0x0f) {

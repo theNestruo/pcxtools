@@ -14,7 +14,7 @@ int argNextFilename(int argc, char **argv, int last);
 
 int argEquals(int argc, char **argv, char *argstring);
 
-int argStartsWith(int argc, char **argv, char *argstring, int minlen);
+int argStartsWith(int argc, char **argv, char *argstring, size_t minlen);
 
 //
 

@@ -84,7 +84,7 @@ void nameTableProcessorGenerate(struct stNameTableProcessor *this,
 		// Allocate
 		reallocateBlocks(charset, charset->blockCount + 1);
 		// Move
-		int i, j;
+		int j;
 		for (i = charset->blockCount - 1, j = i - 1; j >= this->blankAt; i--, j--) {
 			memcpy(&charset->blocks[i], &charset->blocks[j], sizeof(struct stBlock));
 		}
@@ -97,7 +97,7 @@ void nameTableProcessorGenerate(struct stNameTableProcessor *this,
 	}
 }
 
-void nameTableProcessorGenerateUsing(struct stNameTableProcessor *this,
+void nameTableProcessorGenerateUsing(struct stNameTableProcessor *__UNUSED_PARAM(this),
 		struct stNameTable *nametable, struct stCharset *charset, struct stCharset *screen) {
 
 	// Initial namtbl
@@ -153,7 +153,7 @@ int nameTableProcessorWrite(struct stNameTableProcessor *this, struct stNameTabl
 	return 0;
 }
 
-void nameTableProcessorDone(struct stNameTableProcessor *this) {
+void nameTableProcessorDone(struct stNameTableProcessor *__UNUSED_PARAM(this)) {
 
 	// nothing to do here
 }

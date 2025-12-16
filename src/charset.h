@@ -51,6 +51,7 @@ struct stCharsetProcessor {
 // -lh		force lower color to be foreground
 // -f<0..7>	force bit <n> to be foreground (set) on patterns
 // -b<0..7>	force bit <n> to be background (reset) on patterns
+// -o       attempt to optimize CLRTBL for compression
 void charsetProcessorOptions();
 
 void charsetProcessorInit(struct stCharsetProcessor *instance, int argc, char **argv);
