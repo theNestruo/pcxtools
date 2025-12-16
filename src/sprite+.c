@@ -691,7 +691,7 @@ int writeAttributes(struct stSprite *this, struct stSprWriterPlus *cfg, FILE *sp
 
 /* Private function bodies ----- DEBUG ------------------------------------- */
 
-void debugSolution(struct stColorSolver __UNUSED_PARAM(*this), struct stRect *rects, int size) {
+void debugSolution(__attribute__((unused)) struct stColorSolver *this, struct stRect *rects, int size) {
 
 	int i;
 	struct stRect *rect;
