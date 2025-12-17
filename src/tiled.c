@@ -8,8 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "tiled.h"
 #include "args.h"
+#include "tiled.h"
 
 /* Constant values --------------------------------------------------------- */
 

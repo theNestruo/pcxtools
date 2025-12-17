@@ -1,4 +1,6 @@
-*.exe
+*.o
+bin
+!bin/placeholder.txt
 
 *.chr
 *.clr

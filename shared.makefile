@@ -3,164 +3,108 @@
 # file lists
 #
 
-PCX_TOOLS=\
+TARGETS=\
 	$(PCX2MSX) \
 	$(PCX2SPR) \
 	$(PCX2MSXPLUS) \
-	$(PCX2SPRPLUS)
-
-PNG_TOOLS=\
+	$(PCX2SPRPLUS) \
 	$(PNG2MSX) \
 	$(PNG2SPR) \
-	$(PNG2SPRPLUS)
-
-TMX_TOOLS= \
+	$(PNG2SPRPLUS) \
 	$(TMX2BIN)
 
-PCX_TESTS=\
+OBJS_PCX=\
+	src/args.o \
+	src/bitmap.o \
+	src/readpcx.o
+
+OBJS_PNG=\
+	src/args.o \
+	src/bitmap.o \
+	src/readpng.o \
+	src/lodepng/lodepng.o
+
+OBJS_TMX=\
+	src/args.o \
+	src/tiled.o \
+	src/readtmx.o
+
+DEPS_PCX=\
+	src/args.h \
+	src/bitmap.h \
+	src/readpcx.h
+
+DEPS_PNG=\
+	src/args.h \
+	src/bitmap.h \
+	src/readpng.h \
+	src/lodepng/lodepng.h
+
+DEPS_TMX=\
+	src/args.h \
+	src/tiled.h \
+	src/readtmx.h
+
+TESTS=\
 	test/charset.pcx.chr \
 	test/charset.pcx.clr \
 	test/bigsprites.pcx.spat.asm \
-	test/bigsprites.pcx.spr.asm
-
-PNG_TESTS=\
+	test/bigsprites.pcx.spr.asm \
 	test/charset.png.chr \
 	test/charset.png.clr \
 	test/bigsprites.png.spat.asm \
-	test/bigsprites.png.spr.asm
-
-TMX_TESTS=\
+	test/bigsprites.png.spr.asm \
 	test/screen.tmx.bin \
 	test/metatiles.tmx.bin
-
-COMMON_DEPS_C=\
-	src/args.c
-
-COMMON_DEPS_PCX_C=\
-	src/bitmap.c \
-	src/readpcx.c \
-	$(COMMON_DEPS_C)
-
-COMMON_DEPS_PNG_C=\
-	src/bitmap.c \
-	src/readpng.c \
-	src/lodepng/lodepng.c \
-	$(COMMON_DEPS_C)
-
-COMMON_DEPS_TMX_C=\
-	src/tiled.c \
-	src/readtmx.c \
-	$(COMMON_DEPS_C)
-
-COMMON_DEPS_H=\
-	src/args.h
-
-COMMON_DEPS_PCX_H=\
-	src/bitmap.h \
-	src/readpcx.h \
-	$(COMMON_DEPS_H)
-
-COMMON_DEPS_PNG_H=\
-	src/bitmap.h \
-	src/readpng.h \
-	src/lodepng/lodepng.h \
-	$(COMMON_DEPS_H)
-
-COMMON_DEPS_TMX_H=\
-	src/tiled.h \
-	src/readtmx.h \
-	$(COMMON_DEPS_H)
 
 #
 # default target
 #
 
-default: compile_png
+default: all
 
-clean: clean_pcx clean_png clean_tmx
+clean:
+	$(REMOVE) $(TARGETS)
 
-clean_pcx:
-	$(REMOVE) $(PCX_TOOLS)
+all: $(TARGETS)
 
-clean_png:
-	$(REMOVE) $(PNG_TOOLS)
-
-clean_tmx:
-	$(REMOVE) $(TMX_TOOLS)
-
-compile: $(PCX_TOOLS) $(PNG_TOOLS) $(TMX_TOOLS)
-
-compile_pcx: $(PCX_TOOLS)
-
-compile_png: $(PNG_TOOLS)
-
-compile_tmx: $(TMX_TOOLS)
-
-test: test_pcx test_png test_tmx
-
-test_pcx: $(PCX_TOOLS) $(PCX_TESTS)
-
-test_png: $(PNG_TOOLS) $(PNG_TOOLS)
-
-test_tmx: $(TMX_TOOLS) $(TMX_TOOLS)
+test: $(TOOLS) $(TESTS)
 
 demo: demo_sprplus_pcx demo_sprplus_png
+
+.PHONY: default clean all test demo
 
 #
 # main targets
 #
 
-$(PCX2MSX): \
-src/pcx2msx.c \
-$(COMMON_DEPS_PCX_C) src/charset.c \
-$(COMMON_DEPS_PCX_H) src/charset.h
-	$(CCOMPILER) $(CCOMPILER_OPTIONS) $< $(COMMON_DEPS_PCX_C) src/charset.c -o $@
+$(PCX2MSX): src/pcx2msx.c $(OBJS_PCX) src/charset.o $(DEPS_PCX) src/charset.h
+	$(CC) $(CFLAGS) -o $@ $< $(OBJS_PCX) src/charset.o
 
-$(PCX2MSXPLUS): \
-src/pcx2msx+.c \
-$(COMMON_DEPS_PCX_C) src/charset.c src/nametable.c \
-$(COMMON_DEPS_PCX_H) src/charset.h src/nametable.h
-	$(CCOMPILER) $(CCOMPILER_OPTIONS) $< $(COMMON_DEPS_PCX_C) src/charset.c src/nametable.c -o $@
+$(PCX2MSXPLUS): src/pcx2msx+.c $(OBJS_PCX) src/charset.c src/nametable.c $(DEPS_PCX) src/charset.h src/nametable.h
+	$(CC) $(CFLAGS) -o $@ $< $(OBJS_PCX) src/charset.c src/nametable.c
 
-$(PCX2SPR): \
-src/pcx2spr.c \
-$(COMMON_DEPS_PCX_C) src/sprite.c \
-$(COMMON_DEPS_PCX_H) src/sprite.h
-	$(CCOMPILER) $(CCOMPILER_OPTIONS) $< $(COMMON_DEPS_PCX_C) src/sprite.c -o $@
+$(PCX2SPR): src/pcx2spr.c $(OBJS_PCX) src/sprite.c $(DEPS_PCX) src/sprite.h
+	$(CC) $(CFLAGS) -o $@ $< $(OBJS_PCX) src/sprite.c
 
-$(PCX2SPRPLUS): \
-src/pcx2spr+.c \
-$(COMMON_DEPS_PCX_C) src/sprite+.c src/output.c \
-$(COMMON_DEPS_PCX_H) src/sprite.h src/sprite+.h src/output.h
-	$(CCOMPILER) $(CCOMPILER_OPTIONS) $< $(COMMON_DEPS_PCX_C) src/sprite+.c src/output.c -o $@
+$(PCX2SPRPLUS): src/pcx2spr+.c $(OBJS_PCX) src/sprite+.c src/output.c $(DEPS_PCX) src/sprite.h src/sprite+.h src/output.h
+	$(CC) $(CFLAGS) -o $@ $< $(OBJS_PCX) src/sprite+.c src/output.c
 
 #
 
-$(PNG2MSX): \
-src/png2msx.c \
-$(COMMON_DEPS_PNG_C) src/charset.c src/nametable.c \
-$(COMMON_DEPS_PNG_H) src/charset.h src/nametable.h
-	$(CCOMPILER) $(CCOMPILER_OPTIONS) $< $(COMMON_DEPS_PNG_C) src/charset.c src/nametable.c -o $@ $(CCOMPILER_LINKER_OPTIONS)
+$(PNG2MSX): src/png2msx.c $(OBJS_PNG) src/charset.o src/nametable.o $(DEPS_PNG) src/charset.h src/nametable.h
+	$(CC) $(CFLAGS) -o $@ $< $(OBJS_PNG) src/charset.o src/nametable.o $(LDFLAGS)
 
-$(PNG2SPR): \
-src/png2spr.c \
-$(COMMON_DEPS_PNG_C) src/sprite.c \
-$(COMMON_DEPS_PNG_H) src/sprite.h
-	$(CCOMPILER) $(CCOMPILER_OPTIONS) $< $(COMMON_DEPS_PNG_C) src/sprite.c -o $@ $(CCOMPILER_LINKER_OPTIONS)
+$(PNG2SPR): src/png2spr.c $(OBJS_PNG) src/sprite.o $(DEPS_PNG) src/sprite.h
+	$(CC) $(CFLAGS) -o $@ $< $(OBJS_PNG) src/sprite.o $(LDFLAGS)
 
-$(PNG2SPRPLUS): \
-src/png2spr+.c \
-$(COMMON_DEPS_PNG_C) src/sprite+.c src/output.c \
-$(COMMON_DEPS_PNG_H) src/sprite.h src/sprite+.h src/output.h
-	$(CCOMPILER) $(CCOMPILER_OPTIONS) $< $(COMMON_DEPS_PNG_C) src/sprite+.c src/output.c -o $@ $(CCOMPILER_LINKER_OPTIONS)
+$(PNG2SPRPLUS): src/png2spr+.c $(OBJS_PNG) src/sprite+.o src/output.o $(DEPS_PNG) src/sprite.h src/sprite+.h src/output.h
+	$(CC) $(CFLAGS) -o $@ $< $(OBJS_PNG) src/sprite+.o src/output.o $(LDFLAGS)
 
 #
 
-$(TMX2BIN): \
-src/tmx2bin.c \
-$(COMMON_DEPS_TMX_C) \
-$(COMMON_DEPS_TMX_H)
-	$(CCOMPILER) $(CCOMPILER_OPTIONS) $< $(COMMON_DEPS_TMX_C) -o $@
+$(TMX2BIN): src/tmx2bin.c $(OBJS_TMX) $(DEPS_TMX)
+	$(CC) $(CFLAGS) -o $@ $< $(OBJS_TMX)
 
 #
 # test targets
