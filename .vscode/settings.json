@@ -1,13 +1,16 @@
+// Place your settings in this file to overwrite default and user settings.
 {
 	"files.associations": {
 		"*.makefile": "makefile"
 	},
-	//
+
+    // Code style preferences
 	"editor.insertSpaces": false,
 	"editor.tabSize": 4,
 	"editor.rulers": [
 		80, 120
 	],
-	//
+
+	// No AI
 	"chat.disableAIFeatures": true,
 }
