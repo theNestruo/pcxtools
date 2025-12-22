@@ -12,6 +12,7 @@ on:
     - 'src/**/*.*'
     - 'test/**/*.*'
     - '*.makefile'
+    - '.github/**/*.yml'
 
 jobs:
   build-windows:
