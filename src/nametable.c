@@ -17,11 +17,6 @@ void reallocateBlocks(struct stCharset *charset, int newBlockCount);
 
 /* Function bodies --------------------------------------------------------- */
 
-// Supported arguments:
-// -n[<00..ff>]	generate NAMTBL [starting at value <n>]
-// -b<00..ff>	blank block at position <nn>
-// -rr		remove repeated tiles
-// -rm<0..f>	remove solid tiles of <n> color
 void nameTableProcessorOptions() {
 
 	printf("\t-n[<00..ff>]\tgenerate NAMTBL [starting at value <n>]\n");

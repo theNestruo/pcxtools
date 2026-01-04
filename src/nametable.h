@@ -37,7 +37,7 @@ struct stNameTableProcessor {
 // Supported arguments:
 // -n[<00..ff>]	generate NAMTBL [starting at value <n>]
 // -b<00..ff>	blank block at position <nn>
-// -rr		remove repeated tiles
+// -rr		    remove repeated tiles
 // -rm<0..f>	remove solid tiles of <n> color
 void nameTableProcessorOptions();
 

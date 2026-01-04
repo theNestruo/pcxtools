@@ -107,6 +107,8 @@ Optimization:
 	This can create longer runs of repeated values in the CLRTBL, leading to better compression ratios.
 	This optimization is applied after the applying the requested pattern generation algorithm (`-hl`, `-lh`, `-f<0..7>`, `-b<0..7>`).
 
+	> Note: users are encouraged to use the more newer, more versatile, [precompression-tools](https://github.com/theNestruo/precompression-tools) instead of the optimization flag `-o`.
+
 NAMTBL generation:
 
 * `-n<00..ff>` generate NAMTBL \[starting at value &lt;n&gt;\]
