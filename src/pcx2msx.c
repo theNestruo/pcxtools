@@ -16,6 +16,7 @@
 /* Global vars ------------------------------------------------------------- */
 
 int titleShown = 0;
+int verbose = 0;
 
 /* Function prototypes ----------------------------------------------------- */
 
@@ -43,10 +44,11 @@ int main(int argc, char **argv) {
 	struct stCharsetProcessor processor = {0};
 
 	int i = 0, argi = 0;
-	int verbose = 0, dryRun = 0;
+	int dryRun = 0;
 
 	// Parse main arguments
-	if ((verbose = (argEquals(argc, argv, "-v") != -1)))
+	verbose = (argEquals(argc, argv, "-v") != -1);
+	if (verbose)
 		showTitle();
 	dryRun = argEquals(argc, argv, "-d") != -1;
 
@@ -145,6 +147,7 @@ void showUsage() {
 	printf("\tpcxFilename\tinput PCX file\n");
 	printf("options are:\n");
 	printf("\t-v\tverbose execution\n");
+	printf("\t-vv\tvery verbose execution\n");
 	printf("\t-d\tdry run. Doesn't write output files\n");
 	bitmapOptions();
 	charsetProcessorOptions();

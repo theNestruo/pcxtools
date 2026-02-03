@@ -209,6 +209,7 @@ void showUsage() {
 	printf("\tscreen.png\tadditional input PNG files: screens to map\n");
 	printf("options are:\n");
 	printf("\t-v\tverbose execution\n");
+	printf("\t-vv\tvery verbose execution\n");
 	printf("\t-d\tdry run. Doesn't write output files\n");
 	pngReaderOptions();
 	bitmapOptions();

@@ -33,7 +33,7 @@ struct stSprWriter {
 	// Arguments
 	int spriteWidth;
 	int spriteHeight;
-	int colorOrder;
+	int colorMode;
 	int traverseHorizontally;
 };
 
@@ -42,8 +42,10 @@ struct stSprWriter {
 // Supported arguments:
 // -8	generate 8x8px sprites
 // -h	generate half sprites (8x16px, 16b per sprite)
-// -hl  lower colors will have higher priority planes (default)
-// -lh  higher colors will have higher priority planes
+// -lh  higher colors will have higher priority planes (default)
+// -hl  lower colors will have higher priority planes
+// -ld	lighter colors will have higher priority planes
+// -dl	darker colors will have higher priority planes
 // -th  traverse spritesheet horizontally, then vertically (default)
 // -tv  traverse spritesheet vertically, then horizontally
 void sprWriterOptions();

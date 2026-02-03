@@ -1,5 +1,9 @@
 ## Version history
 
+* ??/??/2026 v5.0
+	* `PNG2MSX` uses the most common color as preferred background color instead of 0
+	* -o option removed
+
 * 09/12/2025 v4.0
 	* -o option in `PNG2MSX`
 	* LodePNG updated to latest version (20250506)

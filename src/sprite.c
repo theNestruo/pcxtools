@@ -10,18 +10,36 @@
 #include "args.h"
 #include "sprite.h"
 
+/* Symbolic constants ------------------------------------------------------ */
+
+#define COLOR_MODE_HIGH_LOW (0x01)
+#define COLOR_MODE_LOW_HIGH (0x02)
+#define COLOR_MODE_LIGHT_DARK (0x03)
+#define COLOR_MODE_DARK_LIGHT (0x04)
+
 /* Private function prototypes --------------------------------------------- */
 
 void processSpriteGroup(struct stSprWriter *instance, struct stSpriteGroup *group, struct stBitmap *bitmap, int x, int y);
 
 /* Function bodies --------------------------------------------------------- */
 
+// Supported arguments:
+// -8	generate 8x8px sprites
+// -h	generate half sprites (8x16px, 16b per sprite)
+// -lh  higher colors will have higher priority planes (default)
+// -hl  lower colors will have higher priority planes
+// -ld	lighter colors will have higher priority planes
+// -dl	darker colors will have higher priority planes
+// -th  traverse spritesheet horizontally, then vertically (default)
+// -tv  traverse spritesheet vertically, then horizontally
 void sprWriterOptions() {
 
 	printf("\t-8\tgenerate 8x8px sprites\n");
 	printf("\t-h\tgenerate half sprites (8x16px, 16b per sprite)\n");
-	printf("\t-lh\tlower colors will have higher priority planes (default)\n");
-	printf("\t-hl\thigher colors will have higher priority planes\n");
+	printf("\t-hl\thigher colors will have higher priority planes (default)\n");
+	printf("\t-lh\tlower colors will have higher priority planes\n");
+	printf("\t-ld\tlighter colors will have higher priority planes\n");
+	printf("\t-dl\tdarker colors will have higher priority planes\n");
 	printf("\t-th\ttraverse spritesheet horizontally, then vertically (default)\n");
 	printf("\t-tv\ttraverse spritesheet vertically, then horizontally\n");
 }
@@ -40,10 +58,12 @@ void sprWriterInit(struct stSprWriter *this, int argc, char **argv) {
 	this->spriteHeight =
 		  (argEquals(argc, argv, "-8") != -1) ? 8
 		: 16;
-	this->colorOrder =
-		  (argEquals(argc, argv, "-lh") != -1) ? 1
-		: (argEquals(argc, argv, "-hl") != -1) ? -1
-		: 1;
+	this->colorMode =
+		  (argEquals(argc, argv, "-hl") != -1) ? COLOR_MODE_HIGH_LOW
+		: (argEquals(argc, argv, "-lh") != -1) ? COLOR_MODE_LOW_HIGH
+		: (argEquals(argc, argv, "-ld") != -1) ? COLOR_MODE_LIGHT_DARK
+		: (argEquals(argc, argv, "-dl") != -1) ? COLOR_MODE_DARK_LIGHT
+		: COLOR_MODE_HIGH_LOW;
 	this->traverseHorizontally =
 		  (argEquals(argc, argv, "-th") != -1) ? 1
 		: (argEquals(argc, argv, "-tv") != -1) ? 0
@@ -136,10 +156,7 @@ void processSpriteGroup(struct stSprWriter *this, struct stSpriteGroup *group, s
 			for (x = 0; x < 8; x++) { // for each pixel
 				byte color = bitmapGet(bitmap, x0 + col + x, y0 + y);
 				if (color) {
-					color =
-						(this->colorOrder > 0) ? color - 1
-						: (this->colorOrder < 0) ? 15 - color
-						: color - 1;
+					color = color - 1;
 					buffer[color].pattern[j] |= (0x80 >> x);
 				}
 			}
@@ -162,9 +179,23 @@ void processSpriteGroup(struct stSprWriter *this, struct stSpriteGroup *group, s
 		group->sprites = NULL;
 
 	} else {
+
+		// Brigthness by color, matching the color order: 0146C285D937ABEF
+		const unsigned int colorOrderHighLow[] = { 0xF -1, 0xE -1, 0xD -1, 0xC -1, 0xB -1, 0xA -1, 0x9 -1, 0x8 -1, 0x7 -1, 0x6 -1, 0x5 -1, 0x4 -1, 0x3 -1, 0x2 -1, 0x1 -1 };
+		const unsigned int colorOrderLowHigh[] = { 0x1 -1, 0x2 -1, 0x3 -1, 0x4 -1, 0x5 -1, 0x6 -1, 0x7 -1, 0x8 -1, 0x9 -1, 0xA -1, 0xB -1, 0xC -1, 0xD -1, 0xE -1, 0xF -1 };
+		const unsigned int colorOrderLightDark[] = { 0xF -1, 0xE -1, 0xB -1, 0xA -1, 0x7 -1, 0x3 -1, 0x9 -1, 0xD -1, 0x5 -1, 0x8 -1, 0x2 -1, 0xC -1, 0x6 -1, 0x4 -1, 0x1 -1 };
+		const unsigned int colorOrderDarkLight[] = { 0x1 -1, 0x4 -1, 0x6 -1, 0xC -1, 0x2 -1, 0x8 -1, 0x5 -1, 0xD -1, 0x9 -1, 0x3 -1, 0x7 -1, 0xA -1, 0xB -1, 0xE -1, 0xF -1 };
+		const unsigned int *colorOrder =
+				  this->colorMode == COLOR_MODE_LOW_HIGH   ? colorOrderLowHigh
+				: this->colorMode == COLOR_MODE_LIGHT_DARK ? colorOrderLightDark
+				: this->colorMode == COLOR_MODE_DARK_LIGHT ? colorOrderDarkLight
+				: colorOrderHighLow;
+
 		group->sprites = (struct stSprite*) calloc(group->spriteCount, sizeof(struct stSprite));
-		struct stSprite *src, *dest;
-		for (i = 0, src = buffer, dest = group->sprites; i < 15; i++, src++) {
+		struct stSprite *dest;
+		for (i = 0, dest = group->sprites; i < 15; i++) {
+			struct stSprite *src = &buffer[colorOrder[i]];
+
 			int spriteFound = 0;
 			for (j = 0; (j < spriteSize) && (!spriteFound); j++) {
 				spriteFound |= src->pattern[j];

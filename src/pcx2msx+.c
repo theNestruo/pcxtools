@@ -24,17 +24,18 @@
 /* Global vars ------------------------------------------------------------- */
 
 int titleShown = 0;
+int verbose = 0;
 
 /* Function prototypes ----------------------------------------------------- */
 
 void showTitle();
 void showUsage();
 int readCharset(struct stCharsetProcessor *charsetProcessor,
-	struct stCharset *charset, struct stBitmap *bitmap, char *pcxFilename, int verbose);
+	struct stCharset *charset, struct stBitmap *bitmap, char *pcxFilename);
 int writeCharset(struct stCharsetProcessor *charsetProcessor,
-	struct stCharset *charset, char *pcxFilename, int verbose);
+	struct stCharset *charset, char *pcxFilename);
 int writeNameTable(struct stNameTableProcessor *nameTableProcessor,
-	struct stNameTable *nameTable, char *pcxFilename, int verbose);
+	struct stNameTable *nameTable, char *pcxFilename);
 
 /* Entry point ------------------------------------------------------------- */
 
@@ -49,9 +50,10 @@ int main(int argc, char **argv) {
 	int i = 0, argi = 0;
 
 	// Parse main arguments
-	int verbose = 0, dryRun = 0, generateNameTable = 0, mode = 0;
+	int dryRun = 0, generateNameTable = 0, mode = 0;
 	char *pcxFilename = NULL;
-	if ((verbose = (argEquals(argc, argv, "-v") != -1)))
+	verbose = (argEquals(argc, argv, "-v") != -1);
+	if (verbose)
 		showTitle();
 	dryRun = argEquals(argc, argv, "-d") != -1;
 	generateNameTable = argStartsWith(argc, argv, "-n", 2) != -1;
@@ -75,7 +77,7 @@ int main(int argc, char **argv) {
 	// Read main file
 	bitmapInit(&bitmap, argc, argv);
 	charsetProcessorInit(&charsetProcessor, argc, argv);
-	if ((i = readCharset(&charsetProcessor, &charset, &bitmap, pcxFilename, verbose)))
+	if ((i = readCharset(&charsetProcessor, &charset, &bitmap, pcxFilename)))
 		goto out;
 
 	// Do the work
@@ -90,11 +92,11 @@ int main(int argc, char **argv) {
 		if (dryRun)
 			break;
 
-		if ((i = writeCharset(&charsetProcessor, &charset, pcxFilename, verbose)))
+		if ((i = writeCharset(&charsetProcessor, &charset, pcxFilename)))
 			goto out;
 		if (generateNameTable) {
 			nameTableProcessorPostProcess(&nameTableProcessor, &nameTable);
-			if ((i = writeNameTable(&nameTableProcessor, &nameTable, pcxFilename, verbose)))
+			if ((i = writeNameTable(&nameTableProcessor, &nameTable, pcxFilename)))
 				goto out;
 		}
 		break;
@@ -112,7 +114,7 @@ int main(int argc, char **argv) {
 			pcxFilename = argv[argi];
 			bitmapDone(&bitmap); // (free previous file resources)
 			charsetDone(&screenCharset); // (free previous file resources)
-			if ((i = readCharset(&charsetProcessor, &screenCharset, &bitmap, pcxFilename, verbose)))
+			if ((i = readCharset(&charsetProcessor, &screenCharset, &bitmap, pcxFilename)))
 				goto out;
 
 			// Generate
@@ -122,7 +124,7 @@ int main(int argc, char **argv) {
 			// Write
 			nameTableProcessorPostProcess(&nameTableProcessor, &nameTable);
 			if (!dryRun)
-				if ((i = writeNameTable(&nameTableProcessor, &nameTable, pcxFilename, verbose)))
+				if ((i = writeNameTable(&nameTableProcessor, &nameTable, pcxFilename)))
 					goto out;
 		}
 		break;
@@ -136,7 +138,7 @@ int main(int argc, char **argv) {
 		// First file
 		charsetProcessorPostProcess(&charsetProcessor, &charset);
 		if (!dryRun)
-			if ((i = writeCharset(&charsetProcessor, &charset, pcxFilename, verbose)))
+			if ((i = writeCharset(&charsetProcessor, &charset, pcxFilename)))
 				goto out;
 
 		// Next files
@@ -145,7 +147,7 @@ int main(int argc, char **argv) {
 			pcxFilename = argv[argi];
 			bitmapDone(&bitmap); // (free previous file resources)
 			charsetDone(&charset); // (free previous file resources)
-			if ((i = readCharset(&charsetProcessor, &charset, &bitmap, pcxFilename, verbose)))
+			if ((i = readCharset(&charsetProcessor, &charset, &bitmap, pcxFilename)))
 				goto out;
 
 			// Apply first file nametable
@@ -154,7 +156,7 @@ int main(int argc, char **argv) {
 			// Write
 			charsetProcessorPostProcess(&charsetProcessor, &charset);
 			if (!dryRun)
-				if ((i = writeCharset(&charsetProcessor, &charset, pcxFilename, verbose)))
+				if ((i = writeCharset(&charsetProcessor, &charset, pcxFilename)))
 					goto out;
 		}
 
@@ -203,6 +205,7 @@ void showUsage() {
 	printf("\tscreensPcx\textra input PCX files: screens to map\n");
 	printf("options are:\n");
 	printf("\t-v\tverbose execution\n");
+	printf("\t-vv\tvery verbose execution\n");
 	printf("\t-d\tdry run. Doesn't write output files\n");
 	bitmapOptions();
 	charsetProcessorOptions();
@@ -210,7 +213,7 @@ void showUsage() {
 }
 
 int readCharset(struct stCharsetProcessor *charsetProcessor, struct stCharset *charset,
-	struct stBitmap *bitmap, char *pcxFilename, int verbose) {
+	struct stBitmap *bitmap, char *pcxFilename) {
 
 	int i = 0;
 
@@ -236,7 +239,7 @@ out:
 	return i;
 }
 
-int writeCharset(struct stCharsetProcessor *charsetProcessor, struct stCharset *charset, char *pcxFilename, int verbose) {
+int writeCharset(struct stCharsetProcessor *charsetProcessor, struct stCharset *charset, char *pcxFilename) {
 
 	int i = 0;
 
@@ -276,7 +279,7 @@ out:
 	return i;
 }
 
-int writeNameTable(struct stNameTableProcessor *nameTableProcessor, struct stNameTable *nameTable, char *pcxFilename, int verbose) {
+int writeNameTable(struct stNameTableProcessor *nameTableProcessor, struct stNameTable *nameTable, char *pcxFilename) {
 
 	int i = 0;
 

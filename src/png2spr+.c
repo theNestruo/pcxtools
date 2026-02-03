@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
 
 	// Parse main arguments
 	veryVerbose = argEquals(argc, argv, "-vv") != -1;
-	verbose  = (argEquals(argc, argv, "-v") != -1) | veryVerbose;
+	verbose = (argEquals(argc, argv, "-v") != -1) | veryVerbose;
 	if (verbose)
 		showTitle();
 	dryRun = argEquals(argc, argv, "-d") != -1;

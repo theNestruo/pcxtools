@@ -95,19 +95,12 @@ Pattern generation:
 
 * `-hl` force higher color to be foreground
 * `-lh` force lower color to be foreground
+* `-ld` force lighter foreground, darker background
+* `-dl` force darker foreground, lighter background
 * `-f<0..7>` force bit &lt;n&gt; to be foreground (set) on patterns
 * `-b<0..7>` force bit &lt;n&gt; to be background (reset) on patterns
 	These four options allow some control on how patterns are created, and which color is foreground and which one is background.
 	Can be useful if colors are going to be set programatically (e.g.: fonts colored with FILVRM) or to improve compression results.
-
-Optimization:
-
-* `-o` attempt to optimize CLRTBL for compression
-	If possible, modifies the unused color of solid color lines (pattern = 0x00 or 0xff) for the CLRTBL byte to match the value of bytes before or after it, inverting the pattern if necessary.
-	This can create longer runs of repeated values in the CLRTBL, leading to better compression ratios.
-	This optimization is applied after the applying the requested pattern generation algorithm (`-hl`, `-lh`, `-f<0..7>`, `-b<0..7>`).
-
-	> Note: users are encouraged to use the more newer, more versatile, [precompression-tools](https://github.com/theNestruo/precompression-tools) instead of the optimization flag `-o`.
 
 NAMTBL generation:
 
@@ -145,7 +138,12 @@ Ordering:
 * `-hl` lower colors will have higher priority planes (default)
 
 * `-lh` higher colors will have higher priority planes
-	These two options allow some control on how the colors get ordered (namely, to avoid the flickering routines make flicker the brigther colors)
+
+* `-ld` lighter (brigther) colors will have higher priority planes
+
+* `-dl` darker colors will have higher priority planes
+
+	These four options allow some control on how the colors get ordered (namely, to avoid the flickering routines make flicker the brigther colors)
 
 * `-th` traverse spritesheet horizontally, then vertically (default)
 
