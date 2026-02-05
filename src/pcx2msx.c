@@ -17,6 +17,7 @@
 
 int titleShown = 0;
 int verbose = 0;
+int veryVerbose = 0;
 
 /* Function prototypes ----------------------------------------------------- */
 
@@ -47,7 +48,8 @@ int main(int argc, char **argv) {
 	int dryRun = 0;
 
 	// Parse main arguments
-	verbose = (argEquals(argc, argv, "-v") != -1);
+	veryVerbose = argEquals(argc, argv, "-vv") != -1;
+	verbose = (argEquals(argc, argv, "-v") != -1) | veryVerbose;
 	if (verbose)
 		showTitle();
 	dryRun = argEquals(argc, argv, "-d") != -1;
