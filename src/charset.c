@@ -36,10 +36,11 @@ extern int veryVerbose;
 const unsigned int brightness[] = { 0, 1, 5, 10, 2, 7, 3, 11, 6, 9, 12, 13, 4, 8, 14, 15 };
 
 int patternMode(int isForeground, char bit);
+void postProcessRange(struct stCharsetProcessor *instance, char *argstring);
 
 void charsetProcessorInitForBitmap(struct stCharsetProcessor *instance, struct stBitmap *bitmap);
 int readLine(struct stCharsetProcessor *instance, struct stLine *line, struct stBitmap *bitmap, int x, int y, struct stLine *previousLine);
-void postProcessLine(struct stCharsetProcessor *instance, struct stLine *line, struct stLine *previousLine);
+void postProcessLine(struct stCharsetProcessor *instance, int index, struct stLine *line, struct stLine *previousLine);
 void debugPostProcessLine(struct stCharsetProcessor *instance, struct stLine *from, struct stLine *to, struct stLine *previousLine, char *message);
 void negateAndSwap(struct stLine *line);
 int isLineEquals(struct stLine *line, struct stLine *other);
@@ -49,28 +50,32 @@ byte colorAtBit(struct stLine *line, char bit);
 /* Function bodies --------------------------------------------------------- */
 
 // Supported arguments:
-// -il		ignore line on color collision
-// -sa		auto-detect stripped images (default)
-// -sy		force image to be detected as stripped (simplified algorithm)
-// -sn		force image to be detected as non-stripped (default algorithm)
-// -hl		force higher color to be foreground
-// -lh		force lower color to be foreground
-// -ld		force lighter foreground, darker background
-// -dl		force darker foreground, lighter background
-// -f<0..7>	force bit <n> to be foreground (set) on patterns
-// -b<0..7>	force bit <n> to be background (reset) on patterns
+// -il		 ignore line on color collision
+// -sa		 auto-detect stripped images (default)
+// -sy		 force image to be detected as stripped (simplified algorithm)
+// -sn		 force image to be detected as non-stripped (default algorithm)
+// -hl		 force higher color to be foreground
+// -lh		 force lower color to be foreground
+// -ld		 force lighter foreground, darker background
+// -dl		 force darker foreground, lighter background
+// -f<0..7>	 force bit <n> to be foreground (set) on patterns
+// -b<0..7>	 force bit <n> to be background (reset) on patterns
+// -pf<0000> post-process only the specified address range (from)
+// -pt<ffff> post-process only the specified address range (to)
 void charsetProcessorOptions() {
 
 	printf("\t-il\tignore line on color collision\n");
 	printf("\t-sa\tauto-detect stripped images (default)\n");
-	printf("\t-sy\tforce image to be detected as stripped (simplified algorithm)\n");
-	printf("\t-sn\tforce image to be detected as non-stripped (default algorithm)\n");
+	printf("\t-sy\tforce stripped image (forces using simplified algorithm)\n");
+	printf("\t-sn\tforce non-stripped image\n");
 	printf("\t-hl\tforce higher color to be foreground\n");
 	printf("\t-lh\tforce lower color to be foreground\n");
 	printf("\t-ld\tforce lighter foreground, darker background\n");
 	printf("\t-dl\tforce darker foreground, lighter background\n");
 	printf("\t-f<0..7>\tforce bit <n> to be foreground (set) on patterns\n");
 	printf("\t-b<0..7>\tforce bit <n> to be background (reset) on patterns\n");
+	printf("\t-pf<0000>\tpost-process only the specified address range (from)\n");
+	printf("\t-pt<ffff>\tpost-process only the specified address range (to)\n");
 }
 
 void charsetProcessorInit(struct stCharsetProcessor *this, int argc, char **argv) {
@@ -83,7 +88,7 @@ void charsetProcessorInit(struct stCharsetProcessor *this, int argc, char **argv
 	// Read arguments
 	int i;
 	this->ignoreCollision = (argEquals(argc, argv, "-il") != -1);
-	this->strippedMode =
+	this->forceStrippedImage =
 		  (argEquals(argc, argv, "-sy") != -1) ? 1
 		: (argEquals(argc, argv, "-sn") != -1) ? 0
 		: -1;
@@ -95,6 +100,12 @@ void charsetProcessorInit(struct stCharsetProcessor *this, int argc, char **argv
 		: (argEquals(argc, argv, "-ld") != -1) ? PATTERN_MODE_LIGHT_DARK
 		: (argEquals(argc, argv, "-dl") != -1) ? PATTERN_MODE_DARK_LIGHT
 		: PATTERN_MODE_UNSET;
+	this->postProcessRangeFrom =
+		  ((i = argStartsWith(argc, argv, "-pf", 4)) != -1) ? hexadecimalInt(&(argv[i][3]))
+		: -1;
+	this->postProcessRangeTo =
+		  ((i = argStartsWith(argc, argv, "-pt", 4)) != -1) ? hexadecimalInt(&(argv[i][3]))
+		: -1;
 }
 
 int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *charset, struct stBitmap *bitmap) {
@@ -104,9 +115,9 @@ int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *char
 	if (verbose)
 			printf("Detected preferred background color = %1x, image is %s\n",
 					this->preferredBackground,
-					this->stripped
-						? (this->strippedMode == 1 ? "stripped (forced)" : "stripped")
-						: (this->strippedMode == 0 ? "not stripped (forced)" : "not stripped"));
+					this->isStrippedImage
+						? (this->forceStrippedImage == 1 ? "stripped (forced)" : "stripped")
+						: (this->forceStrippedImage == 0 ? "not stripped (forced)" : "not stripped"));
 
 	// Allocate space for the blocks
 	charset->blockCount = ((int) (bitmap->width / TILE_WIDTH)) * ((int) (bitmap->height / TILE_HEIGHT));
@@ -146,7 +157,7 @@ void charsetProcessorPostProcess(struct stCharsetProcessor *this, struct stChars
 		int j;
 		struct stLine *itLine;
 		for (j = 0, itLine = itBlock->line; j < TILE_HEIGHT; j++, previousLine = itLine, itLine++) {
-			postProcessLine(this, itLine, previousLine);
+			postProcessLine(this, i * TILE_HEIGHT + j, itLine, previousLine);
 		}
 	}
 }
@@ -262,9 +273,28 @@ void charsetProcessorInitForBitmap(struct stCharsetProcessor *this, struct stBit
 	}
 
 	this->preferredBackground = mostFrequentColor;
-	this->stripped =
-			  this->strippedMode == -1 ? ((mostFrequentColor == mostFrequentEvenColor) != (mostFrequentColor == mostFrequentOddColor))
-			: this->strippedMode;
+
+	// Stripped image detection -----------------------------------------------
+
+	// Forced to yes/no?
+	if (this->forceStrippedImage != -1) {
+		this->isStrippedImage = this->forceStrippedImage;
+		return;
+	}
+
+	// Even/odd background is reference background and the other one is not?
+	if ((mostFrequentColor == mostFrequentEvenColor) == (mostFrequentColor == mostFrequentOddColor)) {
+		this->isStrippedImage = 0;
+		return;
+	}
+
+	// Enough excess of reference background representation in even/odd background (>= 5%)?
+	unsigned int excess = (mostFrequentColor == mostFrequentEvenColor)
+			? abs((int) maxEvenCount * 2 - (int) maxCount) / 2
+			: abs((int) maxOddCount  * 2 - (int) maxCount) / 2;
+	unsigned int threshold = 5 * bitmap->width * bitmap->height / 100;
+	this->isStrippedImage = excess >= threshold;
+	return;
 }
 
 int readLine(struct stCharsetProcessor *this, struct stLine *line, struct stBitmap *bitmap, int x, int y, __attribute__((unused)) struct stLine *previousLine) {
@@ -321,12 +351,18 @@ int readLine(struct stCharsetProcessor *this, struct stLine *line, struct stBitm
 	return 1;
 }
 
-void postProcessLine(struct stCharsetProcessor *this, struct stLine *line, struct stLine *previousLine) {
+void postProcessLine(struct stCharsetProcessor *this, int index, struct stLine *line, struct stLine *previousLine) {
 
 	struct stLine copyOfLine = { line->pattern, line->color };
 
+	int patternMode =
+			   ((this->postProcessRangeFrom == -1) || (this->postProcessRangeFrom <= index))
+			&& ((this->postProcessRangeTo   == -1) || (this->postProcessRangeTo   >= index))
+			? this->patternMode
+			: PATTERN_MODE_UNSET;
+
 	// Apply current pattern mode
-	switch (this->patternMode & PATTERN_MODE_MASK) {
+	switch (patternMode & PATTERN_MODE_MASK) {
 	case PATTERN_MODE_FOREGROUND:
 		// Force foreground bit
 		if (!(line->pattern & (1 << (this->patternMode & 0x07)))) {
@@ -410,7 +446,7 @@ void postProcessLine(struct stCharsetProcessor *this, struct stLine *line, struc
 	const int singleColor = isLineSingleColor(line);
 	if (singleColor != -1) {
 
-		if (this->stripped) {
+		if (this->isStrippedImage) {
 			// This seems to yield better compression ratios than more complex algorithms
 			// for stripped images that have rapidly changing either CHRLTBL or CLRTBL bytes
 			// (this should be no-op)

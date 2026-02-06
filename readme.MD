@@ -88,19 +88,46 @@ Mirroring:
 Error control:
 
 * `-il` ignore line on color collision
+
 	Continue processing the file even if collisions are found. Offending lines will be have 0x00 both as pattern and color.
+
 	Can be useful in combination with `-d` to check all the collisions at once.
+
+PNG2MSX has to choose, for each line, which color is foreground and which one is  background. By default, it makes a best effort to get the most natural pattern (i.e.: the one that most likely an human will choose) and the combination of patterns/colors that will get the best compression ratio.
+
+Pattern generation algorithm:
+
+* `-sa` auto-detect stripped images (default)
+
+* `-sy` force image to be detected as stripped
+
+* `-sn` force image to be detected as non-stripped
+
+	Some particular images (e.g.: images with stripped background) get a better compression ratio using a simpler algorithm. These three options control which algorithm will be used.
 
 Pattern generation:
 
 * `-hl` force higher color to be foreground
+
 * `-lh` force lower color to be foreground
+
 * `-ld` force lighter foreground, darker background
+
 * `-dl` force darker foreground, lighter background
+
 * `-f<0..7>` force bit &lt;n&gt; to be foreground (set) on patterns
+
 * `-b<0..7>` force bit &lt;n&gt; to be background (reset) on patterns
-	These four options allow some control on how patterns are created, and which color is foreground and which one is background.
-	Can be useful if colors are going to be set programatically (e.g.: fonts colored with FILVRM) or to improve compression results.
+
+	These six options allow some control on how patterns are created, and which color is foreground and which one is background.
+
+	Can be useful if colors are going to be set programatically (e.g.: fonts colored with FILVRM).
+
+* `-pf<0000>` post-process only the specified address range (from, hexadecimal)
+
+* `-pt<ffff>` post-process only the specified address range (to, hexadecimal)
+
+	Allows the specified post-processing pattern generator to be applied only to an specific address range (for example, the font part of a charset) without alterations of the rest of the image.
 
 NAMTBL generation:
 

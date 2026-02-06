@@ -39,23 +39,31 @@ struct stCharset {
 struct stCharsetProcessor {
 	// Arguments
 	int ignoreCollision;
+	int forceStrippedImage;
 	int patternMode;
-	int strippedMode;
+	int postProcessRangeFrom;
+	int postProcessRangeTo;
 
 	// State
 	byte preferredBackground;
-	int stripped;
+	int isStrippedImage;
 };
 
 /* Function prototypes ----------------------------------------------------- */
 
 // Supported arguments:
-// -il		ignore line on color collision
-// -hl		force higher color to be foreground
-// -lh		force lower color to be foreground
-// -f<0..7>	force bit <n> to be foreground (set) on patterns
-// -b<0..7>	force bit <n> to be background (reset) on patterns
-// -o       attempt to optimize CLRTBL for compression
+// -il		 ignore line on color collision
+// -sa		 auto-detect stripped images (default)
+// -sy		 force image to be detected as stripped (simplified algorithm)
+// -sn		 force image to be detected as non-stripped (default algorithm)
+// -hl		 force higher color to be foreground
+// -lh		 force lower color to be foreground
+// -ld		 force lighter foreground, darker background
+// -dl		 force darker foreground, lighter background
+// -f<0..7>	 force bit <n> to be foreground (set) on patterns
+// -b<0..7>	 force bit <n> to be background (reset) on patterns
+// -pf<0000> post-process only the specified address range (from)
+// -pt<ffff> post-process only the specified address range (to)
 void charsetProcessorOptions();
 
 void charsetProcessorInit(struct stCharsetProcessor *instance, int argc, char **argv);
