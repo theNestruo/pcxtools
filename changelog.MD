@@ -1,5 +1,8 @@
 ## Version history
 
+* 07/02/2026 v5.1
+	* Fixes stripped image detection
+
 * 07/02/2026 v5.0
 	* `PNG2MSX` compression optimization new algorithm, and enabled by default (-o option removed)
 	* -ld (light over dark) and -dl (dark over light) options
