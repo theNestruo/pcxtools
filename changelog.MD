@@ -1,7 +1,9 @@
 ## Version history
 
-* ??/??/2026 v5.0
-	* `PNG2MSX` compression optimization integrated by default (-o option removed)
+* 07/02/2026 v5.0
+	* `PNG2MSX` compression optimization new algorithm, and enabled by default (-o option removed)
+	* -ld (light over dark) and -dl (dark over light) options
+	* -sa, -sy and -sn options (detect stripped image auto/yes/no) in `PNG2MSX`
 
 * 09/12/2025 v4.0
 	* -o option in `PNG2MSX`
