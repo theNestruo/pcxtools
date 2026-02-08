@@ -1,7 +1,8 @@
 ## Version history
 
-* 07/02/2026 v5.1
+* 08/02/2026 v5.1
 	* Fixes stripped image detection
+	* Optimization applied after nametable processing
 
 * 07/02/2026 v5.0
 	* `PNG2MSX` compression optimization new algorithm, and enabled by default (-o option removed)
