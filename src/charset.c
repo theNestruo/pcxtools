@@ -46,6 +46,7 @@ void postProcessRange(struct stCharsetProcessor *instance, char *argstring);
 
 void charsetProcessorInitForBitmap(struct stCharsetProcessor *instance, struct stBitmap *bitmap);
 int readLine(struct stCharsetProcessor *instance, struct stLine *line, struct stBitmap *bitmap, int x, int y, struct stLine *previousLine);
+void charsetProcessorInitForCharset(struct stCharsetProcessor *instance, struct stCharset *charset);
 void postProcessLine(struct stCharsetProcessor *instance, int index, struct stLine *line, struct stLine *previousLine);
 void debugPostProcessLine(struct stCharsetProcessor *instance, struct stLine *from, struct stLine *to, struct stLine *previousLine, char *message);
 void negateAndSwap(struct stLine *line);
@@ -116,14 +117,10 @@ void charsetProcessorInit(struct stCharsetProcessor *this, int argc, char **argv
 
 int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *charset, struct stBitmap *bitmap) {
 
+	// Partial post-process initialization (preferred background color only)
 	charsetProcessorInitForBitmap(this, bitmap);
 
-	if (verbose)
-			printf("Preferred background color: %1x. Image is: %s\n",
-					this->preferredBackground,
-					this->isStrippedImage
-						? (this->forceStrippedImage == 1 ? "stripped (forced)" : "stripped (detected)")
-						: (this->forceStrippedImage == 0 ? "not stripped (forced)" : "not stripped (detected)"));
+	if (verbose) printf("Preferred background color (bitmap): %1x\n", this->preferredBackground);
 
 	// Allocate space for the blocks
 	charset->blockCount = ((int) (bitmap->width / TILE_WIDTH)) * ((int) (bitmap->height / TILE_HEIGHT));
@@ -151,6 +148,17 @@ int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *char
 }
 
 void charsetProcessorPostProcess(struct stCharsetProcessor *this, struct stCharset *charset) {
+
+	// Final post-process initialization delayed after nametable processing,
+	// including stripped image detection
+	charsetProcessorInitForCharset(this, charset);
+
+	if (verbose)
+			printf("Preferred background color (charset): %1x. Image is: %s\n",
+					this->preferredBackground,
+					this->isStrippedImage
+						? (this->forceStrippedImage == 1 ? "stripped (forced)" : "stripped (detected)")
+						: (this->forceStrippedImage == 0 ? "not stripped (forced)" : "not stripped (detected)"));
 
 	// For each block...
 	int i;
@@ -245,73 +253,29 @@ int patternMode(int isForeground, char bit) {
 
 void charsetProcessorInitForBitmap(struct stCharsetProcessor *this, struct stBitmap *bitmap) {
 
+	// (before nametable processing)
+
+	// Preferred background ---------------------------------------------------
+
 	unsigned int count[16] = {0};
-	unsigned int evenCount[16] = {0};
-	unsigned int oddCount[16] = {0};
 	unsigned int x, y;
 	for (x = 0; x < bitmap->width; x++) {
-		for (y = 0; y < bitmap->height; y += 2) {
-			byte evenColor = bitmapGet(bitmap, x, y);
-			byte oddColor = bitmapGet(bitmap, x, y + 1);
-			count[evenColor]++;
-			count[oddColor]++;
-			evenCount[evenColor]++;
-			oddCount[oddColor]++;
+		for (y = 0; y < bitmap->height; y++) {
+			count[bitmapGet(bitmap, x, y)]++;
 		}
 	}
 
-	byte mostFrequentColor = 0x00, mostFrequentEvenColor = 0x00, mostFrequentOddColor = 0x00;
-	unsigned int maxCount = 0, maxEvenCount = 0, maxOddCount = 0;
+	byte mostFrequentColor = 0x00;
+	unsigned int maxCount = 0;
 	for (byte color = 0; color < 16; color++) {
-		if (veryVerbose) printf("\tFrequency of color %x: %d\n", color, count[color]);
+		if (veryVerbose) printf("\tFrequency of color %x (bitmap): %d\n", color, count[color]);
 		if (count[color] > maxCount) {
 			maxCount = count[color];
 			mostFrequentColor = color;
 		}
-		if (evenCount[color] > maxEvenCount) {
-			maxEvenCount = evenCount[color];
-			mostFrequentEvenColor = color;
-		}
-		if (oddCount[color] > maxOddCount) {
-			maxOddCount = oddCount[color];
-			mostFrequentOddColor = color;
-		}
 	}
 
 	this->preferredBackground = mostFrequentColor;
-
-	if (veryVerbose) printf(
-			"\tMost frequent color: %x, even lines: %x, odd lines: %x\n",
-			mostFrequentColor, mostFrequentEvenColor, mostFrequentOddColor);
-
-	// Stripped image detection -----------------------------------------------
-
-	// Forced to yes/no?
-	if (this->forceStrippedImage != -1) {
-		this->isStrippedImage = this->forceStrippedImage;
-		return;
-	}
-
-	// Even/odd background is reference background and the other one is not?
-	if ((mostFrequentColor == mostFrequentEvenColor) == (mostFrequentColor == mostFrequentOddColor)) {
-		if (veryVerbose) printf("\tImage is not stripped\n");
-		this->isStrippedImage = 0;
-		return;
-	}
-
-	// Enough excess of reference background representation in even/odd background (>= 5%)?
-	unsigned int totalBytes = bitmap->width * bitmap->height / 8;
-	unsigned int excess = (mostFrequentColor == mostFrequentEvenColor)
-			? abs((int) maxEvenCount * 2 - (int) maxCount) / 2
-			: abs((int) maxOddCount  * 2 - (int) maxCount) / 2;
-	unsigned int threshold = 5 * totalBytes / 100;
-	this->isStrippedImage = excess >= threshold;
-	if (veryVerbose) printf(
-			"\tImage is %s: excess of background in %s lines: %d, threshold: %d (5%% of %d bytes)\n",
-			this->isStrippedImage ? "stripped" : "not stripped",
-			(mostFrequentColor == mostFrequentEvenColor) ? "even" : "odd",
-			excess, threshold, totalBytes);
-	return;
 }
 
 int readLine(struct stCharsetProcessor *this, struct stLine *line, struct stBitmap *bitmap, int x, int y, __attribute__((unused)) struct stLine *previousLine) {
@@ -366,6 +330,85 @@ int readLine(struct stCharsetProcessor *this, struct stLine *line, struct stBitm
 	 */
 
 	return 1;
+}
+
+void charsetProcessorInitForCharset(struct stCharsetProcessor *this, struct stCharset *charset) {
+
+	// (after nametable processing)
+
+	// Preferred background ---------------------------------------------------
+
+	unsigned int count[16] = {0};
+	unsigned int evenCount[16] = {0};
+	unsigned int oddCount[16] = {0};
+	int i, j, b;
+	struct stBlock *block;
+	struct stLine *evenLine, *oddLine;
+	for (i = 0, block = charset->blocks; i < charset->blockCount; i++, block++) {
+		for (j = 0, evenLine = block->line, oddLine = evenLine + 1; j < TILE_HEIGHT; j += 2, evenLine += 2, oddLine += 2) {
+			for (b = 0; b < 8; b++) {
+				byte evenColor = colorAtBit(evenLine, b);
+				byte oddColor = colorAtBit(oddLine, b);
+				count[evenColor]++;
+				count[oddColor]++;
+				evenCount[evenColor]++;
+				oddCount[oddColor]++;
+			}
+		}
+	}
+
+	byte mostFrequentColor = 0x00, mostFrequentEvenColor = 0x00, mostFrequentOddColor = 0x00;
+	unsigned int maxCount = 0, maxEvenCount = 0, maxOddCount = 0;
+	for (byte color = 0; color < 16; color++) {
+		if (veryVerbose) printf("\tFrequency of color %x (charset): %d\n", color, count[color]);
+		if (count[color] > maxCount) {
+			maxCount = count[color];
+			mostFrequentColor = color;
+		}
+		if (evenCount[color] > maxEvenCount) {
+			maxEvenCount = evenCount[color];
+			mostFrequentEvenColor = color;
+		}
+		if (oddCount[color] > maxOddCount) {
+			maxOddCount = oddCount[color];
+			mostFrequentOddColor = color;
+		}
+	}
+
+	this->preferredBackground = mostFrequentColor;
+
+	if (veryVerbose) printf(
+			"\tMost frequent color: %x, even lines: %x, odd lines: %x\n",
+			mostFrequentColor, mostFrequentEvenColor, mostFrequentOddColor);
+
+	// Stripped image detection -----------------------------------------------
+
+	// Forced to yes/no?
+	if (this->forceStrippedImage != -1) {
+		this->isStrippedImage = this->forceStrippedImage;
+		return;
+	}
+
+	// Even/odd background is reference background and the other one is not?
+	if ((mostFrequentColor == mostFrequentEvenColor) == (mostFrequentColor == mostFrequentOddColor)) {
+		if (veryVerbose) printf("\tImage is not stripped\n");
+		this->isStrippedImage = 0;
+		return;
+	}
+
+	// Enough excess of reference background representation in even/odd background (>= 5%)?
+	unsigned int totalBytes = charset->blockCount;
+	unsigned int excess = (mostFrequentColor == mostFrequentEvenColor)
+			? abs((int) maxEvenCount * 2 - (int) maxCount) / 2
+			: abs((int) maxOddCount  * 2 - (int) maxCount) / 2;
+	unsigned int threshold = 5 * totalBytes / 100;
+	this->isStrippedImage = excess >= threshold;
+	if (veryVerbose) printf(
+			"\tImage is %s: excess of background in %s lines: %d, threshold: %d (5%% of %d bytes)\n",
+			this->isStrippedImage ? "stripped" : "not stripped",
+			(mostFrequentColor == mostFrequentEvenColor) ? "even" : "odd",
+			excess, threshold, totalBytes);
+	return;
 }
 
 void postProcessLine(struct stCharsetProcessor *this, int index, struct stLine *line, struct stLine *previousLine) {
@@ -487,8 +530,14 @@ void postProcessLine(struct stCharsetProcessor *this, int index, struct stLine *
 			return;
 		}
 
-		int isBackground = (brightness[this->preferredBackground] < 8)
-				== (brightness[singleColor] < 8);
+		// Preferred backround and single color are both on the same light/dark side:
+		int isBackground = ((brightness[this->preferredBackground] < 8) == (brightness[singleColor] < 8));
+		/*
+		 * This seems to yield better compression ratios in particular images only
+		 *
+		// Only preferred background:
+		int isBackground = (singleColor == this->preferredBackground);
+		 */
 
 		// Attempts to use preferred background
 		if (isBackground) {
@@ -552,11 +601,12 @@ void debugPostProcessLine(struct stCharsetProcessor *this, struct stLine *from, 
 
 	if (!veryVerbose) return;
 
-	printf("[%02x %02x] %s [%02x %02x] (pref.bg=%x, previous=[%02x %02x]) %s\n",
+	printf("(pref.bg: %x) ...[%02x %02x], [%02x %02x] %s [%02x %02x] %s\n",
+			this->preferredBackground,
+			previousLine->pattern, previousLine->color,
 			from->pattern, from->color,
 			((from->pattern == to->pattern) && (from->color == to->color)) ? "==" : "XX",
 			to->pattern, to->color,
-			this->preferredBackground, previousLine->pattern, previousLine->color,
 			message);
 }
 
