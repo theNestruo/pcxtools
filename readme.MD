@@ -129,6 +129,10 @@ Pattern generation:
 
 	Allows the specified post-processing pattern generator to be applied only to an specific address range (for example, the font part of a charset) without alterations of the rest of the image.
 
+* `-th` traverse image horizontally, then vertically (default)
+
+* `-tv` traverse image vertically, then horizontally
+
 NAMTBL generation:
 
 * `-n<00..ff>` generate NAMTBL \[starting at value &lt;n&gt;\]

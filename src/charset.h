@@ -34,6 +34,8 @@ struct stCharset {
 	// Data container
 	struct stBlock *blocks;
 	int blockCount;
+
+	unsigned int width, height; // (in chars)
 };
 
 struct stCharsetProcessor {
@@ -43,6 +45,7 @@ struct stCharsetProcessor {
 	int patternMode;
 	int postProcessRangeFrom;
 	int postProcessRangeTo;
+	int traverseHorizontally;
 
 	// State
 	byte preferredBackground;
@@ -64,6 +67,8 @@ struct stCharsetProcessor {
 // -b<0..7>	 force bit <n> to be background (reset) on patterns
 // -pf<0000> post-process only the specified address range (from)
 // -pt<ffff> post-process only the specified address range (to)
+// -th       traverse image horizontally, then vertically (default)
+// -tv       traverse image vertically, then horizontally
 void charsetProcessorOptions();
 
 void charsetProcessorInit(struct stCharsetProcessor *instance, int argc, char **argv);

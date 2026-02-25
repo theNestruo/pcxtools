@@ -69,6 +69,8 @@ byte colorAtBit(struct stLine *line, char bit);
 // -b<0..7>	 force bit <n> to be background (reset) on patterns
 // -pf<0000> post-process only the specified address range (from)
 // -pt<ffff> post-process only the specified address range (to)
+// -th       traverse image horizontally, then vertically (default)
+// -tv       traverse image vertically, then horizontally
 void charsetProcessorOptions() {
 
 	printf("\t-il\tignore line on color collision\n");
@@ -83,6 +85,8 @@ void charsetProcessorOptions() {
 	printf("\t-b<0..7>\tforce bit <n> to be background (reset) on patterns\n");
 	printf("\t-pf<0000>\tpost-process only the specified address range (from)\n");
 	printf("\t-pt<ffff>\tpost-process only the specified address range (to)\n");
+	printf("\t-th\ttraverse image horizontally, then vertically (default)\n");
+	printf("\t-tv\ttraverse image vertically, then horizontally\n");
 }
 
 void charsetProcessorInit(struct stCharsetProcessor *this, int argc, char **argv) {
@@ -113,6 +117,10 @@ void charsetProcessorInit(struct stCharsetProcessor *this, int argc, char **argv
 	this->postProcessRangeTo =
 		  ((i = argStartsWith(argc, argv, "-pt", 4)) != -1) ? hexadecimalInt(&(argv[i][3]))
 		: -1;
+	this->traverseHorizontally =
+		  (argEquals(argc, argv, "-th") != -1) ? 1
+		: (argEquals(argc, argv, "-tv") != -1) ? 0
+		: 1;
 }
 
 int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *charset, struct stBitmap *bitmap) {
@@ -123,7 +131,9 @@ int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *char
 	if (verbose) printf("Preferred background color (bitmap): %1x\n", this->preferredBackground);
 
 	// Allocate space for the blocks
-	charset->blockCount = ((int) (bitmap->width / TILE_WIDTH)) * ((int) (bitmap->height / TILE_HEIGHT));
+	charset->width = bitmap->width / TILE_WIDTH;
+	charset->height = bitmap->height / TILE_HEIGHT;
+	charset->blockCount = (int) (charset->width * charset->height);
 	charset->blocks = (struct stBlock*) calloc(charset->blockCount, sizeof(struct stBlock));
 
 	// For each block...
@@ -131,17 +141,37 @@ int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *char
 	struct stBlock *itBlock;
 	struct stLine previousLine0 = { 0x00, this->preferredBackground << 4 | this->preferredBackground };
 	struct stLine *previousLine;
-	for (y = 0, itBlock = charset->blocks, previousLine = &previousLine0; (y + TILE_HEIGHT) <= bitmap->height; y += TILE_HEIGHT) {
-		for (x = 0; (x + TILE_WIDTH) <= bitmap->width; x += TILE_WIDTH, itBlock++) {
 
-			// For each line...
-			int i;
-			struct stLine *itLine;
-			for (i = 0, itLine = itBlock->line; i < TILE_HEIGHT; i++, previousLine = itLine, itLine++) {
-				if (!readLine(this, itLine, bitmap, x, y + i, previousLine) && !this->ignoreCollision)
-					return 1;
+	if (this->traverseHorizontally) {
+
+		for (y = 0, itBlock = charset->blocks, previousLine = &previousLine0; (y + TILE_HEIGHT) <= bitmap->height; y += TILE_HEIGHT) {
+			for (x = 0; (x + TILE_WIDTH) <= bitmap->width; x += TILE_WIDTH, itBlock++) {
+
+				// For each line...
+				int i;
+				struct stLine *itLine;
+				for (i = 0, itLine = itBlock->line; i < TILE_HEIGHT; i++, previousLine = itLine, itLine++) {
+					if (!readLine(this, itLine, bitmap, x, y + i, previousLine) && !this->ignoreCollision)
+						return 1;
+				}
 			}
 		}
+
+	} else {
+
+		for (x = 0, itBlock = charset->blocks, previousLine = &previousLine0; (x + TILE_WIDTH) <= bitmap->width; x += TILE_WIDTH) {
+			for (y = 0; (y + TILE_HEIGHT) <= bitmap->height; y += TILE_HEIGHT, itBlock++) {
+
+				// For each line...
+				int i;
+				struct stLine *itLine;
+				for (i = 0, itLine = itBlock->line; i < TILE_HEIGHT; i++, previousLine = itLine, itLine++) {
+					if (!readLine(this, itLine, bitmap, x, y + i, previousLine) && !this->ignoreCollision)
+						return 1;
+				}
+			}
+		}
+
 	}
 
 	return 0;

@@ -70,7 +70,7 @@ all: $(TARGETS)
 
 test: $(TOOLS) $(TESTS)
 
-demo: demo_sprplus_pcx demo_sprplus_png
+demo: demo_namtbl_png demo_sprplus_pcx demo_sprplus_png
 
 .PHONY: default clean all test demo
 
@@ -128,12 +128,14 @@ test/screen.tmx.bin: $(TMX2BIN) test/screen.tmx
 test/metatiles.tmx.bin: $(TMX2BIN) test/metatiles.tmx
 	$(TMX2BIN) -v -t2 test/metatiles.tmx
 
-test/test-pal.png.chr test/test-pal.png.clr &: $(PNG2MSX) test/test-pal.png
-	$(PNG2MSX) -v test/test-pal.png
-
 #
 # demo targets
 #
+
+demo_namtbl_png: $(PNG2MSX) demo/namtbl/png/screen-th.png demo/namtbl/png/screen-tv.png demo/namtbl/png/demo.asm
+	$(PNG2MSX) -v -rm0 -rr -n -th demo/namtbl/png/screen-th.png
+	$(PNG2MSX) -v -rm0 -rr -n -tv demo/namtbl/png/screen-tv.png
+	$(ASSEMBLER) demo/namtbl/png/demo.asm
 
 demo_sprplus_pcx: $(PCX2SPRPLUS) demo/sprplus/pcx/demo.pcx demo/sprplus/pcx/demo.asm
 	$(PCX2SPRPLUS) -v -vv -w24 -h32 demo/sprplus/pcx/demo.pcx

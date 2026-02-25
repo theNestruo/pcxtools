@@ -2,11 +2,18 @@
 bin
 !bin/placeholder.txt
 
-*.chr
-*.clr
-*.spr
-*.spat.asm
-*.spr.asm
+*.pcx.chr
+*.pcx.clr
+*.pcx.nam
+*.pcx.spr
+*.pcx.spat.asm
+*.pcx.spr.asm
+*.png.chr
+*.png.clr
+*.png.nam
+*.png.spr
+*.png.spat.asm
+*.png.spr.asm
 *.tmx.bin
 
 *.rom

@@ -30,6 +30,7 @@ struct stNameTableProcessor {
 	int removeRepeated;
 	int removeEmpty;
 	byte emptyColorRemoved;
+	int traverseHorizontally; // (see struct stCharsetProcessor)
 };
 
 /* Function prototypes ----------------------------------------------------- */

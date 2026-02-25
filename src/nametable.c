@@ -43,6 +43,10 @@ void nameTableProcessorInit(struct stNameTableProcessor *this, int argc, char **
 	if ((this->removeEmpty = ((i = argStartsWith(argc, argv, "-rm", 4)) != -1))) {
 		this->emptyColorRemoved = hexadecimalNibble(argv[i][3]);
 	}
+	this->traverseHorizontally =
+		  (argEquals(argc, argv, "-th") != -1) ? 1
+		: (argEquals(argc, argv, "-tv") != -1) ? 0
+		: 1;
 }
 
 void nameTableProcessorGenerate(struct stNameTableProcessor *this,
@@ -55,23 +59,65 @@ void nameTableProcessorGenerate(struct stNameTableProcessor *this,
 	// For each block...
 	int i, b, c, blockCount, *it;
 	struct stBlock *src, *dest;
-	for (i = 0, b = 0, blockCount = 0, src = dest = charset->blocks, it = nametable->namtbl;
-			i < charset->blockCount; i++, src++, it++) {
-		// Remove if empty
-		if (this->removeEmpty && isSolidBlock(src, this->emptyColorRemoved)) {
-			*it = -1;
-			continue;
+
+	if (this->traverseHorizontally) {
+
+		for (i = 0, b = 0, blockCount = 0, src = dest = charset->blocks, it = nametable->namtbl;
+				i < charset->blockCount; i++, src++, it++) {
+			// Remove if empty
+			if (this->removeEmpty && isSolidBlock(src, this->emptyColorRemoved)) {
+				*it = -1;
+				continue;
+			}
+			// Remove if repeated
+			if (this->removeRepeated && ((c = blockIndex(charset, src, b)) != -1)) {
+				*it = c;
+				continue;
+			}
+			// Not removed: move (compact blocks)
+			if (src != dest) memcpy(dest, src, sizeof(struct stBlock));
+			*it = b++;
+			blockCount++;
+			dest++;
 		}
-		// Remove if repeated
-		if (this->removeRepeated && ((c = blockIndex(charset, src, b)) != -1)) {
-			*it = c;
-			continue;
+
+	} else {
+
+		unsigned int x, y;
+
+		for (x = 0, b = 0, blockCount = 0, src = dest = charset->blocks, it = nametable->namtbl; x < charset->width; x++) {
+			for (y = 0; y < charset->height; y++, src++, it++) {
+
+				// Remove if empty
+				if (this->removeEmpty && isSolidBlock(src, this->emptyColorRemoved)) {
+					*it = -1;
+					continue;
+				}
+				// Remove if repeated
+				if (this->removeRepeated && ((c = blockIndex(charset, src, b)) != -1)) {
+					*it = c;
+					continue;
+				}
+				// Not removed: move (compact blocks)
+				if (src != dest) memcpy(dest, src, sizeof(struct stBlock));
+				*it = b++;
+				blockCount++;
+				dest++;
+			}
 		}
-		// Not removed: move (compact blocks)
-		if (src != dest) memcpy(dest, src, sizeof(struct stBlock));
-		*it = b++;
-		blockCount++;
-		dest++;
+
+		// Transposes the namtbl
+		int *transposed = (int*) calloc(nametable->namtblSize, sizeof(int));
+
+		for (i = 0; i < nametable->namtblSize; i++) {
+			int toX = i / charset->height,
+				toY = i % charset->height,
+				to = toY * charset->width + toX;
+			transposed[to] = nametable->namtbl[i];
+		}
+
+		free(nametable->namtbl);
+		nametable->namtbl = transposed;
 	}
 	reallocateBlocks(charset, blockCount);
 

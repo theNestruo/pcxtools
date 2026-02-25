@@ -1,5 +1,8 @@
 ## Version history
 
+* 25/02/2026 v5.2 (unreleased)
+	* -th and -tv (traverse image horizontally/vertically) options in `PNG2MSX`
+
 * 08/02/2026 v5.1
 	* Fixes stripped image detection
 	* Optimization applied after nametable processing
