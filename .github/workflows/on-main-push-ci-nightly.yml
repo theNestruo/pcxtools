@@ -27,7 +27,7 @@ jobs:
       run: make -f windows.makefile all
 
     - name: Upload nightly build
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: windows-binaries
         path: bin
@@ -44,7 +44,7 @@ jobs:
       run: make -f linux.makefile all
 
     - name: Upload nightly build
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: linux-binaries
         path: bin
@@ -61,7 +61,7 @@ jobs:
       run: make -f macos.makefile all
 
     - name: Upload nightly build
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: macos-binaries
         path: bin
