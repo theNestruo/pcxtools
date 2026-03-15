@@ -141,7 +141,7 @@ NAMTBL generation:
 	If optional index value is specified, name table will be generated to load the character definition after that index (e.g.: tileset loaded without overwriting ASCII font).
 	Usually to be used in combination with `-rm` and/or `-rr`.
 
-* `-bb<00..ff>` blank block at position <nn>
+* `-bb<00..ff>` blank block at position &lt;nn&gt;
 	A blank block (pattern = 0x00, color = 0x00) will be generated at specified position. Removed blocks will have this index in the name table.
 	Usually to be used in combination with -n and/or rm (e.g.: to keep ASCII 0x20 " " as the blank block)
 
