@@ -19,11 +19,6 @@ CFLAGS=-O3 -Wall -Wextra -Wshadow -Wdouble-promotion -Wundef
 LDFLAGS=-lm
 
 #
-# commands
-#
-REMOVE=rm
-
-#
 # main makefile
 #
 include shared.makefile

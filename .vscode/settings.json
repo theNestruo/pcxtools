@@ -11,6 +11,11 @@
 		80, 120
 	],
 
+	"files.exclude": {
+		"**/*.o": { "when": "$(basename).c" },
+		"~tmppre.?": true,
+	},
+
 	// No AI
 	"chat.disableAIFeatures": true,
 }

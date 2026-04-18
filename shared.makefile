@@ -1,3 +1,5 @@
+# (GNU Make prefers a POSIX shell whenever possible, so explicitly force it)
+SHELL=sh
 
 #
 # file lists
@@ -64,15 +66,13 @@ TESTS=\
 default: all
 
 clean:
-	$(REMOVE) $(TARGETS)
+	rm $(TARGETS)
 
 all: $(TARGETS)
 
 test: $(TOOLS) $(TESTS)
 
-demo: demo_namtbl_png demo_sprplus_pcx demo_sprplus_png
-
-.PHONY: default clean all test demo
+.PHONY: default clean all test
 
 #
 # main targets
@@ -127,20 +127,3 @@ test/screen.tmx.bin: $(TMX2BIN) test/screen.tmx
 
 test/metatiles.tmx.bin: $(TMX2BIN) test/metatiles.tmx
 	$(TMX2BIN) -v -t2 test/metatiles.tmx
-
-#
-# demo targets
-#
-
-demo_namtbl_png: $(PNG2MSX) demo/namtbl/png/screen-th.png demo/namtbl/png/screen-tv.png demo/namtbl/png/demo.asm
-	$(PNG2MSX) -v -rm0 -rr -n -th demo/namtbl/png/screen-th.png
-	$(PNG2MSX) -v -rm0 -rr -n -tv demo/namtbl/png/screen-tv.png
-	$(ASSEMBLER) demo/namtbl/png/demo.asm
-
-demo_sprplus_pcx: $(PCX2SPRPLUS) demo/sprplus/pcx/demo.pcx demo/sprplus/pcx/demo.asm
-	$(PCX2SPRPLUS) -v -vv -w24 -h32 demo/sprplus/pcx/demo.pcx
-	$(ASSEMBLER) demo/sprplus/pcx/demo.asm
-
-demo_sprplus_png: $(PNG2SPRPLUS) demo/sprplus/png/demo.png demo/sprplus/png/demo.asm
-	$(PNG2SPRPLUS) -v -vv -w24 -h32 demo/sprplus/png/demo.png
-	$(ASSEMBLER) demo/sprplus/png/demo.asm
