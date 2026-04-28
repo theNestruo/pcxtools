@@ -41,13 +41,13 @@ out:
 	return i;
 }
 
-int asmBytes(FILE *file, byte *bytes, int byteCount) {
+int asmBytes(FILE *file, uint8_t *bytes, int byteCount) {
 
 	int i = 0;
 
 	char *init = "\tdb\t0x%02x", *cont = ", 0x%02x", *buffer = (char*) calloc(16, sizeof(char));
 	int j;
-	byte *b;
+	uint8_t *b;
 	for (j = 0, b = bytes; j < byteCount; j++, b++) {
 		sprintf(buffer, j ? cont : init, *b);
 		if (fwrite(buffer, sizeof(char), strlen(buffer), file) != strlen(buffer)) goto out;

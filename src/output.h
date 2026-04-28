@@ -5,16 +5,12 @@
 
 #pragma once
 
-/* Types ------------------------------------------------------------------- */
-
-#ifndef byte
-typedef unsigned char byte;
-#endif
+#include <stdint.h>
 
 /* Function prototypes ----------------------------------------------------- */
 
 int asmNewLine(FILE *file);
 int asmComment(FILE *file, char *string, int inner);
 int asmLabel(FILE *file, char *string);
-int asmBytes(FILE *file, byte *bytes, int byteCount);
+int asmBytes(FILE *file, uint8_t *bytes, int byteCount);
 

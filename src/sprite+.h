@@ -5,13 +5,9 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include "bitmap.h"
-
-/* Types ------------------------------------------------------------------- */
-
-#ifndef byte
-typedef unsigned char byte;
-#endif
 
 /* Data structures --------------------------------------------------------- */
 
@@ -30,7 +26,7 @@ typedef struct {
 
 typedef struct {
 	SpriteSolver *spriteSolver; // reference
-	byte color; // reference
+	uint8_t color; // reference
 
 	// Solutions
 	int rectsPerSolution;
@@ -61,7 +57,7 @@ struct stSprWriterPlus {
 	int offsetX;
 	int offsetY;
 	int attributePadding;
-	byte terminator;
+	uint8_t terminator;
 	int binaryOutput;
 };
 

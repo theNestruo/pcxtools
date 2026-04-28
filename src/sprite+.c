@@ -30,8 +30,8 @@ extern int veryVerbose;
 /* Private data structures ------------------------------------------------- */
 
 typedef struct {
-	byte pattern[32];
-	byte attributes[4];
+	uint8_t pattern[32];
+	uint8_t attributes[4];
 } Sprite;
 
 /* Private function prototypes --------------------------------------------- */
@@ -39,13 +39,13 @@ typedef struct {
 /* Private function prototypes ----- SpriteSolver ----------------- */
 
 int readSprite(SpriteSolver *instance);
-int initColorSolver(SpriteSolver *instance, byte color);
+int initColorSolver(SpriteSolver *instance, uint8_t color);
 void solve(SpriteSolver *instance);
 int checkBetterSolution(SpriteSolver *instance, int indexes[16]);
 int nextSolution(SpriteSolver *instance, int indexes[16]);
 
-byte getPixelAt(SpriteSolver *instance, int x, int y);
-ColorSolver *getColorSolver(SpriteSolver *instance, byte color);
+uint8_t getPixelAt(SpriteSolver *instance, int x, int y);
+ColorSolver *getColorSolver(SpriteSolver *instance, uint8_t color);
 int getSpriteCount(SpriteSolver *instance);
 ScanlineCount getScanlineCount(SpriteSolver *instance, int indexes[16]);
 int stSpriteSolverWrite(SpriteSolver *instance, int *spriteIndex, FILE *sprFile, FILE *spatFile);
@@ -89,7 +89,7 @@ void sprWriterPlusOptions() {
 	printf("\t-x<0..255>\tX offset (default: center)\n");
 	printf("\t-y<0..255>\tY offset (default: middle)\n");
 	printf("\t-p<0..4>\tattribute padding size (default: 1b)\n");
-	printf("\t-t<00..ff>\tterminator byte (default: 0xD0 (SPAT_END))\n");
+	printf("\t-t<00..ff>\tterminator uint8_t (default: 0xD0 (SPAT_END))\n");
 	printf("\t-b\tbinary spr/spat output (default: asm)\n");
 	// printf("\t-vv\tVERY verbose execution\n"); // secret option (!^_^)
 }
@@ -185,7 +185,7 @@ int readSprite(SpriteSolver *this) {
 
 	// Check if sprite present
 	int x, y, colorCount;
-	byte color;
+	uint8_t color;
 	for (y = 0, colorCount = 0; y < this->height; y++) for (x = 0; x < this->width; x++) {
 		if (!(color = getPixelAt(this, x, y))) continue;
 		if (initColorSolver(this, color)) colorCount++;
@@ -197,7 +197,7 @@ int readSprite(SpriteSolver *this) {
 	return colorCount;
 }
 
-int initColorSolver(SpriteSolver *this, byte color) {
+int initColorSolver(SpriteSolver *this, uint8_t color) {
 
 	ColorSolver *colorSolver = &(this->colorSolver[color]);
 	if (colorSolver->color) return 0; // already init
@@ -210,7 +210,7 @@ int initColorSolver(SpriteSolver *this, byte color) {
 void solve(SpriteSolver *this) {
 
 	// Find solutions per color
-	byte color;
+	uint8_t color;
 	ColorSolver *colorSolver;
 	for (color = 1; color < 16; color++) {
 		if (!(colorSolver = getColorSolver(this, color))) continue;
@@ -256,7 +256,7 @@ int checkBetterSolution(SpriteSolver *this, int indexes[16]) {
 	int y;
 	for (y = 0; y < this->height; y++) {
 		// For each color
-		byte color;
+		uint8_t color;
 		int count;
 		ColorSolver *colorSolver;
 		for (color = 1, count = 0; color < 16; color++) {
@@ -284,7 +284,7 @@ int checkBetterSolution(SpriteSolver *this, int indexes[16]) {
 				return 0; // not better
 
 	// Update best solution
-	byte color;
+	uint8_t color;
 	for (color = 0; color < 16; color++) {
 		this->solutionIndexes[color] = indexes[color];
 	}
@@ -295,7 +295,7 @@ int checkBetterSolution(SpriteSolver *this, int indexes[16]) {
 
 int nextSolution(SpriteSolver *this, int indexes[16]) {
 
-	byte color;
+	uint8_t color;
 	ColorSolver *colorSolver;
 	for (color = 1; color < 16; color++) {
 		if (!(colorSolver = getColorSolver(this, color))) continue;
@@ -307,14 +307,14 @@ int nextSolution(SpriteSolver *this, int indexes[16]) {
 	return 0; // overflow
 }
 
-byte getPixelAt(SpriteSolver *this, int x, int y) {
+uint8_t getPixelAt(SpriteSolver *this, int x, int y) {
 
 	return ((x < 0) || (y < 0) || (x >= this->width) || (y >= this->height))
 		? 0 // O.B.
 		: bitmapGet(this->bitmap, x + this->x0, y + this->y0);
 }
 
-ColorSolver *getColorSolver(SpriteSolver *this, byte color) {
+ColorSolver *getColorSolver(SpriteSolver *this, uint8_t color) {
 
 	ColorSolver *colorSolver = &(this->colorSolver[color]);
 	if (!colorSolver->color) return NULL;
@@ -325,7 +325,7 @@ int getSpriteCount(SpriteSolver *this) {
 
 	int spriteCount = 0;
 
-	byte color;
+	uint8_t color;
 	ColorSolver *colorSolver;
 	for (color = 1; color < 16; color++) {
 		if (!(colorSolver = getColorSolver(this, color))) continue;
@@ -342,7 +342,7 @@ int getSpriteCount(SpriteSolver *this) {
 	// int y, count;
 	// for (y = 0; y < this->height; y++) {
 		// // For each color
-		// byte color;
+		// uint8_t color;
 		// ColorSolver *colorSolver;
 		// for (color = 1, count = 0; color < 16; color++) {
 			// if (!(colorSolver = getColorSolver(this, color))) continue;
@@ -372,7 +372,7 @@ int stSpriteSolverWrite(SpriteSolver *this, int *spriteIndex, FILE *sprFile, FIL
 	Sprite *buffer = (Sprite*) calloc(n, sizeof(Sprite));
 
 	// Read pattern and attributes
-	byte color;
+	uint8_t color;
 	int solutionIndex, j;
 	Sprite *sprite;
 	ColorSolver *colorSolver;
@@ -431,11 +431,11 @@ int writePadding(SpriteSolver *this, FILE *spatFile) {
 
 	if (!this->cfg->attributePadding) return 1;
 
-	byte *paddingBuffer = (byte*) calloc(this->cfg->attributePadding, sizeof(byte));
+	uint8_t *paddingBuffer = (uint8_t*) calloc(this->cfg->attributePadding, sizeof(uint8_t));
 	paddingBuffer[0] = this->cfg->terminator;
 
 	return (this->cfg->binaryOutput)
-		? (fwrite(paddingBuffer, sizeof(byte), this->cfg->attributePadding, spatFile) == (size_t) this->cfg->attributePadding)
+		? (fwrite(paddingBuffer, sizeof(uint8_t), this->cfg->attributePadding, spatFile) == (size_t) this->cfg->attributePadding)
 		: (asmComment(spatFile, "padding", 1)
 			&& asmBytes(spatFile, paddingBuffer, this->cfg->attributePadding)
 			&& asmNewLine(spatFile));
@@ -668,16 +668,16 @@ void readAttributes(Sprite *this, ColorSolver *colorSolver, int spriteIndex, Rec
 
 	SprWriterPlus *cfg = colorSolver->spriteSolver->cfg;
 
-	this->attributes[0] = (byte) (rect->y - cfg->offsetY);
-	this->attributes[1] = (byte) (rect->x - cfg->offsetX);
-	this->attributes[2] = (byte) (spriteIndex << 2);
-	this->attributes[3] = (byte) (colorSolver->color);
+	this->attributes[0] = (uint8_t) (rect->y - cfg->offsetY);
+	this->attributes[1] = (uint8_t) (rect->x - cfg->offsetX);
+	this->attributes[2] = (uint8_t) (spriteIndex << 2);
+	this->attributes[3] = (uint8_t) (colorSolver->color);
 }
 
 int writePattern(Sprite *this, SprWriterPlus *cfg, FILE *sprFile) {
 
 	return (cfg->binaryOutput)
-		? fwrite(this->pattern, sizeof(byte), 32, sprFile) == 32
+		? fwrite(this->pattern, sizeof(uint8_t), 32, sprFile) == 32
 		: asmBytes(sprFile, this->pattern, 16)
 			&& asmBytes(sprFile, &(this->pattern[16]), 16);
 }
@@ -685,7 +685,7 @@ int writePattern(Sprite *this, SprWriterPlus *cfg, FILE *sprFile) {
 int writeAttributes(Sprite *this, SprWriterPlus *cfg, FILE *spatFile) {
 
 	return (cfg->binaryOutput)
-		? (fwrite(this->attributes, sizeof(byte), 4, spatFile) == 4)
+		? (fwrite(this->attributes, sizeof(uint8_t), 4, spatFile) == 4)
 		: asmBytes(spatFile, this->attributes, 4);
 }
 

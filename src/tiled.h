@@ -6,17 +6,13 @@
 
 #pragma once
 
-/* Types ------------------------------------------------------------------- */
-
-#ifndef byte
-typedef unsigned char byte;
-#endif
+#include <stdint.h>
 
 /* Data structures --------------------------------------------------------- */
 
 // Tiled (TMX) container
 typedef struct {
-	byte *data;
+	uint8_t *data;
 	int width;
 	int height;
 

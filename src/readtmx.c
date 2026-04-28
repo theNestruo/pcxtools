@@ -123,11 +123,11 @@ int tmxReaderRead(TmxReader *this, FILE *file, Tiled *tiled) {
 
 	// Allocate space for the data
 	bufferSize = tiled->width * 4 + 16;
-	buffer = realloc(buffer, bufferSize); // "nnn," per byte and some margin
-	tiled->data = (byte*) malloc(tiled->width * tiled->height);
+	buffer = realloc(buffer, bufferSize); // "nnn," per uint8_t and some margin
+	tiled->data = (uint8_t*) malloc(tiled->width * tiled->height);
 
 	int y;
-	byte *dest = tiled->data;
+	uint8_t *dest = tiled->data;
 	for (y = 0; y < tiled->height; y++) {
 		if (!(line = fgets(buffer, bufferSize, file))) {
 			printf("ERROR: Unexpected EOF inside <data>.\n");
@@ -147,10 +147,10 @@ int tmxReaderRead(TmxReader *this, FILE *file, Tiled *tiled) {
 			}
 			val = atoi(token);
 			if (val - 1 < 256) {
-				*dest = (byte) (val - 1);
+				*dest = (uint8_t) (val - 1);
 
 			} else if (this->isMultibankCharset) {
-				*dest = (byte) ((val % 256) - 1);
+				*dest = (uint8_t) ((val % 256) - 1);
 
 			} else {
 				printf("WARNING: Byte overflow at %d,%d: %d...\n", x, y, val);

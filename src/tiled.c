@@ -52,7 +52,7 @@ int tiledWrite(Tiled *this, FILE *binFile) {
 
 	// Metatile rearrangment or mirrored
 	int x, xMax, y, yMax, v;
-	byte *groupSrc, *tileSrc, *src;
+	uint8_t *groupSrc, *tileSrc, *src;
 	for (y = 0, yMax = (int) (this->height / this->metatileSize), groupSrc = this->data;
 			y < yMax;
 			y++, groupSrc += this->width * this->metatileSize) {

@@ -105,7 +105,7 @@ int sprWriterWrite(SprWriter *this, FILE *sprFile) {
 		int j;
 		Sprite *sprite;
 		for (j = 0, sprite = it->sprites; j < it->spriteCount; j++, sprite++) {
-			if (fwrite(sprite->pattern, sizeof(byte), spriteSize, sprFile) != spriteSize)
+			if (fwrite(sprite->pattern, sizeof(uint8_t), spriteSize, sprFile) != spriteSize)
 				return 2;
 		}
 	}
@@ -146,7 +146,7 @@ void processSpriteGroup(SprWriter *this, SpriteGroup *group, Bitmap *bitmap, int
 	int i, j;
 	Sprite *buffer = (Sprite*) calloc(15, sizeof(Sprite));
 	for(i = 0; i < 15; i++) {
-		buffer[i].pattern = (byte*) calloc(spriteSize, sizeof(byte));
+		buffer[i].pattern = (uint8_t*) calloc(spriteSize, sizeof(uint8_t));
 	}
 
 	// Create the pattern
@@ -154,7 +154,7 @@ void processSpriteGroup(SprWriter *this, SpriteGroup *group, Bitmap *bitmap, int
 	for (col = 0, j = 0; col < this->spriteWidth; col += 8) { // for each 8px width column
 		for (y = 0; y < this->spriteHeight; y++, j++) { // for each line
 			for (x = 0; x < 8; x++) { // for each pixel
-				byte color = bitmapGet(bitmap, x0 + col + x, y0 + y);
+				uint8_t color = bitmapGet(bitmap, x0 + col + x, y0 + y);
 				if (color) {
 					color = color - 1;
 					buffer[color].pattern[j] |= (0x80 >> x);
@@ -202,7 +202,7 @@ void processSpriteGroup(SprWriter *this, SpriteGroup *group, Bitmap *bitmap, int
 			}
 			if (!spriteFound) continue;
 			// blit sprite
-			dest->pattern = (byte*) calloc(spriteSize, sizeof(byte));
+			dest->pattern = (uint8_t*) calloc(spriteSize, sizeof(uint8_t));
 			for (j = 0; j < spriteSize; j++) {
 				dest->pattern[j] = src->pattern[j];
 			}

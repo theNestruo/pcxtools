@@ -184,10 +184,10 @@ void nameTableProcessorPostProcess(NameTableProcessor *this, NameTable *nametabl
 int nameTableProcessorWrite(NameTableProcessor *this, NameTable *nametable, FILE *namFile) {
 
 	int i, *it;
-	byte b;
+	uint8_t b;
 	for (i = 0, it = nametable->namtbl; i < nametable->namtblSize; i++, it++) {
-		b = (byte) (((*it == -1) ? (this->namtblOffset + 0xff) : (*it)) & 0xff);
-		if (fwrite(&b, sizeof(byte), 1, namFile) != 1)
+		b = (uint8_t) (((*it == -1) ? (this->namtblOffset + 0xff) : (*it)) & 0xff);
+		if (fwrite(&b, sizeof(uint8_t), 1, namFile) != 1)
 			return 1;
 	}
 	return 0;

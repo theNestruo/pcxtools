@@ -5,18 +5,14 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include "bitmap.h"
-
-/* Types ------------------------------------------------------------------- */
-
-#ifndef byte
-typedef unsigned char byte;
-#endif
 
 /* Data structures --------------------------------------------------------- */
 
 typedef struct {
-	byte *pattern;
+	uint8_t *pattern;
 } Sprite;
 
 typedef struct {

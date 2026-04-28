@@ -5,13 +5,9 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include "charset.h"
-
-/* Types ------------------------------------------------------------------- */
-
-#ifndef byte
-typedef unsigned char byte;
-#endif
 
 /* Data structures --------------------------------------------------------- */
 
@@ -28,7 +24,7 @@ typedef struct {
 	int blankAt;
 	int removeRepeated;
 	int removeEmpty;
-	byte emptyColorRemoved;
+	uint8_t emptyColorRemoved;
 	int traverseHorizontally; // (see CharsetProcessor)
 } NameTableProcessor;
 

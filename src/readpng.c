@@ -6,6 +6,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "args.h"
@@ -16,28 +17,18 @@
 #define LODEPNG_COMPILE_DISK
 #include "lodepng/lodepng.h"
 
-/* Types ------------------------------------------------------------------- */
-
-#ifndef byte
-typedef unsigned char byte;
-#endif
-
-#ifndef word
-typedef unsigned short int word;
-#endif
-
 /* Data structures --------------------------------------------------------- */
 
 typedef struct {
 
 	// The RGBA values
-	byte r;
-	byte g;
-	byte b;
-	byte a;
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+	uint8_t a;
 
 	// The assigned index
-	byte index;
+	uint8_t index;
 } Color;
 
 /* Constant values --------------------------------------------------------- */
@@ -168,14 +159,14 @@ extern int veryVerbose;
 
 /* Private function prototypes --------------------------------------------- */
 
-Color* guessPalette(unsigned int pngWidth, unsigned int pngHeight, byte *pngImage);
-int paletteDistance(Color palette[], unsigned int pngWidth, unsigned int pngHeight, byte *pngImage);
-int closestColorDistance(Color palette[], byte r, byte g, byte b, byte a);
-byte paletteIndex(Color palette[], byte r, byte g, byte b, byte a);
-int euclideanDistance(Color *color, byte r, byte g, byte b, byte a);
-int weightedDistance(Color *color, byte r, byte g, byte b, byte a);
+Color* guessPalette(unsigned int pngWidth, unsigned int pngHeight, uint8_t *pngImage);
+int paletteDistance(Color palette[], unsigned int pngWidth, unsigned int pngHeight, uint8_t *pngImage);
+int closestColorDistance(Color palette[], uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+uint8_t paletteIndex(Color palette[], uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+int euclideanDistance(Color *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+int weightedDistance(Color *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
-int (*distance) (Color *color, byte r, byte g, byte b, byte a) = euclideanDistance;
+int (*distance) (Color *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a) = euclideanDistance;
 
 /* Function bodies --------------------------------------------------------- */
 
@@ -205,7 +196,7 @@ int pngReaderRead(char *pngFilename, Bitmap *bitmap) {
 	int i = 0;
 
 	// Reads the PNG file (as 32-bit RGBA raw)
-	byte *pngImage = 0;
+	uint8_t *pngImage = 0;
 	unsigned int pngWidth, pngHeight;
 	unsigned int pngError = lodepng_decode32_file(&pngImage, &pngWidth, &pngHeight, pngFilename);
 	if (pngError) {
@@ -227,17 +218,17 @@ int pngReaderRead(char *pngFilename, Bitmap *bitmap) {
 	// Allocate space for the bitmap
 	bitmap->width = pngWidth;
 	bitmap->height = pngHeight;
-	bitmap->bitmap = (byte*) calloc(bitmap->width * bitmap->height, sizeof(byte));
+	bitmap->bitmap = (uint8_t*) calloc(bitmap->width * bitmap->height, sizeof(uint8_t));
 
 	// Populates the bitmap
 	unsigned int y;
-	byte *source, *target;
+	uint8_t *source, *target;
 	for (source = pngImage, target = bitmap->bitmap, y = 0; y < bitmap->height; y++) {
 		for (unsigned int x = 0; x < bitmap->width; x++) {
-			byte r = *(source++);
-			byte g = *(source++);
-			byte b = *(source++);
-			byte a = *(source++);
+			uint8_t r = *(source++);
+			uint8_t g = *(source++);
+			uint8_t b = *(source++);
+			uint8_t a = *(source++);
 			*(target++) = paletteIndex(palette, r, g, b, a);
 		}
 	}
@@ -250,7 +241,7 @@ out:
 
 /* Private function bodies ------------------------------------------------- */
 
-Color* guessPalette(unsigned int pngWidth, unsigned int pngHeight, byte *pngImage) {
+Color* guessPalette(unsigned int pngWidth, unsigned int pngHeight, uint8_t *pngImage) {
 
 	Color* closestPalette = meiseiTms9218Palette;
 	int minDistance = paletteDistance(meiseiTms9218Palette, pngWidth, pngHeight, pngImage);
@@ -280,17 +271,17 @@ Color* guessPalette(unsigned int pngWidth, unsigned int pngHeight, byte *pngImag
 	return closestPalette;
 }
 
-int paletteDistance(Color palette[], unsigned int pngWidth, unsigned int pngHeight, byte *pngImage) {
+int paletteDistance(Color palette[], unsigned int pngWidth, unsigned int pngHeight, uint8_t *pngImage) {
 
 	int totalDistance = 0;
 	unsigned int y, x;
-	byte *source;
+	uint8_t *source;
 	for (source = pngImage, y = 0; y < pngHeight; y++) {
 		for (x = 0; x < pngWidth; x++) {
-			byte r = *(source++);
-			byte g = *(source++);
-			byte b = *(source++);
-			byte a = *(source++);
+			uint8_t r = *(source++);
+			uint8_t g = *(source++);
+			uint8_t b = *(source++);
+			uint8_t a = *(source++);
 			int dist = closestColorDistance(palette, r, g, b, a);
 			if (dist > 0) totalDistance += dist;
 		}
@@ -298,7 +289,7 @@ int paletteDistance(Color palette[], unsigned int pngWidth, unsigned int pngHeig
 	return totalDistance;
 }
 
-int closestColorDistance(Color palette[], byte r, byte g, byte b, byte a) {
+int closestColorDistance(Color palette[], uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 
 	int i;
 	Color *it;
@@ -312,7 +303,7 @@ int closestColorDistance(Color palette[], byte r, byte g, byte b, byte a) {
 	return minDistance;
 }
 
-byte paletteIndex(Color palette[], byte r, byte g, byte b, byte a) {
+uint8_t paletteIndex(Color palette[], uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 
 	int i;
 	Color *it;
@@ -332,7 +323,7 @@ byte paletteIndex(Color palette[], byte r, byte g, byte b, byte a) {
 	return closestColor->index;
 }
 
-int euclideanDistance(Color *color, byte r, byte g, byte b, byte a) {
+int euclideanDistance(Color *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 
 	// (transparent hack)
 	if (color->a == 0x00)
@@ -349,7 +340,7 @@ int euclideanDistance(Color *color, byte r, byte g, byte b, byte a) {
 		);
 }
 
-int weightedDistance(Color *color, byte r, byte g, byte b, byte a) {
+int weightedDistance(Color *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 
 	// (transparent hack)
 	if (color->a == 0x00)

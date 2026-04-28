@@ -52,7 +52,7 @@ void debugPostProcessLine(CharsetProcessor *instance, Line *from, Line *to, Line
 void negateAndSwap(Line *line);
 int isLineEquals(Line *line, Line *other);
 int isLineSingleColor(Line *line);
-byte colorAtBit(Line *line, char bit);
+uint8_t colorAtBit(Line *line, char bit);
 
 /* Function bodies --------------------------------------------------------- */
 
@@ -214,9 +214,9 @@ int charsetProcessorWrite(__attribute__((unused)) CharsetProcessor *this, Charse
 	for (i = 0, it = charset->blocks; i < charset->blockCount; i++, it++) {
 		for (j = 0, line = it->line; j < TILE_HEIGHT; j++, line++) {
 			// Write value in output files
-			if (fwrite(&(line->pattern), sizeof(byte), 1, chrFile) != 1)
+			if (fwrite(&(line->pattern), sizeof(uint8_t), 1, chrFile) != 1)
 				return 2;
-			if (fwrite(&(line->color), sizeof(byte), 1, clrFile) != 1)
+			if (fwrite(&(line->color), sizeof(uint8_t), 1, clrFile) != 1)
 				return 3;
 		}
 	}
@@ -235,7 +235,7 @@ void charsetDone(Charset *this) {
 	this->blocks = NULL;
 }
 
-int isSolidBlock(Block *block, byte color) {
+int isSolidBlock(Block *block, uint8_t color) {
 
 	int i;
 	Line *line;
@@ -295,9 +295,9 @@ void charsetProcessorInitForBitmap(CharsetProcessor *this, Bitmap *bitmap) {
 		}
 	}
 
-	byte mostFrequentColor = 0x00;
+	uint8_t mostFrequentColor = 0x00;
 	unsigned int maxCount = 0;
-	for (byte color = 0; color < 16; color++) {
+	for (uint8_t color = 0; color < 16; color++) {
 		if (veryVerbose) printf("\tFrequency of color %x (bitmap): %d\n", color, count[color]);
 		if (count[color] > maxCount) {
 			maxCount = count[color];
@@ -311,8 +311,8 @@ void charsetProcessorInitForBitmap(CharsetProcessor *this, Bitmap *bitmap) {
 int readLine(CharsetProcessor *this, Line *line, Bitmap *bitmap, int x, int y, __attribute__((unused)) Line *previousLine) {
 
 	int i, j;
-	byte colors[TILE_WIDTH];
-	byte pattern = 0x00, bgcandidate = 0xff, fgcandidate = 0xff;
+	uint8_t colors[TILE_WIDTH];
+	uint8_t pattern = 0x00, bgcandidate = 0xff, fgcandidate = 0xff;
 
 	// Read the colors
 	for (i = 0; i < TILE_WIDTH; i++) {
@@ -321,7 +321,7 @@ int readLine(CharsetProcessor *this, Line *line, Bitmap *bitmap, int x, int y, _
 
 	// Create the pattern
 	for (i = 0, j = TILE_WIDTH - 1; i < TILE_WIDTH; i++, j--) {
-		byte color = colors[j];
+		uint8_t color = colors[j];
 		if (bgcandidate == 0xff) {
 			bgcandidate = color;
 			// pattern |= 0<<i; // (unnecesary)
@@ -377,8 +377,8 @@ void charsetProcessorInitForCharset(CharsetProcessor *this, Charset *charset) {
 	for (i = 0, block = charset->blocks; i < charset->blockCount; i++, block++) {
 		for (j = 0, evenLine = block->line, oddLine = evenLine + 1; j < TILE_HEIGHT; j += 2, evenLine += 2, oddLine += 2) {
 			for (b = 0; b < 8; b++) {
-				byte evenColor = colorAtBit(evenLine, b);
-				byte oddColor = colorAtBit(oddLine, b);
+				uint8_t evenColor = colorAtBit(evenLine, b);
+				uint8_t oddColor = colorAtBit(oddLine, b);
 				count[evenColor]++;
 				count[oddColor]++;
 				evenCount[evenColor]++;
@@ -387,9 +387,9 @@ void charsetProcessorInitForCharset(CharsetProcessor *this, Charset *charset) {
 		}
 	}
 
-	byte mostFrequentColor = 0x00, mostFrequentEvenColor = 0x00, mostFrequentOddColor = 0x00;
+	uint8_t mostFrequentColor = 0x00, mostFrequentEvenColor = 0x00, mostFrequentOddColor = 0x00;
 	unsigned int maxCount = 0, maxEvenCount = 0, maxOddCount = 0;
-	for (byte color = 0; color < 16; color++) {
+	for (uint8_t color = 0; color < 16; color++) {
 		if (veryVerbose) printf("\tFrequency of color %x (charset): %d\n", color, count[color]);
 		if (count[color] > maxCount) {
 			maxCount = count[color];
@@ -587,8 +587,8 @@ void postProcessLine(CharsetProcessor *this, int index, Line *line, Line *previo
 
 	// Two colors -------------------------------------------------------------
 
-	const byte fg = (line->color >> 4);
-	const byte bg = (line->color & 0x0f);
+	const uint8_t fg = (line->color >> 4);
+	const uint8_t bg = (line->color & 0x0f);
 
 	// Attempts to reuse the previous CLRTBL value
 	if (line->color == previousLine->color) {
@@ -664,7 +664,7 @@ int isLineSingleColor(Line *line) {
 			: -1;
 }
 
-byte colorAtBit(Line *line, char bit) {
+uint8_t colorAtBit(Line *line, char bit) {
 
 	return (line->pattern & (0x01 << bit))
 		? (line->color >> 4)

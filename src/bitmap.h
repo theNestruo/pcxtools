@@ -5,17 +5,13 @@
 
 #pragma once
 
-/* Types ------------------------------------------------------------------- */
-
-#ifndef byte
-typedef unsigned char byte;
-#endif
+#include <stdint.h>
 
 /* Data structures --------------------------------------------------------- */
 
 typedef struct {
 	// Bitmap container
-	byte *bitmap;
+	uint8_t *bitmap;
 	unsigned int width, height;
 
 	// Arguments and options
@@ -32,7 +28,7 @@ void bitmapOptions();
 
 void bitmapInit(Bitmap *instance, int argc, char **argv);
 
-byte bitmapGet(Bitmap *instance, int x, int y);
+uint8_t bitmapGet(Bitmap *instance, int x, int y);
 
 void bitmapDone(Bitmap *instance);
 

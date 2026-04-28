@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include "bitmap.h"
 
 /* Symbolic constants ------------------------------------------------------ */
@@ -12,17 +14,11 @@
 #define TILE_WIDTH (8)
 #define TILE_HEIGHT (8)
 
-/* Types ------------------------------------------------------------------- */
-
-#ifndef byte
-typedef unsigned char byte;
-#endif
-
 /* Data structures --------------------------------------------------------- */
 
 typedef struct {
-	byte pattern;
-	byte color;
+	uint8_t pattern;
+	uint8_t color;
 } Line;
 
 typedef struct {
@@ -47,7 +43,7 @@ typedef struct {
 	int traverseHorizontally;
 
 	// State
-	byte preferredBackground;
+	uint8_t preferredBackground;
 	int isStrippedImage;
 } CharsetProcessor;
 
@@ -82,7 +78,7 @@ void charsetProcessorDone(CharsetProcessor *instance);
 
 void charsetDone(Charset *instance);
 
-int isSolidBlock(Block *block, byte color);
+int isSolidBlock(Block *block, uint8_t color);
 
 int isBlockEquals(Block *block, Block *other);
 
