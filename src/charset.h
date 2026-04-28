@@ -3,8 +3,7 @@
  * Coded by theNestruo
  */
 
-#ifndef CHARSETS_H_INCLUDED
-#define CHARSETS_H_INCLUDED
+#pragma once
 
 #include "bitmap.h"
 
@@ -21,24 +20,24 @@ typedef unsigned char byte;
 
 /* Data structures --------------------------------------------------------- */
 
-struct stLine {
+typedef struct {
 	byte pattern;
 	byte color;
-};
+} Line;
 
-struct stBlock {
-	struct stLine line[TILE_HEIGHT];
-};
+typedef struct {
+	Line line[TILE_HEIGHT];
+} Block;
 
-struct stCharset {
+typedef struct {
 	// Data container
-	struct stBlock *blocks;
+	Block *blocks;
 	int blockCount;
 
 	unsigned int width, height; // (in chars)
-};
+} Charset;
 
-struct stCharsetProcessor {
+typedef struct {
 	// Arguments
 	int ignoreCollision;
 	int forceStrippedImage;
@@ -50,7 +49,7 @@ struct stCharsetProcessor {
 	// State
 	byte preferredBackground;
 	int isStrippedImage;
-};
+} CharsetProcessor;
 
 /* Function prototypes ----------------------------------------------------- */
 
@@ -71,22 +70,21 @@ struct stCharsetProcessor {
 // -tv       traverse image vertically, then horizontally
 void charsetProcessorOptions();
 
-void charsetProcessorInit(struct stCharsetProcessor *instance, int argc, char **argv);
+void charsetProcessorInit(CharsetProcessor *instance, int argc, char **argv);
 
-int charsetProcessorRead(struct stCharsetProcessor *instance, struct stCharset *charset, struct stBitmap *bitmap);
+int charsetProcessorRead(CharsetProcessor *instance, Charset *charset, Bitmap *bitmap);
 
-void charsetProcessorPostProcess(struct stCharsetProcessor *instance, struct stCharset *charset);
+void charsetProcessorPostProcess(CharsetProcessor *instance, Charset *charset);
 
-int charsetProcessorWrite(struct stCharsetProcessor *instance, struct stCharset *charset, FILE *chrFile, FILE *clrFile);
+int charsetProcessorWrite(CharsetProcessor *instance, Charset *charset, FILE *chrFile, FILE *clrFile);
 
-void charsetProcessorDone(struct stCharsetProcessor *instance);
+void charsetProcessorDone(CharsetProcessor *instance);
 
-void charsetDone(struct stCharset *instance);
+void charsetDone(Charset *instance);
 
-int isSolidBlock(struct stBlock *block, byte color);
+int isSolidBlock(Block *block, byte color);
 
-int isBlockEquals(struct stBlock *block, struct stBlock *other);
+int isBlockEquals(Block *block, Block *other);
 
-int blockIndex(struct stCharset *charset, struct stBlock *block, int stopBefore);
+int blockIndex(Charset *charset, Block *block, int stopBefore);
 
-#endif // CHARSETS_H_INCLUDED

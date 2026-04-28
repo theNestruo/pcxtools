@@ -3,13 +3,11 @@
  * Coded by theNestruo
  */
 
-#ifndef READPCX_H_INCLUDED
-#define READPCX_H_INCLUDED
+#pragma once
 
 #include "bitmap.h"
 
 /* Function prototypes ----------------------------------------------------- */
 
-int pcxReaderRead(FILE *file, struct stBitmap *bitmap);
+int pcxReaderRead(FILE *file, Bitmap *bitmap);
 
-#endif // READPCX_H_INCLUDED

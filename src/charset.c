@@ -42,17 +42,17 @@ const unsigned int brightness[] =
 
 
 int patternMode(int isForeground, char bit);
-void postProcessRange(struct stCharsetProcessor *instance, char *argstring);
+void postProcessRange(CharsetProcessor *instance, char *argstring);
 
-void charsetProcessorInitForBitmap(struct stCharsetProcessor *instance, struct stBitmap *bitmap);
-int readLine(struct stCharsetProcessor *instance, struct stLine *line, struct stBitmap *bitmap, int x, int y, struct stLine *previousLine);
-void charsetProcessorInitForCharset(struct stCharsetProcessor *instance, struct stCharset *charset);
-void postProcessLine(struct stCharsetProcessor *instance, int index, struct stLine *line, struct stLine *previousLine);
-void debugPostProcessLine(struct stCharsetProcessor *instance, struct stLine *from, struct stLine *to, struct stLine *previousLine, char *message);
-void negateAndSwap(struct stLine *line);
-int isLineEquals(struct stLine *line, struct stLine *other);
-int isLineSingleColor(struct stLine *line);
-byte colorAtBit(struct stLine *line, char bit);
+void charsetProcessorInitForBitmap(CharsetProcessor *instance, Bitmap *bitmap);
+int readLine(CharsetProcessor *instance, Line *line, Bitmap *bitmap, int x, int y, Line *previousLine);
+void charsetProcessorInitForCharset(CharsetProcessor *instance, Charset *charset);
+void postProcessLine(CharsetProcessor *instance, int index, Line *line, Line *previousLine);
+void debugPostProcessLine(CharsetProcessor *instance, Line *from, Line *to, Line *previousLine, char *message);
+void negateAndSwap(Line *line);
+int isLineEquals(Line *line, Line *other);
+int isLineSingleColor(Line *line);
+byte colorAtBit(Line *line, char bit);
 
 /* Function bodies --------------------------------------------------------- */
 
@@ -89,7 +89,7 @@ void charsetProcessorOptions() {
 	printf("\t-tv\ttraverse image vertically, then horizontally\n");
 }
 
-void charsetProcessorInit(struct stCharsetProcessor *this, int argc, char **argv) {
+void charsetProcessorInit(CharsetProcessor *this, int argc, char **argv) {
 
 	// Init
 	this->ignoreCollision = 0;
@@ -123,7 +123,7 @@ void charsetProcessorInit(struct stCharsetProcessor *this, int argc, char **argv
 		: 1;
 }
 
-int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *charset, struct stBitmap *bitmap) {
+int charsetProcessorRead(CharsetProcessor *this, Charset *charset, Bitmap *bitmap) {
 
 	// Partial post-process initialization (preferred background color only)
 	charsetProcessorInitForBitmap(this, bitmap);
@@ -134,13 +134,13 @@ int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *char
 	charset->width = bitmap->width / TILE_WIDTH;
 	charset->height = bitmap->height / TILE_HEIGHT;
 	charset->blockCount = (int) (charset->width * charset->height);
-	charset->blocks = (struct stBlock*) calloc(charset->blockCount, sizeof(struct stBlock));
+	charset->blocks = (Block*) calloc(charset->blockCount, sizeof(Block));
 
 	// For each block...
 	unsigned int x, y;
-	struct stBlock *itBlock;
-	struct stLine previousLine0 = { 0x00, this->preferredBackground << 4 | this->preferredBackground };
-	struct stLine *previousLine;
+	Block *itBlock;
+	Line previousLine0 = { 0x00, this->preferredBackground << 4 | this->preferredBackground };
+	Line *previousLine;
 
 	if (this->traverseHorizontally) {
 
@@ -149,7 +149,7 @@ int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *char
 
 				// For each line...
 				int i;
-				struct stLine *itLine;
+				Line *itLine;
 				for (i = 0, itLine = itBlock->line; i < TILE_HEIGHT; i++, previousLine = itLine, itLine++) {
 					if (!readLine(this, itLine, bitmap, x, y + i, previousLine) && !this->ignoreCollision)
 						return 1;
@@ -164,7 +164,7 @@ int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *char
 
 				// For each line...
 				int i;
-				struct stLine *itLine;
+				Line *itLine;
 				for (i = 0, itLine = itBlock->line; i < TILE_HEIGHT; i++, previousLine = itLine, itLine++) {
 					if (!readLine(this, itLine, bitmap, x, y + i, previousLine) && !this->ignoreCollision)
 						return 1;
@@ -177,7 +177,7 @@ int charsetProcessorRead(struct stCharsetProcessor *this, struct stCharset *char
 	return 0;
 }
 
-void charsetProcessorPostProcess(struct stCharsetProcessor *this, struct stCharset *charset) {
+void charsetProcessorPostProcess(CharsetProcessor *this, Charset *charset) {
 
 	// Final post-process initialization delayed after nametable processing,
 	// including stripped image detection
@@ -192,25 +192,25 @@ void charsetProcessorPostProcess(struct stCharsetProcessor *this, struct stChars
 
 	// For each block...
 	int i;
-	struct stBlock *itBlock;
-	struct stLine previousLine0 = { 0x00, this->preferredBackground << 4 | this->preferredBackground };
-	struct stLine *previousLine;
+	Block *itBlock;
+	Line previousLine0 = { 0x00, this->preferredBackground << 4 | this->preferredBackground };
+	Line *previousLine;
 	for (i = 0, itBlock = charset->blocks, previousLine = &previousLine0; i < charset->blockCount; i++, itBlock++) {
 
 		// For each line...
 		int j;
-		struct stLine *itLine;
+		Line *itLine;
 		for (j = 0, itLine = itBlock->line; j < TILE_HEIGHT; j++, previousLine = itLine, itLine++) {
 			postProcessLine(this, i * TILE_HEIGHT + j, itLine, previousLine);
 		}
 	}
 }
 
-int charsetProcessorWrite(__attribute__((unused)) struct stCharsetProcessor *this, struct stCharset *charset, FILE *chrFile, FILE *clrFile) {
+int charsetProcessorWrite(__attribute__((unused)) CharsetProcessor *this, Charset *charset, FILE *chrFile, FILE *clrFile) {
 
 	int i, j;
-	struct stBlock *it;
-	struct stLine *line;
+	Block *it;
+	Line *line;
 	for (i = 0, it = charset->blocks; i < charset->blockCount; i++, it++) {
 		for (j = 0, line = it->line; j < TILE_HEIGHT; j++, line++) {
 			// Write value in output files
@@ -224,21 +224,21 @@ int charsetProcessorWrite(__attribute__((unused)) struct stCharsetProcessor *thi
 	return 0;
 }
 
-void charsetProcessorDone(__attribute__((unused)) struct stCharsetProcessor *this) {
+void charsetProcessorDone(__attribute__((unused)) CharsetProcessor *this) {
 
 	// nothing to do here
 }
 
-void charsetDone(struct stCharset *this) {
+void charsetDone(Charset *this) {
 
 	if (this->blocks) free(this->blocks);
 	this->blocks = NULL;
 }
 
-int isSolidBlock(struct stBlock *block, byte color) {
+int isSolidBlock(Block *block, byte color) {
 
 	int i;
-	struct stLine *line;
+	Line *line;
 	for (i = 0, line = block->line; i < TILE_HEIGHT; i++, line++) {
 		if (((line->pattern) != 0xff) && ((line->color & 0x0f) != color))
 			return 0;
@@ -248,10 +248,10 @@ int isSolidBlock(struct stBlock *block, byte color) {
 	return 1;
 }
 
-int isBlockEquals(struct stBlock *this, struct stBlock *that) {
+int isBlockEquals(Block *this, Block *that) {
 
 	int i;
-	struct stLine *thisLine, *thatLine;
+	Line *thisLine, *thatLine;
 	for (i = 0, thisLine = this->line, thatLine = that->line; i < TILE_HEIGHT; i++, thisLine++, thatLine++)
 		if (!isLineEquals(thisLine, thatLine))
 			return 0;
@@ -259,10 +259,10 @@ int isBlockEquals(struct stBlock *this, struct stBlock *that) {
 	return 1;
 }
 
-int blockIndex(struct stCharset *charset, struct stBlock *block, int stopBefore) {
+int blockIndex(Charset *charset, Block *block, int stopBefore) {
 
 	int i;
-	struct stBlock *it;
+	Block *it;
 	for (i = 0, it = charset->blocks; (i < charset->blockCount) && (i < stopBefore); i++, it++)
 		if (isBlockEquals(block, it))
 			return i;
@@ -281,7 +281,7 @@ int patternMode(int isForeground, char bit) {
 		| (bit - '0');
 }
 
-void charsetProcessorInitForBitmap(struct stCharsetProcessor *this, struct stBitmap *bitmap) {
+void charsetProcessorInitForBitmap(CharsetProcessor *this, Bitmap *bitmap) {
 
 	// (before nametable processing)
 
@@ -308,7 +308,7 @@ void charsetProcessorInitForBitmap(struct stCharsetProcessor *this, struct stBit
 	this->preferredBackground = mostFrequentColor;
 }
 
-int readLine(struct stCharsetProcessor *this, struct stLine *line, struct stBitmap *bitmap, int x, int y, __attribute__((unused)) struct stLine *previousLine) {
+int readLine(CharsetProcessor *this, Line *line, Bitmap *bitmap, int x, int y, __attribute__((unused)) Line *previousLine) {
 
 	int i, j;
 	byte colors[TILE_WIDTH];
@@ -362,7 +362,7 @@ int readLine(struct stCharsetProcessor *this, struct stLine *line, struct stBitm
 	return 1;
 }
 
-void charsetProcessorInitForCharset(struct stCharsetProcessor *this, struct stCharset *charset) {
+void charsetProcessorInitForCharset(CharsetProcessor *this, Charset *charset) {
 
 	// (after nametable processing)
 
@@ -372,8 +372,8 @@ void charsetProcessorInitForCharset(struct stCharsetProcessor *this, struct stCh
 	unsigned int evenCount[16] = {0};
 	unsigned int oddCount[16] = {0};
 	int i, j, b;
-	struct stBlock *block;
-	struct stLine *evenLine, *oddLine;
+	Block *block;
+	Line *evenLine, *oddLine;
 	for (i = 0, block = charset->blocks; i < charset->blockCount; i++, block++) {
 		for (j = 0, evenLine = block->line, oddLine = evenLine + 1; j < TILE_HEIGHT; j += 2, evenLine += 2, oddLine += 2) {
 			for (b = 0; b < 8; b++) {
@@ -441,9 +441,9 @@ void charsetProcessorInitForCharset(struct stCharsetProcessor *this, struct stCh
 	return;
 }
 
-void postProcessLine(struct stCharsetProcessor *this, int index, struct stLine *line, struct stLine *previousLine) {
+void postProcessLine(CharsetProcessor *this, int index, Line *line, Line *previousLine) {
 
-	struct stLine copyOfLine = { line->pattern, line->color };
+	Line copyOfLine = { line->pattern, line->color };
 
 	int patternMode =
 			   ((this->postProcessRangeFrom == -1) || (this->postProcessRangeFrom <= index))
@@ -627,7 +627,7 @@ void postProcessLine(struct stCharsetProcessor *this, int index, struct stLine *
 	return;
 }
 
-void debugPostProcessLine(struct stCharsetProcessor *this, struct stLine *from, struct stLine *to, struct stLine *previousLine, char *message) {
+void debugPostProcessLine(CharsetProcessor *this, Line *from, Line *to, Line *previousLine, char *message) {
 
 	if (!veryVerbose) return;
 
@@ -640,13 +640,13 @@ void debugPostProcessLine(struct stCharsetProcessor *this, struct stLine *from, 
 			message);
 }
 
-void negateAndSwap(struct stLine *line) {
+void negateAndSwap(Line *line) {
 
 	line->pattern ^= 0xff;
 	line->color = ((line->color & 0x0f) << 4) | (line->color >> 4);
 }
 
-int isLineEquals(struct stLine *thisLine, struct stLine *thatLine) {
+int isLineEquals(Line *thisLine, Line *thatLine) {
 
 	int i;
 	for (i = 0; i < TILE_WIDTH; i++)
@@ -656,7 +656,7 @@ int isLineEquals(struct stLine *thisLine, struct stLine *thatLine) {
 	return 1;
 }
 
-int isLineSingleColor(struct stLine *line) {
+int isLineSingleColor(Line *line) {
 
 	return    (line->pattern == 0x00) ? (line->color & 0x0f)
 			: (line->pattern == 0xff) ? (line->color >> 4)
@@ -664,7 +664,7 @@ int isLineSingleColor(struct stLine *line) {
 			: -1;
 }
 
-byte colorAtBit(struct stLine *line, char bit) {
+byte colorAtBit(Line *line, char bit) {
 
 	return (line->pattern & (0x01 << bit))
 		? (line->color >> 4)

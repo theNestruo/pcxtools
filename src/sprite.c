@@ -19,7 +19,7 @@
 
 /* Private function prototypes --------------------------------------------- */
 
-void processSpriteGroup(struct stSprWriter *instance, struct stSpriteGroup *group, struct stBitmap *bitmap, int x, int y);
+void processSpriteGroup(SprWriter *instance, SpriteGroup *group, Bitmap *bitmap, int x, int y);
 
 /* Function bodies --------------------------------------------------------- */
 
@@ -44,7 +44,7 @@ void sprWriterOptions() {
 	printf("\t-tv\ttraverse spritesheet vertically, then horizontally\n");
 }
 
-void sprWriterInit(struct stSprWriter *this, int argc, char **argv) {
+void sprWriterInit(SprWriter *this, int argc, char **argv) {
 
 	// Init
 	this->groups = NULL;
@@ -70,13 +70,13 @@ void sprWriterInit(struct stSprWriter *this, int argc, char **argv) {
 		: 1;
 }
 
-void sprWriterReadSprites(struct stSprWriter *this, struct stBitmap *bitmap) {
+void sprWriterReadSprites(SprWriter *this, Bitmap *bitmap) {
 
 	this->groupCount = ((int) (bitmap->width / this->spriteWidth)) * ((int) (bitmap->height / this->spriteHeight));
-	this->groups = (struct stSpriteGroup*) calloc(this->groupCount, sizeof(struct stSpriteGroup));
+	this->groups = (SpriteGroup*) calloc(this->groupCount, sizeof(SpriteGroup));
 
 	unsigned int y, x;
-	struct stSpriteGroup *it;
+	SpriteGroup *it;
 	if (this->traverseHorizontally) {
 		for (y = 0, it = this->groups; (y + this->spriteHeight) <= bitmap->height; y += this->spriteHeight) {
 			for (x = 0; (x + this->spriteWidth) <= bitmap->width; x += this->spriteWidth, it++) {
@@ -92,18 +92,18 @@ void sprWriterReadSprites(struct stSprWriter *this, struct stBitmap *bitmap) {
 	}
 }
 
-int sprWriterWrite(struct stSprWriter *this, FILE *sprFile) {
+int sprWriterWrite(SprWriter *this, FILE *sprFile) {
 
 	size_t spriteSize = (this->spriteWidth / 8) * this->spriteHeight;
 
 	// For each group...
 	int i;
-	struct stSpriteGroup *it;
+	SpriteGroup *it;
 	for (i = 0, it = this->groups; i < this->groupCount; i++, it++) {
 
 		// For each sprite...
 		int j;
-		struct stSprite *sprite;
+		Sprite *sprite;
 		for (j = 0, sprite = it->sprites; j < it->spriteCount; j++, sprite++) {
 			if (fwrite(sprite->pattern, sizeof(byte), spriteSize, sprFile) != spriteSize)
 				return 2;
@@ -112,20 +112,20 @@ int sprWriterWrite(struct stSprWriter *this, FILE *sprFile) {
 	return 0;
 }
 
-void sprWriterDone(struct stSprWriter *this) {
+void sprWriterDone(SprWriter *this) {
 
 	if (!this->groups)
 		return;
 
 	// For each group...
 	int i;
-	struct stSpriteGroup *it;
+	SpriteGroup *it;
 	for (i = 0, it = this->groups; i < this->groupCount; i++, it++) {
 		if (!it->sprites) continue;
 
 		// For each sprite...
 		int j;
-		struct stSprite *sprite;
+		Sprite *sprite;
 		for (j = 0, sprite = it->sprites; j < it->spriteCount; j++, sprite++) {
 			if (sprite->pattern)
 				free(sprite->pattern);
@@ -138,13 +138,13 @@ void sprWriterDone(struct stSprWriter *this) {
 
 /* Private function bodies ------------------------------------------------- */
 
-void processSpriteGroup(struct stSprWriter *this, struct stSpriteGroup *group, struct stBitmap *bitmap, int x0, int y0) {
+void processSpriteGroup(SprWriter *this, SpriteGroup *group, Bitmap *bitmap, int x0, int y0) {
 
 	int spriteSize = (this->spriteWidth / 8) * this->spriteHeight;
 
 	// Create buffer and reset values
 	int i, j;
-	struct stSprite *buffer = (struct stSprite*) calloc(15, sizeof(struct stSprite));
+	Sprite *buffer = (Sprite*) calloc(15, sizeof(Sprite));
 	for(i = 0; i < 15; i++) {
 		buffer[i].pattern = (byte*) calloc(spriteSize, sizeof(byte));
 	}
@@ -191,10 +191,10 @@ void processSpriteGroup(struct stSprWriter *this, struct stSpriteGroup *group, s
 				: this->colorMode == COLOR_MODE_DARK_LIGHT ? colorOrderDarkLight
 				: colorOrderHighLow;
 
-		group->sprites = (struct stSprite*) calloc(group->spriteCount, sizeof(struct stSprite));
-		struct stSprite *dest;
+		group->sprites = (Sprite*) calloc(group->spriteCount, sizeof(Sprite));
+		Sprite *dest;
 		for (i = 0, dest = group->sprites; i < 15; i++) {
-			struct stSprite *src = &buffer[colorOrder[i]];
+			Sprite *src = &buffer[colorOrder[i]];
 
 			int spriteFound = 0;
 			for (j = 0; (j < spriteSize) && (!spriteFound); j++) {

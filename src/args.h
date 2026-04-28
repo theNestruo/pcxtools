@@ -3,8 +3,7 @@
  * Coded by theNestruo
  */
 
-#ifndef ARGS_H_INCLUDED
-#define ARGS_H_INCLUDED
+#pragma once
 
 /* Function prototypes ----------------------------------------------------- */
 
@@ -34,4 +33,3 @@ int hexadecimalInt(char *value);
 
 int hexadecimalNibble(char c);
 
-#endif // ARGS_H_INCLUDED

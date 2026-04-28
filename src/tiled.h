@@ -4,8 +4,7 @@
  * Tiled (c) 2008-2013 Thorbjørn Lindeijer [http://www.mapeditor.org/]
  */
 
-#ifndef TILED_H_INCLUDED
-#define TILED_H_INCLUDED
+#pragma once
 
 /* Types ------------------------------------------------------------------- */
 
@@ -16,16 +15,16 @@ typedef unsigned char byte;
 /* Data structures --------------------------------------------------------- */
 
 // Tiled (TMX) container
-struct stTiled {
+typedef struct {
 	byte *data;
 	int width;
 	int height;
-	
+
 	// Arguments and options
 	// int isFlip; // (not yet implemented)
 	// int isMirror; // (not yet implemented)
 	int metatileSize;
-};
+} Tiled;
 
 /* Function prototypes ----------------------------------------------------- */
 
@@ -35,10 +34,8 @@ struct stTiled {
 // -t<0..255>	reorganize data as metatiles of <0..255>x<0..255> bytes
 void tiledOptions();
 
-void tiledInit(struct stTiled *instance, int argc, char **argv);
+void tiledInit(Tiled *instance, int argc, char **argv);
 
-int tiledWrite(struct stTiled *instance, FILE *binFile);
+int tiledWrite(Tiled *instance, FILE *binFile);
 
-void tiledDone(struct stTiled *instance);
-
-#endif // BITMAP_H_INCLUDED
+void tiledDone(Tiled *instance);

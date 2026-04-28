@@ -3,8 +3,7 @@
  * Coded by theNestruo
  */
 
-#ifndef NAMETABLE_H_INCLUDED
-#define NAMETABLE_H_INCLUDED
+#pragma once
 
 #include "charset.h"
 
@@ -16,13 +15,13 @@ typedef unsigned char byte;
 
 /* Data structures --------------------------------------------------------- */
 
-struct stNameTable {
+typedef struct {
 	// Data container
 	int *namtbl;
 	int namtblSize;
-};
+} NameTable;
 
-struct stNameTableProcessor {
+typedef struct {
 	// Arguments
 	int namtblOffset;
 	int generateBlank;
@@ -30,8 +29,8 @@ struct stNameTableProcessor {
 	int removeRepeated;
 	int removeEmpty;
 	byte emptyColorRemoved;
-	int traverseHorizontally; // (see struct stCharsetProcessor)
-};
+	int traverseHorizontally; // (see CharsetProcessor)
+} NameTableProcessor;
 
 /* Function prototypes ----------------------------------------------------- */
 
@@ -42,22 +41,21 @@ struct stNameTableProcessor {
 // -rm<0..f>	remove solid tiles of <n> color
 void nameTableProcessorOptions();
 
-void nameTableProcessorInit(struct stNameTableProcessor *instance, int argc, char **argv);
+void nameTableProcessorInit(NameTableProcessor *instance, int argc, char **argv);
 
-void nameTableProcessorGenerate(struct stNameTableProcessor *instance,
-	struct stNameTable *nametable, struct stCharset *charset);
+void nameTableProcessorGenerate(NameTableProcessor *instance,
+	NameTable *nametable, Charset *charset);
 
-void nameTableProcessorGenerateUsing(struct stNameTableProcessor *instance,
-	struct stNameTable *nametable, struct stCharset *charset, struct stCharset *screen);
+void nameTableProcessorGenerateUsing(NameTableProcessor *instance,
+	NameTable *nametable, Charset *charset, Charset *screen);
 
-void nameTableProcessorApplyTo(struct stNameTable *nametable, struct stCharset *charset);
+void nameTableProcessorApplyTo(NameTable *nametable, Charset *charset);
 
-void nameTableProcessorPostProcess(struct stNameTableProcessor *instance, struct stNameTable *nametable);
+void nameTableProcessorPostProcess(NameTableProcessor *instance, NameTable *nametable);
 
-int nameTableProcessorWrite(struct stNameTableProcessor *instance, struct stNameTable *nametable, FILE *namFile);
+int nameTableProcessorWrite(NameTableProcessor *instance, NameTable *nametable, FILE *namFile);
 
-void nameTableProcessorDone(struct stNameTableProcessor *instance);
+void nameTableProcessorDone(NameTableProcessor *instance);
 
-void nameTableDone(struct stNameTable *instance);
+void nameTableDone(NameTable *instance);
 
-#endif // NAMETABLE_H_INCLUDED

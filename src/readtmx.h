@@ -4,18 +4,17 @@
  * Tiled (c) 2008-2013 Thorbjørn Lindeijer [http://www.mapeditor.org/]
  */
 
-#ifndef READTMX_H_INCLUDED
-#define READTMX_H_INCLUDED
+#pragma once
 
 #include "tiled.h"
 
 /* Data structures --------------------------------------------------------- */
 
 // Tiled (TMX) reader
-struct stTmxReader {
+typedef struct {
 	// Arguments and options
 	int isMultibankCharset;
-};
+} TmxReader;
 
 /* Function prototypes ----------------------------------------------------- */
 
@@ -23,8 +22,7 @@ struct stTmxReader {
 // -b		multibank charset support
 void tmxReaderOptions();
 
-void tmxReaderInit(struct stTmxReader *instance, int argc, char **argv);
+void tmxReaderInit(TmxReader *instance, int argc, char **argv);
 
-int tmxReaderRead(struct stTmxReader *instance, FILE *file, struct stTiled *tiled);
+int tmxReaderRead(TmxReader *instance, FILE *file, Tiled *tiled);
 
-#endif // READTMX_H_INCLUDED

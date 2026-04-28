@@ -31,12 +31,12 @@ int veryVerbose = 0;
 
 void showTitle();
 void showUsage();
-int readCharset(struct stCharsetProcessor *charsetProcessor,
-	struct stCharset *charset, struct stBitmap *bitmap, char *pcxFilename);
-int writeCharset(struct stCharsetProcessor *charsetProcessor,
-	struct stCharset *charset, char *pcxFilename);
-int writeNameTable(struct stNameTableProcessor *nameTableProcessor,
-	struct stNameTable *nameTable, char *pcxFilename);
+int readCharset(CharsetProcessor *charsetProcessor,
+	Charset *charset, Bitmap *bitmap, char *pcxFilename);
+int writeCharset(CharsetProcessor *charsetProcessor,
+	Charset *charset, char *pcxFilename);
+int writeNameTable(NameTableProcessor *nameTableProcessor,
+	NameTable *nameTable, char *pcxFilename);
 
 /* Entry point ------------------------------------------------------------- */
 
@@ -69,12 +69,12 @@ int main(int argc, char **argv) {
 		return 12;
 	}
 
-	struct stCharsetProcessor charsetProcessor = {0};
-	struct stNameTableProcessor nameTableProcessor = {0};
-	struct stBitmap bitmap = {0};
-	struct stCharset charset = {0};
-	struct stCharset screenCharset = {0};
-	struct stNameTable nameTable = {0};
+	CharsetProcessor charsetProcessor = {0};
+	NameTableProcessor nameTableProcessor = {0};
+	Bitmap bitmap = {0};
+	Charset charset = {0};
+	Charset screenCharset = {0};
+	NameTable nameTable = {0};
 
 	// Read main file
 	bitmapInit(&bitmap, argc, argv);
@@ -214,8 +214,8 @@ void showUsage() {
 	nameTableProcessorOptions();
 }
 
-int readCharset(struct stCharsetProcessor *charsetProcessor, struct stCharset *charset,
-	struct stBitmap *bitmap, char *pcxFilename) {
+int readCharset(CharsetProcessor *charsetProcessor, Charset *charset,
+	Bitmap *bitmap, char *pcxFilename) {
 
 	int i = 0;
 
@@ -241,7 +241,7 @@ out:
 	return i;
 }
 
-int writeCharset(struct stCharsetProcessor *charsetProcessor, struct stCharset *charset, char *pcxFilename) {
+int writeCharset(CharsetProcessor *charsetProcessor, Charset *charset, char *pcxFilename) {
 
 	int i = 0;
 
@@ -281,7 +281,7 @@ out:
 	return i;
 }
 
-int writeNameTable(struct stNameTableProcessor *nameTableProcessor, struct stNameTable *nameTable, char *pcxFilename) {
+int writeNameTable(NameTableProcessor *nameTableProcessor, NameTable *nameTable, char *pcxFilename) {
 
 	int i = 0;
 

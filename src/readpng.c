@@ -28,7 +28,7 @@ typedef unsigned short int word;
 
 /* Data structures --------------------------------------------------------- */
 
-struct stColor {
+typedef struct {
 
 	// The RGBA values
 	byte r;
@@ -38,13 +38,13 @@ struct stColor {
 
 	// The assigned index
 	byte index;
-};
+} Color;
 
 /* Constant values --------------------------------------------------------- */
 
 const int paletteLength = 15 + 3;
 
-struct stColor meiseiTms9218Palette[] = {
+Color meiseiTms9218Palette[] = {
 			// transparent values
 			{ 0x00, 0x00, 0x00, 0x00,  0 }, // actually transparent
 			{ 0xFF, 0x00, 0xFF, 0xFF,  0 }, // fuchsia
@@ -67,7 +67,7 @@ struct stColor meiseiTms9218Palette[] = {
 			{ 0xFF, 0xFF, 0xFF, 0xFF, 15 }  // white
 		};
 
-struct stColor meiseiV9938Palette[] = {
+Color meiseiV9938Palette[] = {
 			// transparent values
 			{ 0x00, 0x00, 0x00, 0x00,  0 }, // actually transparent
 			{ 0xFF, 0x00, 0xFF, 0xFF,  0 }, // fuchsia
@@ -90,7 +90,7 @@ struct stColor meiseiV9938Palette[] = {
 			{ 0xFF, 0xFF, 0xFF, 0xFF, 15 }  // white
 		};
 
-struct stColor reidracToshibaPalette[] = {
+Color reidracToshibaPalette[] = {
 			// transparent values
 			{ 0x00, 0x00, 0x00, 0x00,  0 }, // actually transparent
 			{ 0xFF, 0x00, 0xFF, 0xFF,  0 }, // fuchsia
@@ -114,7 +114,7 @@ struct stColor reidracToshibaPalette[] = {
 			{  238,  238,  238, 0xFF, 15 }  // white
 		};
 
-struct stColor wikipediaTms9918Palette[] = {
+Color wikipediaTms9918Palette[] = {
 			// transparent values
 			{ 0x00, 0x00, 0x00, 0x00,  0 }, // actually transparent
 			{ 0xFF, 0x00, 0xFF, 0xFF,  0 }, // fuchsia
@@ -138,7 +138,7 @@ struct stColor wikipediaTms9918Palette[] = {
 			{ 0xFF, 0xFF, 0xFF, 0xFF, 15 }  // white
 		};
 
-struct stColor yaziohPalette[] = {
+Color yaziohPalette[] = {
 			// transparent values
 			{ 0x00, 0x00, 0x00, 0x00,  0 }, // actually transparent
 			{ 0xFF, 0x00, 0xFF, 0xFF,  0 }, // fuchsia
@@ -168,14 +168,14 @@ extern int veryVerbose;
 
 /* Private function prototypes --------------------------------------------- */
 
-struct stColor* guessPalette(unsigned int pngWidth, unsigned int pngHeight, byte *pngImage);
-int paletteDistance(struct stColor palette[], unsigned int pngWidth, unsigned int pngHeight, byte *pngImage);
-int closestColorDistance(struct stColor palette[], byte r, byte g, byte b, byte a);
-byte paletteIndex(struct stColor palette[], byte r, byte g, byte b, byte a);
-int euclideanDistance(struct stColor *color, byte r, byte g, byte b, byte a);
-int weightedDistance(struct stColor *color, byte r, byte g, byte b, byte a);
+Color* guessPalette(unsigned int pngWidth, unsigned int pngHeight, byte *pngImage);
+int paletteDistance(Color palette[], unsigned int pngWidth, unsigned int pngHeight, byte *pngImage);
+int closestColorDistance(Color palette[], byte r, byte g, byte b, byte a);
+byte paletteIndex(Color palette[], byte r, byte g, byte b, byte a);
+int euclideanDistance(Color *color, byte r, byte g, byte b, byte a);
+int weightedDistance(Color *color, byte r, byte g, byte b, byte a);
 
-int (*distance) (struct stColor *color, byte r, byte g, byte b, byte a) = euclideanDistance;
+int (*distance) (Color *color, byte r, byte g, byte b, byte a) = euclideanDistance;
 
 /* Function bodies --------------------------------------------------------- */
 
@@ -194,7 +194,7 @@ void pngReaderInit(int argc, char **argv) {
 		distance = weightedDistance;
 }
 
-int pngReaderRead(char *pngFilename, struct stBitmap *bitmap) {
+int pngReaderRead(char *pngFilename, Bitmap *bitmap) {
 
 	if (!pngFilename)
 		return 1;
@@ -215,7 +215,7 @@ int pngReaderRead(char *pngFilename, struct stBitmap *bitmap) {
 	}
 
 	// Guesses the palette
-	struct stColor *palette = guessPalette(pngWidth, pngHeight, pngImage);
+	Color *palette = guessPalette(pngWidth, pngHeight, pngImage);
 	if (verbose) printf("Using %s...\n",
 			palette == meiseiTms9218Palette ? "TI TMS9219 palette, from hap's meisei emulator"
 			: palette == meiseiV9938Palette ? "V9938 palette, from hap's meisei emulator"
@@ -250,9 +250,9 @@ out:
 
 /* Private function bodies ------------------------------------------------- */
 
-struct stColor* guessPalette(unsigned int pngWidth, unsigned int pngHeight, byte *pngImage) {
+Color* guessPalette(unsigned int pngWidth, unsigned int pngHeight, byte *pngImage) {
 
-	struct stColor* closestPalette = meiseiTms9218Palette;
+	Color* closestPalette = meiseiTms9218Palette;
 	int minDistance = paletteDistance(meiseiTms9218Palette, pngWidth, pngHeight, pngImage);
 	if (veryVerbose) printf("Distance %u: TI TMS9219 palette, from hap's meisei emulator\n", minDistance);
 	if (minDistance == 0) return meiseiTms9218Palette;
@@ -280,7 +280,7 @@ struct stColor* guessPalette(unsigned int pngWidth, unsigned int pngHeight, byte
 	return closestPalette;
 }
 
-int paletteDistance(struct stColor palette[], unsigned int pngWidth, unsigned int pngHeight, byte *pngImage) {
+int paletteDistance(Color palette[], unsigned int pngWidth, unsigned int pngHeight, byte *pngImage) {
 
 	int totalDistance = 0;
 	unsigned int y, x;
@@ -298,10 +298,10 @@ int paletteDistance(struct stColor palette[], unsigned int pngWidth, unsigned in
 	return totalDistance;
 }
 
-int closestColorDistance(struct stColor palette[], byte r, byte g, byte b, byte a) {
+int closestColorDistance(Color palette[], byte r, byte g, byte b, byte a) {
 
 	int i;
-	struct stColor *it;
+	Color *it;
 	int minDistance = -1;
 	for (i = 0, it = palette; i < paletteLength; i++, it++) {
 		int dist = distance(it, r, g, b, a);
@@ -312,11 +312,11 @@ int closestColorDistance(struct stColor palette[], byte r, byte g, byte b, byte 
 	return minDistance;
 }
 
-byte paletteIndex(struct stColor palette[], byte r, byte g, byte b, byte a) {
+byte paletteIndex(Color palette[], byte r, byte g, byte b, byte a) {
 
 	int i;
-	struct stColor *it;
-	struct stColor *closestColor = 0;
+	Color *it;
+	Color *closestColor = 0;
 	int minDistance = -1;
 	for (i = 0, it = palette; i < paletteLength; i++, it++) {
 		int dist = distance(it, r, g, b, a);
@@ -332,7 +332,7 @@ byte paletteIndex(struct stColor palette[], byte r, byte g, byte b, byte a) {
 	return closestColor->index;
 }
 
-int euclideanDistance(struct stColor *color, byte r, byte g, byte b, byte a) {
+int euclideanDistance(Color *color, byte r, byte g, byte b, byte a) {
 
 	// (transparent hack)
 	if (color->a == 0x00)
@@ -349,7 +349,7 @@ int euclideanDistance(struct stColor *color, byte r, byte g, byte b, byte a) {
 		);
 }
 
-int weightedDistance(struct stColor *color, byte r, byte g, byte b, byte a) {
+int weightedDistance(Color *color, byte r, byte g, byte b, byte a) {
 
 	// (transparent hack)
 	if (color->a == 0x00)

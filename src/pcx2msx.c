@@ -40,9 +40,9 @@ int main(int argc, char **argv) {
 	FILE *pcxFile = NULL;
 	FILE *chrFile = NULL;
 	FILE *clrFile = NULL;
-	struct stBitmap bitmap = {0};
-	struct stCharset charset = {0};
-	struct stCharsetProcessor processor = {0};
+	Bitmap bitmap = {0};
+	Charset charset = {0};
+	CharsetProcessor processor = {0};
 
 	int i = 0, argi = 0;
 	int dryRun = 0;

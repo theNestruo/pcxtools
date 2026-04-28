@@ -3,8 +3,7 @@
  * Coded by theNestruo
  */
 
-#ifndef OUTPUT_H_INCLUDED
-#define OUTPUT_H_INCLUDED
+#pragma once
 
 /* Types ------------------------------------------------------------------- */
 
@@ -19,4 +18,3 @@ int asmComment(FILE *file, char *string, int inner);
 int asmLabel(FILE *file, char *string);
 int asmBytes(FILE *file, byte *bytes, int byteCount);
 
-#endif // OUTPUT_H_INCLUDED

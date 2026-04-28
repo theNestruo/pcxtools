@@ -36,8 +36,8 @@ int main(int argc, char **argv) {
 	char *sprFilename = NULL;
 	FILE *pcxFile = NULL;
 	FILE *sprFile = NULL;
-	struct stBitmap bitmap = {0};
-	struct stSprWriter writer = {0};
+	Bitmap bitmap = {0};
+	SprWriter writer = {0};
 
 	int i = 0, argi = 0;
 	int verbose = 0, dryRun = 0;

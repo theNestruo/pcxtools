@@ -12,8 +12,7 @@
 
 /* Private function prototypes --------------------------------------------- */
 
-// void optimizeLine(struct stChrClrWriter *instance, struct stLine *line, byte optColor);
-void reallocateBlocks(struct stCharset *charset, int newBlockCount);
+void reallocateBlocks(Charset *charset, int newBlockCount);
 
 /* Function bodies --------------------------------------------------------- */
 
@@ -25,7 +24,7 @@ void nameTableProcessorOptions() {
 	printf("\t-rm<0..f>\tremove solid tiles of <n> color\n");
 }
 
-void nameTableProcessorInit(struct stNameTableProcessor *this, int argc, char **argv) {
+void nameTableProcessorInit(NameTableProcessor *this, int argc, char **argv) {
 
 	// Init
 	this->namtblOffset = this->blankAt = 0;
@@ -49,8 +48,8 @@ void nameTableProcessorInit(struct stNameTableProcessor *this, int argc, char **
 		: 1;
 }
 
-void nameTableProcessorGenerate(struct stNameTableProcessor *this,
-		struct stNameTable *nametable, struct stCharset *charset) {
+void nameTableProcessorGenerate(NameTableProcessor *this,
+		NameTable *nametable, Charset *charset) {
 
 	// Initial namtbl
 	nametable->namtblSize = charset->blockCount;
@@ -58,7 +57,7 @@ void nameTableProcessorGenerate(struct stNameTableProcessor *this,
 
 	// For each block...
 	int i, b, c, blockCount, *it;
-	struct stBlock *src, *dest;
+	Block *src, *dest;
 
 	if (this->traverseHorizontally) {
 
@@ -75,7 +74,7 @@ void nameTableProcessorGenerate(struct stNameTableProcessor *this,
 				continue;
 			}
 			// Not removed: move (compact blocks)
-			if (src != dest) memcpy(dest, src, sizeof(struct stBlock));
+			if (src != dest) memcpy(dest, src, sizeof(Block));
 			*it = b++;
 			blockCount++;
 			dest++;
@@ -99,7 +98,7 @@ void nameTableProcessorGenerate(struct stNameTableProcessor *this,
 					continue;
 				}
 				// Not removed: move (compact blocks)
-				if (src != dest) memcpy(dest, src, sizeof(struct stBlock));
+				if (src != dest) memcpy(dest, src, sizeof(Block));
 				*it = b++;
 				blockCount++;
 				dest++;
@@ -127,10 +126,10 @@ void nameTableProcessorGenerate(struct stNameTableProcessor *this,
 		// Move
 		int j;
 		for (i = charset->blockCount - 1, j = i - 1; j >= this->blankAt; i--, j--) {
-			memcpy(&charset->blocks[i], &charset->blocks[j], sizeof(struct stBlock));
+			memcpy(&charset->blocks[i], &charset->blocks[j], sizeof(Block));
 		}
 		// Blank
-		struct stLine *itLine;
+		Line *itLine;
 		for (i = 0, itLine = charset->blocks[this->blankAt].line; i < TILE_HEIGHT; i++, itLine++) {
 			itLine->pattern = 0x00;
 			itLine->color = 0x00;
@@ -138,8 +137,8 @@ void nameTableProcessorGenerate(struct stNameTableProcessor *this,
 	}
 }
 
-void nameTableProcessorGenerateUsing(__attribute__((unused)) struct stNameTableProcessor *this,
-		struct stNameTable *nametable, struct stCharset *charset, struct stCharset *screen) {
+void nameTableProcessorGenerateUsing(__attribute__((unused)) NameTableProcessor *this,
+		NameTable *nametable, Charset *charset, Charset *screen) {
 
 	// Initial namtbl
 	nametable->namtblSize = screen->blockCount;
@@ -147,17 +146,17 @@ void nameTableProcessorGenerateUsing(__attribute__((unused)) struct stNameTableP
 
 	// For each block...
 	int i, j, *it;
-	struct stBlock *block;
+	Block *block;
 	for (i = 0, it = nametable->namtbl, block = screen->blocks; i < nametable->namtblSize; i++, it++, block++) {
 		j = blockIndex(charset, block, charset->blockCount);
 		*it = j;
 	}
 }
 
-void nameTableProcessorApplyTo(struct stNameTable *nametable, struct stCharset *charset) {
+void nameTableProcessorApplyTo(NameTable *nametable, Charset *charset) {
 
 	int i, expected, blockCount, *it;
-	struct stBlock *src, *dest;
+	Block *src, *dest;
 
 	for (i = expected = 0, blockCount = 0, src = dest = charset->blocks, it = nametable->namtbl;
 			(i < charset->blockCount) && (i < nametable->namtblSize); i++, src++, it++) {
@@ -166,14 +165,14 @@ void nameTableProcessorApplyTo(struct stNameTable *nametable, struct stCharset *
 			continue;
 
 		// Not empty nor repeated in master pcx: move (compact blocks)
-		if (src != dest) memcpy(dest, src, sizeof(struct stBlock));
+		if (src != dest) memcpy(dest, src, sizeof(Block));
 		blockCount++;
 		dest++;
 	}
 	reallocateBlocks(charset, blockCount);
 }
 
-void nameTableProcessorPostProcess(struct stNameTableProcessor *this, struct stNameTable *nametable) {
+void nameTableProcessorPostProcess(NameTableProcessor *this, NameTable *nametable) {
 
 	int i, *it;
 	for (i = 0, it = nametable->namtbl; i < nametable->namtblSize; i++, it++)
@@ -182,7 +181,7 @@ void nameTableProcessorPostProcess(struct stNameTableProcessor *this, struct stN
 			: *it + this->namtblOffset + ((this->generateBlank) && (*it >= this->blankAt) ? 1 : 0);
 }
 
-int nameTableProcessorWrite(struct stNameTableProcessor *this, struct stNameTable *nametable, FILE *namFile) {
+int nameTableProcessorWrite(NameTableProcessor *this, NameTable *nametable, FILE *namFile) {
 
 	int i, *it;
 	byte b;
@@ -194,12 +193,12 @@ int nameTableProcessorWrite(struct stNameTableProcessor *this, struct stNameTabl
 	return 0;
 }
 
-void nameTableProcessorDone(__attribute__((unused)) struct stNameTableProcessor *this) {
+void nameTableProcessorDone(__attribute__((unused)) NameTableProcessor *this) {
 
 	// nothing to do here
 }
 
-void nameTableDone(struct stNameTable *this) {
+void nameTableDone(NameTable *this) {
 
 	if (this->namtbl) free(this->namtbl);
 	this->namtbl = NULL;
@@ -207,7 +206,7 @@ void nameTableDone(struct stNameTable *this) {
 
 /* Private function bodies ------------------------------------------------- */
 
-void reallocateBlocks(struct stCharset *charset, int newBlockCount) {
+void reallocateBlocks(Charset *charset, int newBlockCount) {
 
 	if (newBlockCount == charset->blockCount)
 		return;
@@ -215,150 +214,10 @@ void reallocateBlocks(struct stCharset *charset, int newBlockCount) {
 	charset->blockCount = newBlockCount;
 	if (newBlockCount) {
 		// Reallocate space for the blocks
-		charset->blocks = (struct stBlock*) realloc(charset->blocks, newBlockCount * sizeof(struct stBlock));
+		charset->blocks = (Block*) realloc(charset->blocks, newBlockCount * sizeof(Block));
 	} else {
 		// Remove blocks
 		free(charset->blocks);
 		charset->blocks = NULL;
 	}
 }
-
-// void optimizeLine(struct stChrClrWriter *this, struct stLine *line, byte optColor) {
-
-	// // Nothing to optimize
-	// if (line->color == optColor) return;
-
-	// byte swappedColor = ((optColor & 0x0f) << 4) | (optColor >> 4);
-
-	// switch (this->patternMode & PATTERN_MODE_MASK) {
-	// default:
-		// if (line->color == swappedColor) {
-			// negateAndSwap(line);
-			// line->color = optColor;
-			// return;
-		// }
-		// // (falls through)
-
-	// case PATTERN_MODE_HIGH_LOW:
-	// case PATTERN_MODE_LOW_HIGH:
-		// // Cannot swap if two colors
-		// if ((line->pattern == 0x00) && ((line->color & 0x0f) == (swappedColor & 0x0f))) {
-			// negateAndSwap(line);
-			// line->color = optColor;
-			// return;
-		// }
-		// if ((line->pattern == 0xff) && ((line->color & 0xf0) == (swappedColor & 0xf0))) {
-			// negateAndSwap(line);
-			// line->color = optColor;
-			// return;
-		// }
-		// // (falls through)
-
-	// case PATTERN_MODE_FOREGROUND:
-	// case PATTERN_MODE_BACKGROUND:
-		// // Cannot swap, cannot set/reset bits
-		// if ((line->pattern == 0x00) && ((line->color & 0x0f) == (optColor & 0x0f))) {
-			// line->color = optColor;
-			// return;
-		// }
-		// if ((line->pattern == 0xff) && ((line->color & 0xf0) == (optColor & 0xf0))) {
-			// line->color = optColor;
-			// return;
-		// }
-		// return;
-	// }
-
-
-
-
-
-
-	// int allowSetReset = ((this->patternMode & PATTERN_MODE_MASK) != PATTERN_MODE_FOREGROUND)
-			// && ((this->patternMode & PATTERN_MODE_MASK) != PATTERN_MODE_BACKGROUND);
-
-	// // Optimize 0x00 pattern
-	// if (line->pattern == 0x00) {
-		// if ((line->color & 0x0f) == (optColor & 0x0f)) {
-			// line->color = optColor;
-			// return;
-		// }
-		// if (allowSetReset && ((line->color & 0x0f) == (optColor >> 4))) {
-			// negateAndSwap(line);
-			// line->color = optColor;
-			// return;
-		// }
-		// return;
-	// }
-
-	// // Optimize 0xff pattern
-	// if (line->pattern == 0xff) {
-		// if ((line->color >> 4) == (optColor >> 4)) {
-			// line->color = optColor;
-			// return;
-		// }
-		// if (allowSetReset && ((line->color >> 4) == (optColor & 0x0f))) {
-			// negateAndSwap(line);
-			// line->color = optColor;
-			// return;
-		// }
-		// return;
-	// }
-
-	// int allowSwap = (this->patternMode & PATTERN_MODE_MASK) == PATTERN_MODE_UNSET;
-
-	// // Optimize other pattern
-	// if (allowSwap
-			// && ((line->color & 0x0f) == (optColor >> 4))
-			// && ((line->color >> 4) != (optColor && 0x0f))) {
-		// negateAndSwap(line);
-		// line->color = optColor;
-		// return;
-	// }
-
-	// return;
-// }
-
-// // int isOptimizableLine(struct stChrClrWriter *this, struct stLine *line, byte optColor) {
-
-	// // switch (this->patternMode & PATTERN_MODE_MASK) {
-	// // case PATTERN_MODE_FOREGROUND:
-	// // case PATTERN_MODE_BACKGROUND:
-		// // // Doesn't allow swap
-		// // if (line->pattern == 0x00)
-			// // return (line->color & 0x0f) == (optColor & 0x0f);
-		// // if (line->pattern == 0xff)
-			// // return (line->color >> 4) == (optColor >> 4);
-		// // return 0;
-
-	// // default:
-		// // // Allow swap
-		// // if (line->pattern == 0x00)
-			// // return ((line->color & 0x0f) == (optColor & 0x0f))
-				// // || ((line->color & 0x0f) == (optColor >> 4));
-		// // if (line->pattern == 0xff)
-			// // return ((line->color >> 4) == (optColor & 0x0f))
-				// // || ((line->color >> 4) == (optColor >> 4));
-		// // return ((line->color & 0x0f) == (optColor >> 4))
-			// // && ((line->color >> 4) == (optColor && 0x0f));
-	// // }
-// // }
-
-// // void optimizeLine(struct stChrClrWriter *this, struct stLine *line, byte optColor) {
-
-	// // if (line->pattern == 0x00) {
-		// // if ((line->color & 0x0f) != (optColor & 0x0f))
-			// // negateAndSwap(line);
-		// // line->color = optColor;
-		// // return;
-	// // }
-
-	// // if (line->pattern == 0xff) {
-		// // if ((line->color >> 4) != (optColor >> 4))
-			// // negateAndSwap(line);
-		// // line->color = optColor;
-		// // return;
-	// // }
-
-	// // negateAndSwap(line);
-	// // line->color = optColor; // should be unnecesary
-// // }

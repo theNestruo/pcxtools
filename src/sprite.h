@@ -3,8 +3,7 @@
  * Coded by theNestruo
  */
 
-#ifndef SPRITE_H_INCLUDED
-#define SPRITE_H_INCLUDED
+#pragma once
 
 #include "bitmap.h"
 
@@ -16,18 +15,18 @@ typedef unsigned char byte;
 
 /* Data structures --------------------------------------------------------- */
 
-struct stSprite {
+typedef struct {
 	byte *pattern;
-};
+} Sprite;
 
-struct stSpriteGroup {
-	struct stSprite *sprites;
+typedef struct {
+	Sprite *sprites;
 	int spriteCount;
-};
+} SpriteGroup;
 
-struct stSprWriter {
+typedef struct {
 	// Data container
-	struct stSpriteGroup *groups;
+	SpriteGroup *groups;
 	int groupCount;
 
 	// Arguments
@@ -35,7 +34,7 @@ struct stSprWriter {
 	int spriteHeight;
 	int colorMode;
 	int traverseHorizontally;
-};
+} SprWriter;
 
 /* Function prototypes ----------------------------------------------------- */
 
@@ -50,12 +49,11 @@ struct stSprWriter {
 // -tv  traverse spritesheet vertically, then horizontally
 void sprWriterOptions();
 
-void sprWriterInit(struct stSprWriter *instance, int argc, char **argv);
+void sprWriterInit(SprWriter *instance, int argc, char **argv);
 
-void sprWriterReadSprites(struct stSprWriter *instance, struct stBitmap *bitmap);
+void sprWriterReadSprites(SprWriter *instance, Bitmap *bitmap);
 
-int sprWriterWrite(struct stSprWriter *instance, FILE *sprFile);
+int sprWriterWrite(SprWriter *instance, FILE *sprFile);
 
-void sprWriterDone(struct stSprWriter *instance);
+void sprWriterDone(SprWriter *instance);
 
-#endif // SPRITE_H_INCLUDED

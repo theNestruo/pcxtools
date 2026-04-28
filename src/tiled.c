@@ -24,7 +24,7 @@ void tiledOptions() {
 	printf("\t-t<0..255>\treorganize data as metatiles of <0..255>x<0..255> bytes\n");
 }
 
-void tiledInit(struct stTiled *this, int argc, char **argv) {
+void tiledInit(Tiled *this, int argc, char **argv) {
 
 	// Init
 	this->data= NULL;
@@ -41,7 +41,7 @@ void tiledInit(struct stTiled *this, int argc, char **argv) {
 	}
 }
 
-int tiledWrite(struct stTiled *this, FILE *binFile) {
+int tiledWrite(Tiled *this, FILE *binFile) {
 
 	// No rearrangment
 	if (this->metatileSize == 1) {
@@ -71,7 +71,7 @@ int tiledWrite(struct stTiled *this, FILE *binFile) {
 	return 0;
 }
 
-void tiledDone(struct stTiled *this) {
+void tiledDone(Tiled *this) {
 
 	if (this->data) free(this->data);
 	this->data = NULL;

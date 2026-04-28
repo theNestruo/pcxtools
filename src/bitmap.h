@@ -3,8 +3,7 @@
  * Coded by theNestruo
  */
 
-#ifndef BITMAP_H_INCLUDED
-#define BITMAP_H_INCLUDED
+#pragma once
 
 /* Types ------------------------------------------------------------------- */
 
@@ -14,7 +13,7 @@ typedef unsigned char byte;
 
 /* Data structures --------------------------------------------------------- */
 
-struct stBitmap {
+typedef struct {
 	// Bitmap container
 	byte *bitmap;
 	unsigned int width, height;
@@ -22,7 +21,7 @@ struct stBitmap {
 	// Arguments and options
 	int isFlip;
 	int isMirror;
-};
+} Bitmap;
 
 /* Function prototypes ----------------------------------------------------- */
 
@@ -31,10 +30,9 @@ struct stBitmap {
 // -m	mirrored. Flips bitmap horizontally
 void bitmapOptions();
 
-void bitmapInit(struct stBitmap *instance, int argc, char **argv);
+void bitmapInit(Bitmap *instance, int argc, char **argv);
 
-byte bitmapGet(struct stBitmap *instance, int x, int y);
+byte bitmapGet(Bitmap *instance, int x, int y);
 
-void bitmapDone(struct stBitmap *instance);
+void bitmapDone(Bitmap *instance);
 
-#endif // BITMAP_H_INCLUDED

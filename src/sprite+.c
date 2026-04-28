@@ -29,56 +29,56 @@ extern int veryVerbose;
 
 /* Private data structures ------------------------------------------------- */
 
-struct stSprite {
+typedef struct {
 	byte pattern[32];
 	byte attributes[4];
-};
+} Sprite;
 
 /* Private function prototypes --------------------------------------------- */
 
-/* Private function prototypes ----- struct stSpriteSolver ----------------- */
+/* Private function prototypes ----- SpriteSolver ----------------- */
 
-int readSprite(struct stSpriteSolver *instance);
-int initColorSolver(struct stSpriteSolver *instance, byte color);
-void solve(struct stSpriteSolver *instance);
-int checkBetterSolution(struct stSpriteSolver *instance, int indexes[16]);
-int nextSolution(struct stSpriteSolver *instance, int indexes[16]);
+int readSprite(SpriteSolver *instance);
+int initColorSolver(SpriteSolver *instance, byte color);
+void solve(SpriteSolver *instance);
+int checkBetterSolution(SpriteSolver *instance, int indexes[16]);
+int nextSolution(SpriteSolver *instance, int indexes[16]);
 
-byte getPixelAt(struct stSpriteSolver *instance, int x, int y);
-struct stColorSolver *getColorSolver(struct stSpriteSolver *instance, byte color);
-int getSpriteCount(struct stSpriteSolver *instance);
-struct stScanlineCount getScanlineCount(struct stSpriteSolver *instance, int indexes[16]);
-int stSpriteSolverWrite(struct stSpriteSolver *instance, int *spriteIndex, FILE *sprFile, FILE *spatFile);
-int writeHeader(struct stSpriteSolver *instance, FILE *sprFile, FILE *spatFile);
-int writePadding(struct stSpriteSolver *instance, FILE *spatFile);
-void stSpriteSolverDone(struct stSpriteSolver *instance);
+byte getPixelAt(SpriteSolver *instance, int x, int y);
+ColorSolver *getColorSolver(SpriteSolver *instance, byte color);
+int getSpriteCount(SpriteSolver *instance);
+ScanlineCount getScanlineCount(SpriteSolver *instance, int indexes[16]);
+int stSpriteSolverWrite(SpriteSolver *instance, int *spriteIndex, FILE *sprFile, FILE *spatFile);
+int writeHeader(SpriteSolver *instance, FILE *sprFile, FILE *spatFile);
+int writePadding(SpriteSolver *instance, FILE *spatFile);
+void stSpriteSolverDone(SpriteSolver *instance);
 
-/* Private function prototypes ----- struct stColorSolver ------------------ */
+/* Private function prototypes ----- ColorSolver ------------------ */
 
-void findRects(struct stColorSolver *instance);
-int initRect(struct stColorSolver *instance, struct stRect *rects, int depth);
-int checkRect(struct stColorSolver *instance, struct stRect *rects, int depth);
-int moveRect(struct stColorSolver *instance, struct stRect *rects, int depth, int flags);
-int checkSolution(struct stColorSolver *instance, struct stRect *rects);
-int moveSolution(struct stColorSolver *instance, struct stRect *rects);
-void saveSolution(struct stColorSolver *instance, struct stRect *rects);
-int getColorScanlineCount(struct stColorSolver *instance, int index, int y);
-void stColorSolverDone(struct stColorSolver *instance);
+void findRects(ColorSolver *instance);
+int initRect(ColorSolver *instance, Rect *rects, int depth);
+int checkRect(ColorSolver *instance, Rect *rects, int depth);
+int moveRect(ColorSolver *instance, Rect *rects, int depth, int flags);
+int checkSolution(ColorSolver *instance, Rect *rects);
+int moveSolution(ColorSolver *instance, Rect *rects);
+void saveSolution(ColorSolver *instance, Rect *rects);
+int getColorScanlineCount(ColorSolver *instance, int index, int y);
+void stColorSolverDone(ColorSolver *instance);
 
-/* Private function prototypes ----- struct stRect ------------------------- */
+/* Private function prototypes ----- Rect ------------------------- */
 
-void addLayer(struct stRect **rects, int *count, struct stRect *src);
+void addLayer(Rect **rects, int *count, Rect *src);
 
-/* Private function prototypes ----- struct stSprite ----------------------- */
+/* Private function prototypes ----- Sprite ----------------------- */
 
-void readPattern(struct stSprite *instance, struct stColorSolver *colorSolver, struct stRect *rect);
-void readAttributes(struct stSprite *instance, struct stColorSolver *colorSolver, int spriteIndex, struct stRect *rect);
-int writePattern(struct stSprite *instance, struct stSprWriterPlus *cfg, FILE *sprFile);
-int writeAttributes(struct stSprite *instance, struct stSprWriterPlus *cfg, FILE *spatFile);
+void readPattern(Sprite *instance, ColorSolver *colorSolver, Rect *rect);
+void readAttributes(Sprite *instance, ColorSolver *colorSolver, int spriteIndex, Rect *rect);
+int writePattern(Sprite *instance, SprWriterPlus *cfg, FILE *sprFile);
+int writeAttributes(Sprite *instance, SprWriterPlus *cfg, FILE *spatFile);
 
 /* Private function prototypes ----- DEBUG --------------------------------- */
 
-void debugSolution(struct stColorSolver *instance, struct stRect *rects, int size);
+void debugSolution(ColorSolver *instance, Rect *rects, int size);
 
 /* Function bodies --------------------------------------------------------- */
 
@@ -94,7 +94,7 @@ void sprWriterPlusOptions() {
 	// printf("\t-vv\tVERY verbose execution\n"); // secret option (!^_^)
 }
 
-void sprWriterPlusInit(struct stSprWriterPlus *this, int argc, char **argv) {
+void sprWriterPlusInit(SprWriterPlus *this, int argc, char **argv) {
 
 	// Init
 	this->sprites = NULL;
@@ -130,13 +130,13 @@ void sprWriterPlusInit(struct stSprWriterPlus *this, int argc, char **argv) {
 	this->binaryOutput = (argEquals(argc, argv, "-b") != -1);
 }
 
-void sprWriterPlusReadSprites(struct stSprWriterPlus *this, struct stBitmap *bitmap) {
+void sprWriterPlusReadSprites(SprWriterPlus *this, Bitmap *bitmap) {
 
 	this->spriteCount = ((int) (bitmap->width / this->spriteWidth)) * ((int) (bitmap->height / this->spriteHeight));
-	this->sprites = (struct stSpriteSolver*) calloc(this->spriteCount, sizeof(struct stSpriteSolver));
+	this->sprites = (SpriteSolver*) calloc(this->spriteCount, sizeof(SpriteSolver));
 
 	unsigned int x, y;
-	struct stSpriteSolver *solver;
+	SpriteSolver *solver;
 	for (y = 0, solver = this->sprites; (y + this->spriteHeight) <= bitmap->height; y += this->spriteHeight) {
 		for (x = 0; (x + this->spriteWidth) <= bitmap->width; x += this->spriteWidth, solver++) {
 			solver->cfg = this; // reference
@@ -153,10 +153,10 @@ void sprWriterPlusReadSprites(struct stSprWriterPlus *this, struct stBitmap *bit
 	}
 }
 
-int sprWriterPlusWrite(struct stSprWriterPlus *this, FILE *sprFile, FILE *spatFile) {
+int sprWriterPlusWrite(SprWriterPlus *this, FILE *sprFile, FILE *spatFile) {
 
 	int i, spriteIndex;
-	struct stSpriteSolver *it;
+	SpriteSolver *it;
 	for (i = 0, spriteIndex = 0, it = this->sprites; i < this->spriteCount; i++, it++) {
 		if (!stSpriteSolverWrite(it, &spriteIndex, sprFile, spatFile)) return 1;
 		if (this->terminator == SPAT_END) spriteIndex = 0;
@@ -167,11 +167,11 @@ int sprWriterPlusWrite(struct stSprWriterPlus *this, FILE *sprFile, FILE *spatFi
 	return 0;
 }
 
-void sprWriterPlusDone(struct stSprWriterPlus *this) {
+void sprWriterPlusDone(SprWriterPlus *this) {
 
 	if (this->sprites) {
 		int i;
-		struct stSpriteSolver *it;
+		SpriteSolver *it;
 		for (i = 0, it = this->sprites; i < this->spriteCount; i++, it++) {
 			stSpriteSolverDone(it);
 		}
@@ -179,9 +179,9 @@ void sprWriterPlusDone(struct stSprWriterPlus *this) {
 	}
 }
 
-/* Private function bodies ----- struct stSpriteSolver --------------------- */
+/* Private function bodies ----- SpriteSolver --------------------- */
 
-int readSprite(struct stSpriteSolver *this) {
+int readSprite(SpriteSolver *this) {
 
 	// Check if sprite present
 	int x, y, colorCount;
@@ -197,9 +197,9 @@ int readSprite(struct stSpriteSolver *this) {
 	return colorCount;
 }
 
-int initColorSolver(struct stSpriteSolver *this, byte color) {
+int initColorSolver(SpriteSolver *this, byte color) {
 
-	struct stColorSolver *colorSolver = &(this->colorSolver[color]);
+	ColorSolver *colorSolver = &(this->colorSolver[color]);
 	if (colorSolver->color) return 0; // already init
 
 	this->colorSolver[color].spriteSolver = this; // reference
@@ -207,11 +207,11 @@ int initColorSolver(struct stSpriteSolver *this, byte color) {
 	return 1;
 }
 
-void solve(struct stSpriteSolver *this) {
+void solve(SpriteSolver *this) {
 
 	// Find solutions per color
 	byte color;
-	struct stColorSolver *colorSolver;
+	ColorSolver *colorSolver;
 	for (color = 1; color < 16; color++) {
 		if (!(colorSolver = getColorSolver(this, color))) continue;
 
@@ -237,7 +237,7 @@ void solve(struct stSpriteSolver *this) {
 		if (!(colorSolver = getColorSolver(this, color))) continue;
 
 		int solutionIndex, i;
-		struct stRect *rect;
+		Rect *rect;
 		for (solutionIndex = this->solutionIndexes[color], i = 0;
 				i < colorSolver->rectsPerSolution;
 				i++, solutionIndex++) {
@@ -248,9 +248,9 @@ void solve(struct stSpriteSolver *this) {
 	printf("SPAT_END\n\n");
 }
 
-int checkBetterSolution(struct stSpriteSolver *this, int indexes[16]) {
+int checkBetterSolution(SpriteSolver *this, int indexes[16]) {
 
-	struct stScanlineCount scanlineCount = {0};
+	ScanlineCount scanlineCount = {0};
 
 	// For each scanline
 	int y;
@@ -258,7 +258,7 @@ int checkBetterSolution(struct stSpriteSolver *this, int indexes[16]) {
 		// For each color
 		byte color;
 		int count;
-		struct stColorSolver *colorSolver;
+		ColorSolver *colorSolver;
 		for (color = 1, count = 0; color < 16; color++) {
 			if (!(colorSolver = getColorSolver(this, color))) continue;
 			count += getColorScanlineCount(colorSolver, indexes[color], y);
@@ -293,10 +293,10 @@ int checkBetterSolution(struct stSpriteSolver *this, int indexes[16]) {
 	return 1;
 }
 
-int nextSolution(struct stSpriteSolver *this, int indexes[16]) {
+int nextSolution(SpriteSolver *this, int indexes[16]) {
 
 	byte color;
-	struct stColorSolver *colorSolver;
+	ColorSolver *colorSolver;
 	for (color = 1; color < 16; color++) {
 		if (!(colorSolver = getColorSolver(this, color))) continue;
 
@@ -307,26 +307,26 @@ int nextSolution(struct stSpriteSolver *this, int indexes[16]) {
 	return 0; // overflow
 }
 
-byte getPixelAt(struct stSpriteSolver *this, int x, int y) {
+byte getPixelAt(SpriteSolver *this, int x, int y) {
 
 	return ((x < 0) || (y < 0) || (x >= this->width) || (y >= this->height))
 		? 0 // O.B.
 		: bitmapGet(this->bitmap, x + this->x0, y + this->y0);
 }
 
-struct stColorSolver *getColorSolver(struct stSpriteSolver *this, byte color) {
+ColorSolver *getColorSolver(SpriteSolver *this, byte color) {
 
-	struct stColorSolver *colorSolver = &(this->colorSolver[color]);
+	ColorSolver *colorSolver = &(this->colorSolver[color]);
 	if (!colorSolver->color) return NULL;
 	return colorSolver;
 }
 
-int getSpriteCount(struct stSpriteSolver *this) {
+int getSpriteCount(SpriteSolver *this) {
 
 	int spriteCount = 0;
 
 	byte color;
-	struct stColorSolver *colorSolver;
+	ColorSolver *colorSolver;
 	for (color = 1; color < 16; color++) {
 		if (!(colorSolver = getColorSolver(this, color))) continue;
 		spriteCount += colorSolver->rectsPerSolution;
@@ -334,16 +334,16 @@ int getSpriteCount(struct stSpriteSolver *this) {
 	return spriteCount;
 }
 
-// struct stScanlineCount getScanlineCount(struct stSpriteSolver *this, int solutionIndexes[16]) {
+// ScanlineCount getScanlineCount(SpriteSolver *this, int solutionIndexes[16]) {
 
-	// struct stScanlineCount ret = {0};
+	// ScanlineCount ret = {0};
 
 	// // For each scanline
 	// int y, count;
 	// for (y = 0; y < this->height; y++) {
 		// // For each color
 		// byte color;
-		// struct stColorSolver *colorSolver;
+		// ColorSolver *colorSolver;
 		// for (color = 1, count = 0; color < 16; color++) {
 			// if (!(colorSolver = getColorSolver(this, color))) continue;
 			// count += getColorScanlineCount(colorSolver, solutionIndexes[color], y);
@@ -364,19 +364,19 @@ int getSpriteCount(struct stSpriteSolver *this) {
 	// return ret;
 // }
 
-int stSpriteSolverWrite(struct stSpriteSolver *this, int *spriteIndex, FILE *sprFile, FILE *spatFile) {
+int stSpriteSolverWrite(SpriteSolver *this, int *spriteIndex, FILE *sprFile, FILE *spatFile) {
 
 	int n = getSpriteCount(this);
 	if (!n) return 1;
 
-	struct stSprite *buffer = (struct stSprite*) calloc(n, sizeof(struct stSprite));
+	Sprite *buffer = (Sprite*) calloc(n, sizeof(Sprite));
 
 	// Read pattern and attributes
 	byte color;
 	int solutionIndex, j;
-	struct stSprite *sprite;
-	struct stColorSolver *colorSolver;
-	struct stRect *rect;
+	Sprite *sprite;
+	ColorSolver *colorSolver;
+	Rect *rect;
 	for (color = 1, sprite = buffer; color < 16; color++) {
 		if (!(colorSolver = getColorSolver(this, color))) continue;
 
@@ -405,7 +405,7 @@ out:
 	return i;
 }
 
-int writeHeader(struct stSpriteSolver *this, FILE *sprFile, FILE *spatFile) {
+int writeHeader(SpriteSolver *this, FILE *sprFile, FILE *spatFile) {
 
 	if (this->cfg->binaryOutput) return 1;
 
@@ -427,7 +427,7 @@ out:
 	return i;
 }
 
-int writePadding(struct stSpriteSolver *this, FILE *spatFile) {
+int writePadding(SpriteSolver *this, FILE *spatFile) {
 
 	if (!this->cfg->attributePadding) return 1;
 
@@ -441,18 +441,18 @@ int writePadding(struct stSpriteSolver *this, FILE *spatFile) {
 			&& asmNewLine(spatFile));
 }
 
-void stSpriteSolverDone(struct stSpriteSolver *this) {
+void stSpriteSolverDone(SpriteSolver *this) {
 
 	int i;
-	struct stColorSolver *it;
+	ColorSolver *it;
 	for (i = 0, it = this->colorSolver; i < 15; i++, it++) {
 		stColorSolverDone(it);
 	}
 }
 
-/* Private function bodies ----- struct stColorSolver ---------------------- */
+/* Private function bodies ----- ColorSolver ---------------------- */
 
-void findRects(struct stColorSolver *this) {
+void findRects(ColorSolver *this) {
 
 	if (veryVerbose) printf("\t#%d: ", this->color);
 
@@ -460,7 +460,7 @@ void findRects(struct stColorSolver *this) {
 		if (veryVerbose) printf("%dx ", this->rectsPerSolution);
 
 		// alloc
-		struct stRect *rects = (struct stRect*) calloc(this->rectsPerSolution, sizeof(struct stRect));
+		Rect *rects = (Rect*) calloc(this->rectsPerSolution, sizeof(Rect));
 
 		// init for this size
 		int depth;
@@ -487,7 +487,7 @@ void findRects(struct stColorSolver *this) {
 	if (veryVerbose) printf("%d solution(s)\n", this->rectCount / this->rectsPerSolution);
 }
 
-int initRect(struct stColorSolver *this, struct stRect *rects, int depth) {
+int initRect(ColorSolver *this, Rect *rects, int depth) {
 
 	rects[depth].x = depth ? rects[depth - 1].x : 0;
 	rects[depth].y = depth ? rects[depth - 1].y : -15;
@@ -502,7 +502,7 @@ int initRect(struct stColorSolver *this, struct stRect *rects, int depth) {
 	return 1;
 }
 
-int checkRect(struct stColorSolver *this, struct stRect *rects, int depth) {
+int checkRect(ColorSolver *this, Rect *rects, int depth) {
 
 	int flags = 0;
 
@@ -513,7 +513,7 @@ int checkRect(struct stColorSolver *this, struct stRect *rects, int depth) {
 
 		// Covered by previous rects?
 		int i;
-		struct stRect *rect;
+		Rect *rect;
 		for (i = 0, rect = rects; i < depth; i++, rect++) {
 			if ((x >= rect->x) && (x < rect->x + 16) && (y >= rect->y) && (y < rect->y + 16))
 				break;
@@ -532,9 +532,9 @@ int checkRect(struct stColorSolver *this, struct stRect *rects, int depth) {
 	return flags;
 }
 
-int moveRect(struct stColorSolver *this, struct stRect *rects, int depth, int flags) {
+int moveRect(ColorSolver *this, Rect *rects, int depth, int flags) {
 
-	struct stRect *rect = &(rects[depth]);
+	Rect *rect = &(rects[depth]);
 
 	// over top: invalid
 	if (flags & OVER_TOP)
@@ -559,7 +559,7 @@ skipScanline:
 	return (++rect->y < this->spriteSolver->height);
 }
 
-int checkSolution(struct stColorSolver *this, struct stRect *rects) {
+int checkSolution(ColorSolver *this, Rect *rects) {
 
 	int x, y, height = this->spriteSolver->height, width = this->spriteSolver->width;
 	for (y = 0; y < height; y++) for (x = 0; x < width; x++) {
@@ -568,7 +568,7 @@ int checkSolution(struct stColorSolver *this, struct stRect *rects) {
 
 		// Is covered by rects?
 		int i;
-		struct stRect *rect;
+		Rect *rect;
 		for (i = 0, rect = rects; i < this->rectsPerSolution; i++, rect++) {
 			if ((x >= rect->x) && (x < rect->x + 16) && (y >= rect->y) && (y < rect->y + 16))
 				break;
@@ -579,7 +579,7 @@ int checkSolution(struct stColorSolver *this, struct stRect *rects) {
 	return 1;
 }
 
-int moveSolution(struct stColorSolver *this, struct stRect *rects) {
+int moveSolution(ColorSolver *this, Rect *rects) {
 
 	int depth;
 	for (depth = this->rectsPerSolution - 1; depth >= 0; depth--) {
@@ -608,22 +608,22 @@ int moveSolution(struct stColorSolver *this, struct stRect *rects) {
 	return 0; // no more layers to move
 }
 
-void saveSolution(struct stColorSolver *this, struct stRect *rects) {
+void saveSolution(ColorSolver *this, Rect *rects) {
 
 	int i;
-	struct stRect *rect;
+	Rect *rect;
 	for (i = 0, rect = rects; i < this->rectsPerSolution; i++, rect++) {
 		addLayer(&this->rects, &this->rectCount, rect);
 	}
 }
 
-int getColorScanlineCount(struct stColorSolver *this, int index, int y) {
+int getColorScanlineCount(ColorSolver *this, int index, int y) {
 
 	int count = 0;
 
 	// For each rect
 	int i;
-	struct stRect *layer;
+	Rect *layer;
 	for (i = 0; i < this->rectsPerSolution; i++) {
 		layer = &(this->rects[index + i]);
 		if ((y >= layer->y) && (y <= layer->y + 15)) count++;
@@ -632,26 +632,26 @@ int getColorScanlineCount(struct stColorSolver *this, int index, int y) {
 	return count;
 }
 
-void stColorSolverDone(struct stColorSolver *this) {
+void stColorSolverDone(ColorSolver *this) {
 
 	if (this->rects) free(this->rects);
 }
 
-/* Private function bodies ----- struct stRect ----------------------------- */
+/* Private function bodies ----- Rect ----------------------------- */
 
-void addLayer(struct stRect **rects, int *count, struct stRect *src) {
+void addLayer(Rect **rects, int *count, Rect *src) {
 
 	(*count)++;
 	(*rects) = (*rects)
-		? (struct stRect*) realloc((*rects), (*count) * sizeof(struct stRect))
-		: (struct stRect*) calloc((*count), sizeof(struct stRect));
+		? (Rect*) realloc((*rects), (*count) * sizeof(Rect))
+		: (Rect*) calloc((*count), sizeof(Rect));
 
-	struct stRect *rect = &(*rects)[(*count) - 1]; // last rect
+	Rect *rect = &(*rects)[(*count) - 1]; // last rect
 	rect->x = src->x;
 	rect->y = src->y;
 }
 
-void readPattern(struct stSprite *this, struct stColorSolver *colorSolver, struct stRect *rect) {
+void readPattern(Sprite *this, ColorSolver *colorSolver, Rect *rect) {
 
 	int i0, i1, k, x0, x1, y;
 	for (i0 = 0, i1 = 16, y = rect->y; i0 < 16; i0++, i1++, y++) {
@@ -664,9 +664,9 @@ void readPattern(struct stSprite *this, struct stColorSolver *colorSolver, struc
 	}
 }
 
-void readAttributes(struct stSprite *this, struct stColorSolver *colorSolver, int spriteIndex, struct stRect *rect) {
+void readAttributes(Sprite *this, ColorSolver *colorSolver, int spriteIndex, Rect *rect) {
 
-	struct stSprWriterPlus *cfg = colorSolver->spriteSolver->cfg;
+	SprWriterPlus *cfg = colorSolver->spriteSolver->cfg;
 
 	this->attributes[0] = (byte) (rect->y - cfg->offsetY);
 	this->attributes[1] = (byte) (rect->x - cfg->offsetX);
@@ -674,7 +674,7 @@ void readAttributes(struct stSprite *this, struct stColorSolver *colorSolver, in
 	this->attributes[3] = (byte) (colorSolver->color);
 }
 
-int writePattern(struct stSprite *this, struct stSprWriterPlus *cfg, FILE *sprFile) {
+int writePattern(Sprite *this, SprWriterPlus *cfg, FILE *sprFile) {
 
 	return (cfg->binaryOutput)
 		? fwrite(this->pattern, sizeof(byte), 32, sprFile) == 32
@@ -682,7 +682,7 @@ int writePattern(struct stSprite *this, struct stSprWriterPlus *cfg, FILE *sprFi
 			&& asmBytes(sprFile, &(this->pattern[16]), 16);
 }
 
-int writeAttributes(struct stSprite *this, struct stSprWriterPlus *cfg, FILE *spatFile) {
+int writeAttributes(Sprite *this, SprWriterPlus *cfg, FILE *spatFile) {
 
 	return (cfg->binaryOutput)
 		? (fwrite(this->attributes, sizeof(byte), 4, spatFile) == 4)
@@ -691,10 +691,10 @@ int writeAttributes(struct stSprite *this, struct stSprWriterPlus *cfg, FILE *sp
 
 /* Private function bodies ----- DEBUG ------------------------------------- */
 
-void debugSolution(__attribute__((unused)) struct stColorSolver *this, struct stRect *rects, int size) {
+void debugSolution(__attribute__((unused)) ColorSolver *this, Rect *rects, int size) {
 
 	int i;
-	struct stRect *rect;
+	Rect *rect;
 	for (i = 0, rect = rects; i < size; i++, rect++) {
 		printf("(%d,%d)-(%d,%d)\t", rect->x, rect->y, rect->x+15, rect->y+15);
 	}

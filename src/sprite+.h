@@ -3,8 +3,7 @@
  * Coded by theNestruo
  */
 
-#ifndef SPRITE_PLUS_H_INCLUDED
-#define SPRITE_PLUS_H_INCLUDED
+#pragma once
 
 #include "bitmap.h"
 
@@ -16,42 +15,46 @@ typedef unsigned char byte;
 
 /* Data structures --------------------------------------------------------- */
 
-struct stScanlineCount {
+// (forward declarations)
+typedef struct stSpriteSolver SpriteSolver;
+typedef struct stSprWriterPlus SprWriterPlus;
+
+typedef struct {
 	int value;
 	int scanlineCount; // number of scanlines with the value
-};
+} ScanlineCount;
 
-struct stRect {
+typedef struct {
 	int x, y;
-};
+} Rect;
 
-struct stColorSolver {
-	struct stSpriteSolver *spriteSolver; // reference
+typedef struct {
+	SpriteSolver *spriteSolver; // reference
 	byte color; // reference
-	
+
 	// Solutions
 	int rectsPerSolution;
-	struct stRect *rects;
+	Rect *rects;
 	int rectCount;
-};
+} ColorSolver;
 
 struct stSpriteSolver {
 	// Sprite to solve
-	struct stSprWriterPlus *cfg; // reference
-	struct stBitmap *bitmap; // reference
+	SprWriterPlus *cfg; // reference
+	Bitmap *bitmap; // reference
 	int x0, y0, width, height;
 
 	// Solution
-	struct stColorSolver colorSolver[16];
+	ColorSolver colorSolver[16];
 	int solutionIndexes[16]; // best
-	struct stScanlineCount bestScanlineCount;
+	ScanlineCount bestScanlineCount;
 };
 
 struct stSprWriterPlus {
 	// Data container
-	struct stSpriteSolver *sprites;
+	SpriteSolver *sprites;
 	int spriteCount;
-	
+
 	// Arguments
 	int spriteWidth;
 	int spriteHeight;
@@ -67,12 +70,11 @@ struct stSprWriterPlus {
 // Supported arguments:
 void sprWriterPlusOptions();
 
-void sprWriterPlusInit(struct stSprWriterPlus *instance, int argc, char **argv);
+void sprWriterPlusInit(SprWriterPlus *instance, int argc, char **argv);
 
-void sprWriterPlusReadSprites(struct stSprWriterPlus *instance, struct stBitmap *bitmap);
+void sprWriterPlusReadSprites(SprWriterPlus *instance, Bitmap *bitmap);
 
-int sprWriterPlusWrite(struct stSprWriterPlus *instance, FILE *sprFile, FILE *spatFile);
+int sprWriterPlusWrite(SprWriterPlus *instance, FILE *sprFile, FILE *spatFile);
 
-void sprWriterPlusDone(struct stSprWriterPlus *instance);
+void sprWriterPlusDone(SprWriterPlus *instance);
 
-#endif // SPRITE_PLUS_H_INCLUDED

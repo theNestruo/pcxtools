@@ -3,8 +3,7 @@
  * Coded by theNestruo
  */
 
-#ifndef READPNG_H_INCLUDED
-#define READPNG_H_INCLUDED
+#pragma once
 
 #include "bitmap.h"
 
@@ -17,6 +16,5 @@ void pngReaderOptions();
 
 void pngReaderInit(int argc, char **argv);
 
-int pngReaderRead(char *pngFilename, struct stBitmap *bitmap);
+int pngReaderRead(char *pngFilename, Bitmap *bitmap);
 
-#endif // READPNG_H_INCLUDED

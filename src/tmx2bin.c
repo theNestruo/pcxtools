@@ -35,8 +35,8 @@ int main(int argc, char **argv) {
 	char *binFilename = NULL;
 	FILE *tmxFile = NULL;
 	FILE *binFile = NULL;
-	struct stTmxReader tmxReader = {0};
-	struct stTiled tiled = {0};
+	TmxReader tmxReader = {0};
+	Tiled tiled = {0};
 
 	int i = 0, argi = 0;
 	int dryRun = 0;

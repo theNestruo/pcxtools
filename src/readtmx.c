@@ -24,7 +24,7 @@ void tmxReaderOptions() {
 	printf("\t-b\tmultibank charset support\n");
 }
 
-void tmxReaderInit(struct stTmxReader *this, int argc, char **argv) {
+void tmxReaderInit(TmxReader *this, int argc, char **argv) {
 
 	// Init
 	this->isMultibankCharset = 0;
@@ -33,7 +33,7 @@ void tmxReaderInit(struct stTmxReader *this, int argc, char **argv) {
 	this->isMultibankCharset = (argEquals(argc, argv, "-b") != -1);
 }
 
-int tmxReaderRead(struct stTmxReader *this, FILE *file, struct stTiled *tiled) {
+int tmxReaderRead(TmxReader *this, FILE *file, Tiled *tiled) {
 
 	if (!file)
 		return 1;

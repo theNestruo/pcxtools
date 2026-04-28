@@ -23,7 +23,7 @@ typedef unsigned short int word;
 /* Data structures --------------------------------------------------------- */
 
 // PCX header container
-struct stPcxHeader {
+typedef struct {
 	byte id; // Must be 0x0a
 	byte version; // 0=2.5, 2=2.8+pal., 3=2.8+default pal. 4=Paintbrush, 5=3.0+
 	byte encoding; // Must be 1, 1=RLE
@@ -37,7 +37,7 @@ struct stPcxHeader {
 	word paletteInformation; // 1=color, 2=grayscale
 	word deviceWidth, deviceHeight; // Paintbrush IV+
 	byte padding[54]; // Up to 128 bytes
-};
+} PcxHeader;
 
 /* Private function prototypes --------------------------------------------- */
 
@@ -45,7 +45,7 @@ byte autoPalette(byte value);
 
 /* Function bodies --------------------------------------------------------- */
 
-int pcxReaderRead(FILE *file, struct stBitmap *bitmap) {
+int pcxReaderRead(FILE *file, Bitmap *bitmap) {
 
 	if (!file)
 		return 1;
@@ -54,8 +54,8 @@ int pcxReaderRead(FILE *file, struct stBitmap *bitmap) {
 		return 2;
 
 	// Reads the header
-	struct stPcxHeader header;
-	if (fread(&header, sizeof(struct stPcxHeader), 1, file) != 1) {
+	PcxHeader header;
+	if (fread(&header, sizeof(PcxHeader), 1, file) != 1) {
 		printf("ERROR: Could not read header.\n");
 		return 3;
 	}

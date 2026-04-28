@@ -18,7 +18,7 @@ void bitmapOptions() {
 	printf("\t-m\tmirrored. Flips bitmap horizontally\n");
 }
 
-void bitmapInit(struct stBitmap *this, int argc, char **argv) {
+void bitmapInit(Bitmap *this, int argc, char **argv) {
 
 	// Init
 	this->bitmap = NULL;
@@ -30,7 +30,7 @@ void bitmapInit(struct stBitmap *this, int argc, char **argv) {
 	this->isMirror = (argEquals(argc, argv, "-m") != -1);
 }
 
-byte bitmapGet(struct stBitmap *this, int x0, int y0) {
+byte bitmapGet(Bitmap *this, int x0, int y0) {
 
 	if ((x0 < 0) || (y0 < 0) || (x0 >= (int) this->width) || (y0 >= (int) this->height))
 		return 0;
@@ -47,7 +47,7 @@ byte bitmapGet(struct stBitmap *this, int x0, int y0) {
 	return index;
 }
 
-void bitmapDone(struct stBitmap *this) {
+void bitmapDone(Bitmap *this) {
 
 	if (this->bitmap) free(this->bitmap);
 	this->bitmap = NULL;
