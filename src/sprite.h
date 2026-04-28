@@ -12,24 +12,24 @@
 /* Data structures --------------------------------------------------------- */
 
 typedef struct {
-	uint8_t *pattern;
+  uint8_t *pattern;
 } Sprite;
 
 typedef struct {
-	Sprite *sprites;
-	int spriteCount;
+  Sprite *sprites;
+  int spriteCount;
 } SpriteGroup;
 
 typedef struct {
-	// Data container
-	SpriteGroup *groups;
-	int groupCount;
+  // Data container
+  SpriteGroup *groups;
+  int groupCount;
 
-	// Arguments
-	int spriteWidth;
-	int spriteHeight;
-	int colorMode;
-	int traverseHorizontally;
+  // Arguments
+  int spriteWidth;
+  int spriteHeight;
+  int colorMode;
+  int traverseHorizontally;
 } SprWriter;
 
 /* Function prototypes ----------------------------------------------------- */
@@ -52,4 +52,3 @@ void sprWriterReadSprites(SprWriter *instance, Bitmap *bitmap);
 int sprWriterWrite(SprWriter *instance, FILE *sprFile);
 
 void sprWriterDone(SprWriter *instance);
-

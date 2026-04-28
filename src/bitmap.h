@@ -10,13 +10,13 @@
 /* Data structures --------------------------------------------------------- */
 
 typedef struct {
-	// Bitmap container
-	uint8_t *bitmap;
-	unsigned int width, height;
+  // Bitmap container
+  uint8_t *bitmap;
+  unsigned int width, height;
 
-	// Arguments and options
-	int isFlip;
-	int isMirror;
+  // Arguments and options
+  int isFlip;
+  int isMirror;
 } Bitmap;
 
 /* Function prototypes ----------------------------------------------------- */
@@ -31,4 +31,3 @@ void bitmapInit(Bitmap *instance, int argc, char **argv);
 uint8_t bitmapGet(Bitmap *instance, int x, int y);
 
 void bitmapDone(Bitmap *instance);
-

@@ -12,14 +12,14 @@
 
 // Tiled (TMX) container
 typedef struct {
-	uint8_t *data;
-	int width;
-	int height;
+  uint8_t *data;
+  int width;
+  int height;
 
-	// Arguments and options
-	// int isFlip; // (not yet implemented)
-	// int isMirror; // (not yet implemented)
-	int metatileSize;
+  // Arguments and options
+  // int isFlip; // (not yet implemented)
+  // int isMirror; // (not yet implemented)
+  int metatileSize;
 } Tiled;
 
 /* Function prototypes ----------------------------------------------------- */

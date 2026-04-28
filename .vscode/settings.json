@@ -5,6 +5,11 @@
 	},
 
     // Code style preferences
+	"C_Cpp.formatting": "clangFormat",
+	"C_Cpp.clang_format_style": "LLVM",
+	"[c]": {
+		"editor.formatOnSave": true,
+	},
 	"editor.insertSpaces": false,
 	"editor.tabSize": 4,
 	"editor.rulers": [
@@ -17,5 +22,5 @@
 	},
 
 	// No AI
-	"chat.disableAIFeatures": true,
+	"chat.disableAIFeatures": true
 }

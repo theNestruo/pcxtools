@@ -10,8 +10,8 @@
 
 #include "args.h"
 #include "bitmap.h"
-#include "sprite+.h"
 #include "readpcx.h"
+#include "sprite+.h"
 
 /* Global vars ------------------------------------------------------------- */
 
@@ -28,122 +28,128 @@ void showUsage();
 
 int main(int argc, char **argv) {
 
-	// Shows usage if there are no parameters
-	if (argc == 1) {
-		showUsage();
-		return 11;
-	}
+  // Shows usage if there are no parameters
+  if (argc == 1) {
+    showUsage();
+    return 11;
+  }
 
-	char *pcxFilename = NULL;
-	char *sprFilename = NULL;
-	char *spatFilename = NULL;
-	FILE *pcxFile = NULL;
-	FILE *sprFile = NULL;
-	FILE *spatFile = NULL;
-	Bitmap bitmap = {0};
-	SprWriterPlus writer = {0};
+  char *pcxFilename = NULL;
+  char *sprFilename = NULL;
+  char *spatFilename = NULL;
+  FILE *pcxFile = NULL;
+  FILE *sprFile = NULL;
+  FILE *spatFile = NULL;
+  Bitmap bitmap = {0};
+  SprWriterPlus writer = {0};
 
-	int i = 0, argi = 0;
-	int dryRun = 0;
+  int i = 0, argi = 0;
+  int dryRun = 0;
 
-	// Parse main arguments
-	veryVerbose = argEquals(argc, argv, "-vv") != -1;
-	verbose = (argEquals(argc, argv, "-v") != -1) | veryVerbose;
-	if (verbose)
-		showTitle();
-	dryRun = argEquals(argc, argv, "-d") != -1;
+  // Parse main arguments
+  veryVerbose = argEquals(argc, argv, "-vv") != -1;
+  verbose = (argEquals(argc, argv, "-v") != -1) | veryVerbose;
+  if (verbose)
+    showTitle();
+  dryRun = argEquals(argc, argv, "-d") != -1;
 
-	if ((argi = argFilename(argc, argv)) != -1)
-		pcxFilename = argv[argi];
+  if ((argi = argFilename(argc, argv)) != -1)
+    pcxFilename = argv[argi];
 
-	if (!pcxFilename) {
-		showUsage();
-		i = 12;
-		goto out;
-	}
+  if (!pcxFilename) {
+    showUsage();
+    i = 12;
+    goto out;
+  }
 
-	if (verbose)
-		printf("Input file: %s\n", pcxFilename);
+  if (verbose)
+    printf("Input file: %s\n", pcxFilename);
 
-	// Initializes bitmap container and chr/clr processor
-	bitmapInit(&bitmap, argc, argv);
-	sprWriterPlusInit(&writer, argc, argv);
+  // Initializes bitmap container and chr/clr processor
+  bitmapInit(&bitmap, argc, argv);
+  sprWriterPlusInit(&writer, argc, argv);
 
-	sprFilename = append(pcxFilename, writer.binaryOutput ? ".spr" : ".spr.asm");
-	spatFilename = append(pcxFilename, writer.binaryOutput ? ".spat" : ".spat.asm");
+  sprFilename = append(pcxFilename, writer.binaryOutput ? ".spr" : ".spr.asm");
+  spatFilename =
+      append(pcxFilename, writer.binaryOutput ? ".spat" : ".spat.asm");
 
-	if (verbose)
-		printf("Output files: %s, %s\n", sprFilename, spatFilename);
+  if (verbose)
+    printf("Output files: %s, %s\n", sprFilename, spatFilename);
 
-	// Main code
-	if (verbose)
-		printf("Reading input file...\n");
-	if (!(pcxFile = fopen(pcxFilename, "rb"))) {
-		printf("ERROR: Could not open %s.\n", pcxFilename);
-		i = 13;
-		goto out;
-	}
-	if ((i = pcxReaderRead(pcxFile, &bitmap)))
-		goto out;
+  // Main code
+  if (verbose)
+    printf("Reading input file...\n");
+  if (!(pcxFile = fopen(pcxFilename, "rb"))) {
+    printf("ERROR: Could not open %s.\n", pcxFilename);
+    i = 13;
+    goto out;
+  }
+  if ((i = pcxReaderRead(pcxFile, &bitmap)))
+    goto out;
 
-	if (verbose)
-		printf("Processing sprites...\n");
-	sprWriterPlusReadSprites(&writer, &bitmap);
+  if (verbose)
+    printf("Processing sprites...\n");
+  sprWriterPlusReadSprites(&writer, &bitmap);
 
-	if (!dryRun) {
-		if (verbose)
-			printf("Writing output files...\n");
-		if (!(sprFile = fopen(sprFilename, writer.binaryOutput ? "wb" : "wt"))) {
-			printf("ERROR: Could not create %s.\n", sprFilename);
-			i = 14;
-			goto out;
-		}
-		if (!(spatFile = fopen(spatFilename, writer.binaryOutput ? "wb" : "wt"))) {
-			printf("ERROR: Could not create %s.\n", spatFilename);
-			i = 15;
-			goto out;
-		}
-		if ((i = sprWriterPlusWrite(&writer, sprFile, spatFile))) {
-			printf("ERROR: Failed writing %s/%s (%d).\n", sprFilename, spatFilename, i);
-			goto out;
-		}
-	}
+  if (!dryRun) {
+    if (verbose)
+      printf("Writing output files...\n");
+    if (!(sprFile = fopen(sprFilename, writer.binaryOutput ? "wb" : "wt"))) {
+      printf("ERROR: Could not create %s.\n", sprFilename);
+      i = 14;
+      goto out;
+    }
+    if (!(spatFile = fopen(spatFilename, writer.binaryOutput ? "wb" : "wt"))) {
+      printf("ERROR: Could not create %s.\n", spatFilename);
+      i = 15;
+      goto out;
+    }
+    if ((i = sprWriterPlusWrite(&writer, sprFile, spatFile))) {
+      printf("ERROR: Failed writing %s/%s (%d).\n", sprFilename, spatFilename,
+             i);
+      goto out;
+    }
+  }
 
-	if (verbose)
-		printf("Done!\n");
+  if (verbose)
+    printf("Done!\n");
 
 out:
-	// Exit gracefully
-	if (sprFilename) free(sprFilename);
-	if (pcxFile) fclose(pcxFile);
-	if (sprFile) fclose(sprFile);
-	if (spatFile) fclose(spatFile);
-	bitmapDone(&bitmap);
-	sprWriterPlusDone(&writer);
-	return i;
+  // Exit gracefully
+  if (sprFilename)
+    free(sprFilename);
+  if (pcxFile)
+    fclose(pcxFile);
+  if (sprFile)
+    fclose(sprFile);
+  if (spatFile)
+    fclose(spatFile);
+  bitmapDone(&bitmap);
+  sprWriterPlusDone(&writer);
+  return i;
 }
 
 /* Function bodies ------------------------------------- */
 
 void showTitle() {
 
-	if (titleShown)
-		return;
-	printf("PCX2SPR+: A tool to extract MSX-1 VDP sprites from PCX images\n");
-	printf("Deprecation notice: please consider using PNG2SPR+ instead\n");
-	titleShown = 1;
+  if (titleShown)
+    return;
+  printf("PCX2SPR+: A tool to extract MSX-1 VDP sprites from PCX images\n");
+  printf("Deprecation notice: please consider using PNG2SPR+ instead\n");
+  titleShown = 1;
 }
 
 void showUsage() {
 
-	showTitle();
-	printf("Usage:\n");
-	printf("\tPCX2SPR+ [options] pcxFilename\n");
-	printf("where:\n");
-	printf("\tpcxFilename input PCX file\n");
-	printf("options are:\n");
-	printf("\t-v\tverbose execution\n");
-	printf("\t-d\tdry run. Doesn't write output files\n");
-	bitmapOptions();
-	sprWriterPlusOptions();
+  showTitle();
+  printf("Usage:\n");
+  printf("\tPCX2SPR+ [options] pcxFilename\n");
+  printf("where:\n");
+  printf("\tpcxFilename input PCX file\n");
+  printf("options are:\n");
+  printf("\t-v\tverbose execution\n");
+  printf("\t-d\tdry run. Doesn't write output files\n");
+  bitmapOptions();
+  sprWriterPlusOptions();
 }

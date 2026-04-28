@@ -17,4 +17,3 @@ void pngReaderOptions();
 void pngReaderInit(int argc, char **argv);
 
 int pngReaderRead(char *pngFilename, Bitmap *bitmap);
-

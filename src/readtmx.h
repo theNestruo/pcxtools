@@ -12,8 +12,8 @@
 
 // Tiled (TMX) reader
 typedef struct {
-	// Arguments and options
-	int isMultibankCharset;
+  // Arguments and options
+  int isMultibankCharset;
 } TmxReader;
 
 /* Function prototypes ----------------------------------------------------- */
@@ -25,4 +25,3 @@ void tmxReaderOptions();
 void tmxReaderInit(TmxReader *instance, int argc, char **argv);
 
 int tmxReaderRead(TmxReader *instance, FILE *file, Tiled *tiled);
-

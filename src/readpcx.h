@@ -10,4 +10,3 @@
 /* Function prototypes ----------------------------------------------------- */
 
 int pcxReaderRead(FILE *file, Bitmap *bitmap);
-

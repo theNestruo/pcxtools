@@ -7,48 +7,51 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "bitmap.h"
 #include "args.h"
+#include "bitmap.h"
 
 /* Function bodies --------------------------------------------------------- */
 
 void bitmapOptions() {
 
-	printf("\t-i\tinverted. Flips bitmap vertically\n");
-	printf("\t-m\tmirrored. Flips bitmap horizontally\n");
+  printf("\t-i\tinverted. Flips bitmap vertically\n");
+  printf("\t-m\tmirrored. Flips bitmap horizontally\n");
 }
 
 void bitmapInit(Bitmap *this, int argc, char **argv) {
 
-	// Init
-	this->bitmap = NULL;
-	this->width = this->height = 0;
-	this->isFlip = this->isMirror = 0;
+  // Init
+  this->bitmap = NULL;
+  this->width = this->height = 0;
+  this->isFlip = this->isMirror = 0;
 
-	// Read arguments
-	this->isFlip = (argEquals(argc, argv, "-i") != -1);
-	this->isMirror = (argEquals(argc, argv, "-m") != -1);
+  // Read arguments
+  this->isFlip = (argEquals(argc, argv, "-i") != -1);
+  this->isMirror = (argEquals(argc, argv, "-m") != -1);
 }
 
 uint8_t bitmapGet(Bitmap *this, int x0, int y0) {
 
-	if ((x0 < 0) || (y0 < 0) || (x0 >= (int) this->width) || (y0 >= (int) this->height))
-		return 0;
+  if ((x0 < 0) || (y0 < 0) || (x0 >= (int)this->width) ||
+      (y0 >= (int)this->height)) {
+    return 0;
+  }
 
-	int y = this->isFlip   ? ((int) this->height) - y0 - 1 : y0;
-	int x = this->isMirror ? ((int) this->width ) - x0 - 1 : x0;
+  int y = this->isFlip ? ((int)this->height) - y0 - 1 : y0;
+  int x = this->isMirror ? ((int)this->width) - x0 - 1 : x0;
 
-	uint8_t index = this->bitmap[x + y * this->width];
-	if (index > 0x0f) {
-		printf("WARN: Palette index greater than %d found at %d,%d: %x\n",
-			0x0f, x0, y0, index);
-		return 0;
-	}
-	return index;
+  uint8_t index = this->bitmap[x + y * this->width];
+  if (index > 0x0f) {
+    printf("WARN: Palette index greater than %d found at %d,%d: %x\n", 0x0f, x0,
+           y0, index);
+    return 0;
+  }
+  return index;
 }
 
 void bitmapDone(Bitmap *this) {
 
-	if (this->bitmap) free(this->bitmap);
-	this->bitmap = NULL;
+  if (this->bitmap)
+    free(this->bitmap);
+  this->bitmap = NULL;
 }

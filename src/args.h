@@ -32,4 +32,3 @@ int decimalDigit(char c);
 int hexadecimalInt(char *value);
 
 int hexadecimalNibble(char c);
-
