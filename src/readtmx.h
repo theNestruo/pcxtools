@@ -12,8 +12,8 @@
 
 // Tiled (TMX) reader
 typedef struct {
-  // Arguments and options
-  int isMultibankCharset;
+    // Arguments and options
+    int isMultibankCharset;
 } TmxReader;
 
 /* Function prototypes ----------------------------------------------------- */

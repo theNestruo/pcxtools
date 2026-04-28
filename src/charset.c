@@ -20,10 +20,9 @@
 #define PATTERN_MODE_LOW_HIGH (0x80)
 #define PATTERN_MODE_LIGHT_DARK (0x100)
 #define PATTERN_MODE_DARK_LIGHT (0x200)
-#define PATTERN_MODE_MASK                                                      \
-  (PATTERN_MODE_UNSET | PATTERN_MODE_FOREGROUND | PATTERN_MODE_BACKGROUND |    \
-   PATTERN_MODE_HIGH_LOW | PATTERN_MODE_LOW_HIGH | PATTERN_MODE_LIGHT_DARK |   \
-   PATTERN_MODE_DARK_LIGHT)
+#define PATTERN_MODE_MASK                                                                                              \
+    (PATTERN_MODE_UNSET | PATTERN_MODE_FOREGROUND | PATTERN_MODE_BACKGROUND | PATTERN_MODE_HIGH_LOW |                  \
+     PATTERN_MODE_LOW_HIGH | PATTERN_MODE_LIGHT_DARK | PATTERN_MODE_DARK_LIGHT)
 
 /* Global vars ------------------------------------------------------------- */
 
@@ -43,14 +42,10 @@ int patternMode(int isForeground, char bit);
 void postProcessRange(CharsetProcessor *instance, char *argstring);
 
 void charsetProcessorInitForBitmap(CharsetProcessor *instance, Bitmap *bitmap);
-int readLine(CharsetProcessor *instance, Line *line, Bitmap *bitmap, int x,
-             int y, Line *previousLine);
-void charsetProcessorInitForCharset(CharsetProcessor *instance,
-                                    Charset *charset);
-void postProcessLine(CharsetProcessor *instance, int index, Line *line,
-                     Line *previousLine);
-void debugPostProcessLine(CharsetProcessor *instance, Line *from, Line *to,
-                          Line *previousLine, char *message);
+int readLine(CharsetProcessor *instance, Line *line, Bitmap *bitmap, int x, int y, Line *previousLine);
+void charsetProcessorInitForCharset(CharsetProcessor *instance, Charset *charset);
+void postProcessLine(CharsetProcessor *instance, int index, Line *line, Line *previousLine);
+void debugPostProcessLine(CharsetProcessor *instance, Line *from, Line *to, Line *previousLine, char *message);
 void negateAndSwap(Line *line);
 int isLineEquals(Line *line, Line *other);
 int isLineSingleColor(Line *line);
@@ -75,661 +70,622 @@ uint8_t colorAtBit(Line *line, char bit);
 // -tv       traverse image vertically, then horizontally
 void charsetProcessorOptions() {
 
-  printf("\t-il\tignore line on color collision\n");
-  printf("\t-sa\tauto-detect stripped images (default)\n");
-  printf("\t-sy\tforce stripped image (forces using simplified algorithm)\n");
-  printf("\t-sn\tforce non-stripped image\n");
-  printf("\t-hl\tforce higher color to be foreground\n");
-  printf("\t-lh\tforce lower color to be foreground\n");
-  printf("\t-ld\tforce lighter foreground, darker background\n");
-  printf("\t-dl\tforce darker foreground, lighter background\n");
-  printf("\t-f<0..7>\tforce bit <n> to be foreground (set) on patterns\n");
-  printf("\t-b<0..7>\tforce bit <n> to be background (reset) on patterns\n");
-  printf("\t-pf<0000>\tpost-process only the specified address range (from)\n");
-  printf("\t-pt<ffff>\tpost-process only the specified address range (to)\n");
-  printf("\t-th\ttraverse image horizontally, then vertically (default)\n");
-  printf("\t-tv\ttraverse image vertically, then horizontally\n");
+    printf("\t-il\tignore line on color collision\n");
+    printf("\t-sa\tauto-detect stripped images (default)\n");
+    printf("\t-sy\tforce stripped image (forces using simplified algorithm)\n");
+    printf("\t-sn\tforce non-stripped image\n");
+    printf("\t-hl\tforce higher color to be foreground\n");
+    printf("\t-lh\tforce lower color to be foreground\n");
+    printf("\t-ld\tforce lighter foreground, darker background\n");
+    printf("\t-dl\tforce darker foreground, lighter background\n");
+    printf("\t-f<0..7>\tforce bit <n> to be foreground (set) on patterns\n");
+    printf("\t-b<0..7>\tforce bit <n> to be background (reset) on patterns\n");
+    printf("\t-pf<0000>\tpost-process only the specified address range (from)\n");
+    printf("\t-pt<ffff>\tpost-process only the specified address range (to)\n");
+    printf("\t-th\ttraverse image horizontally, then vertically (default)\n");
+    printf("\t-tv\ttraverse image vertically, then horizontally\n");
 }
 
 void charsetProcessorInit(CharsetProcessor *this, int argc, char **argv) {
 
-  // Init
-  this->ignoreCollision = 0;
-  this->patternMode = PATTERN_MODE_UNSET;
-  this->preferredBackground = 0x00;
+    // Init
+    this->ignoreCollision = 0;
+    this->patternMode = PATTERN_MODE_UNSET;
+    this->preferredBackground = 0x00;
 
-  // Read arguments
-  int i;
-  this->ignoreCollision = (argEquals(argc, argv, "-il") != -1);
-  this->forceStrippedImage = (argEquals(argc, argv, "-sy") != -1)   ? 1
-                             : (argEquals(argc, argv, "-sn") != -1) ? 0
-                                                                    : -1;
-  this->patternMode =
-      ((i = argStartsWith(argc, argv, "-f", 3)) != -1)
-          ? patternMode(1, argv[i][2])
-      : ((i = argStartsWith(argc, argv, "-b", 3)) != -1)
-          ? patternMode(0, argv[i][2])
-      : (argEquals(argc, argv, "-hl") != -1) ? PATTERN_MODE_HIGH_LOW
-      : (argEquals(argc, argv, "-lh") != -1) ? PATTERN_MODE_LOW_HIGH
-      : (argEquals(argc, argv, "-ld") != -1) ? PATTERN_MODE_LIGHT_DARK
-      : (argEquals(argc, argv, "-dl") != -1) ? PATTERN_MODE_DARK_LIGHT
-                                             : PATTERN_MODE_UNSET;
-  this->postProcessRangeFrom = ((i = argStartsWith(argc, argv, "-pf", 4)) != -1)
-                                   ? hexadecimalInt(&(argv[i][3]))
-                                   : -1;
-  this->postProcessRangeTo = ((i = argStartsWith(argc, argv, "-pt", 4)) != -1)
-                                 ? hexadecimalInt(&(argv[i][3]))
-                                 : -1;
-  this->traverseHorizontally = (argEquals(argc, argv, "-th") != -1)   ? 1
-                               : (argEquals(argc, argv, "-tv") != -1) ? 0
-                                                                      : 1;
+    // Read arguments
+    int i;
+    this->ignoreCollision = (argEquals(argc, argv, "-il") != -1);
+    this->forceStrippedImage = (argEquals(argc, argv, "-sy") != -1) ? 1 : (argEquals(argc, argv, "-sn") != -1) ? 0 : -1;
+    this->patternMode = ((i = argStartsWith(argc, argv, "-f", 3)) != -1)   ? patternMode(1, argv[i][2])
+                        : ((i = argStartsWith(argc, argv, "-b", 3)) != -1) ? patternMode(0, argv[i][2])
+                        : (argEquals(argc, argv, "-hl") != -1)             ? PATTERN_MODE_HIGH_LOW
+                        : (argEquals(argc, argv, "-lh") != -1)             ? PATTERN_MODE_LOW_HIGH
+                        : (argEquals(argc, argv, "-ld") != -1)             ? PATTERN_MODE_LIGHT_DARK
+                        : (argEquals(argc, argv, "-dl") != -1)             ? PATTERN_MODE_DARK_LIGHT
+                                                                           : PATTERN_MODE_UNSET;
+    this->postProcessRangeFrom = ((i = argStartsWith(argc, argv, "-pf", 4)) != -1) ? hexadecimalInt(&(argv[i][3])) : -1;
+    this->postProcessRangeTo = ((i = argStartsWith(argc, argv, "-pt", 4)) != -1) ? hexadecimalInt(&(argv[i][3])) : -1;
+    this->traverseHorizontally = (argEquals(argc, argv, "-th") != -1)   ? 1
+                                 : (argEquals(argc, argv, "-tv") != -1) ? 0
+                                                                        : 1;
 }
 
-int charsetProcessorRead(CharsetProcessor *this, Charset *charset,
-                         Bitmap *bitmap) {
+int charsetProcessorRead(CharsetProcessor *this, Charset *charset, Bitmap *bitmap) {
 
-  // Partial post-process initialization (preferred background color only)
-  charsetProcessorInitForBitmap(this, bitmap);
+    // Partial post-process initialization (preferred background color only)
+    charsetProcessorInitForBitmap(this, bitmap);
 
-  if (verbose)
-    printf("Preferred background color (bitmap): %1x\n",
-           this->preferredBackground);
-
-  // Allocate space for the blocks
-  charset->width = bitmap->width / TILE_WIDTH;
-  charset->height = bitmap->height / TILE_HEIGHT;
-  charset->blockCount = (int)(charset->width * charset->height);
-  charset->blocks = (Block *)calloc(charset->blockCount, sizeof(Block));
-
-  // For each block...
-  unsigned int x, y;
-  Block *itBlock;
-  Line previousLine0 = {0x00, this->preferredBackground << 4 |
-                                  this->preferredBackground};
-  Line *previousLine;
-
-  if (this->traverseHorizontally) {
-
-    for (y = 0, itBlock = charset->blocks, previousLine = &previousLine0;
-         (y + TILE_HEIGHT) <= bitmap->height; y += TILE_HEIGHT) {
-      for (x = 0; (x + TILE_WIDTH) <= bitmap->width;
-           x += TILE_WIDTH, itBlock++) {
-
-        // For each line...
-        int i;
-        Line *itLine;
-        for (i = 0, itLine = itBlock->line; i < TILE_HEIGHT;
-             i++, previousLine = itLine, itLine++) {
-          if (!readLine(this, itLine, bitmap, x, y + i, previousLine) &&
-              !this->ignoreCollision)
-            return 1;
-        }
-      }
+    if (verbose) {
+        printf("Preferred background color (bitmap): %1x\n", this->preferredBackground);
     }
 
-  } else {
+    // Allocate space for the blocks
+    charset->width = bitmap->width / TILE_WIDTH;
+    charset->height = bitmap->height / TILE_HEIGHT;
+    charset->blockCount = (int)(charset->width * charset->height);
+    charset->blocks = (Block *)calloc(charset->blockCount, sizeof(Block));
 
-    for (x = 0, itBlock = charset->blocks, previousLine = &previousLine0;
-         (x + TILE_WIDTH) <= bitmap->width; x += TILE_WIDTH) {
-      for (y = 0; (y + TILE_HEIGHT) <= bitmap->height;
-           y += TILE_HEIGHT, itBlock++) {
+    // For each block...
+    unsigned int x, y;
+    Block *itBlock;
+    Line previousLine0 = {0x00, this->preferredBackground << 4 | this->preferredBackground};
+    Line *previousLine;
 
-        // For each line...
-        int i;
-        Line *itLine;
-        for (i = 0, itLine = itBlock->line; i < TILE_HEIGHT;
-             i++, previousLine = itLine, itLine++) {
-          if (!readLine(this, itLine, bitmap, x, y + i, previousLine) &&
-              !this->ignoreCollision)
-            return 1;
+    if (this->traverseHorizontally) {
+
+        for (y = 0, itBlock = charset->blocks, previousLine = &previousLine0; (y + TILE_HEIGHT) <= bitmap->height;
+             y += TILE_HEIGHT) {
+            for (x = 0; (x + TILE_WIDTH) <= bitmap->width; x += TILE_WIDTH, itBlock++) {
+
+                // For each line...
+                int i;
+                Line *itLine;
+                for (i = 0, itLine = itBlock->line; i < TILE_HEIGHT; i++, previousLine = itLine, itLine++) {
+                    if (!readLine(this, itLine, bitmap, x, y + i, previousLine) && !this->ignoreCollision) {
+                        return 1;
+                    }
+                }
+            }
         }
-      }
-    }
-  }
 
-  return 0;
+    } else {
+
+        for (x = 0, itBlock = charset->blocks, previousLine = &previousLine0; (x + TILE_WIDTH) <= bitmap->width;
+             x += TILE_WIDTH) {
+            for (y = 0; (y + TILE_HEIGHT) <= bitmap->height; y += TILE_HEIGHT, itBlock++) {
+
+                // For each line...
+                int i;
+                Line *itLine;
+                for (i = 0, itLine = itBlock->line; i < TILE_HEIGHT; i++, previousLine = itLine, itLine++) {
+                    if (!readLine(this, itLine, bitmap, x, y + i, previousLine) && !this->ignoreCollision) {
+                        return 1;
+                    }
+                }
+            }
+        }
+    }
+
+    return 0;
 }
 
 void charsetProcessorPostProcess(CharsetProcessor *this, Charset *charset) {
 
-  // Final post-process initialization delayed after nametable processing,
-  // including stripped image detection
-  charsetProcessorInitForCharset(this, charset);
+    // Final post-process initialization delayed after nametable processing,
+    // including stripped image detection
+    charsetProcessorInitForCharset(this, charset);
 
-  if (verbose)
-    printf("Preferred background color (charset): %1x. Image is: %s\n",
-           this->preferredBackground,
-           this->isStrippedImage
-               ? (this->forceStrippedImage == 1 ? "stripped (forced)"
-                                                : "stripped (detected)")
-               : (this->forceStrippedImage == 0 ? "not stripped (forced)"
-                                                : "not stripped (detected)"));
-
-  // For each block...
-  int i;
-  Block *itBlock;
-  Line previousLine0 = {0x00, this->preferredBackground << 4 |
-                                  this->preferredBackground};
-  Line *previousLine;
-  for (i = 0, itBlock = charset->blocks, previousLine = &previousLine0;
-       i < charset->blockCount; i++, itBlock++) {
-
-    // For each line...
-    int j;
-    Line *itLine;
-    for (j = 0, itLine = itBlock->line; j < TILE_HEIGHT;
-         j++, previousLine = itLine, itLine++) {
-      postProcessLine(this, i * TILE_HEIGHT + j, itLine, previousLine);
+    if (verbose) {
+        printf("Preferred background color (charset): %1x. Image is: %s\n", this->preferredBackground,
+               this->isStrippedImage
+                   ? (this->forceStrippedImage == 1 ? "stripped (forced)" : "stripped (detected)")
+                   : (this->forceStrippedImage == 0 ? "not stripped (forced)" : "not stripped (detected)"));
     }
-  }
+
+    // For each block...
+    int i;
+    Block *itBlock;
+    Line previousLine0 = {0x00, this->preferredBackground << 4 | this->preferredBackground};
+    Line *previousLine;
+    for (i = 0, itBlock = charset->blocks, previousLine = &previousLine0; i < charset->blockCount; i++, itBlock++) {
+
+        // For each line...
+        int j;
+        Line *itLine;
+        for (j = 0, itLine = itBlock->line; j < TILE_HEIGHT; j++, previousLine = itLine, itLine++) {
+            postProcessLine(this, i * TILE_HEIGHT + j, itLine, previousLine);
+        }
+    }
 }
 
-int charsetProcessorWrite(__attribute__((unused)) CharsetProcessor *this,
-                          Charset *charset, FILE *chrFile, FILE *clrFile) {
+int charsetProcessorWrite(__attribute__((unused)) CharsetProcessor *this, Charset *charset, FILE *chrFile,
+                          FILE *clrFile) {
 
-  int i, j;
-  Block *it;
-  Line *line;
-  for (i = 0, it = charset->blocks; i < charset->blockCount; i++, it++) {
-    for (j = 0, line = it->line; j < TILE_HEIGHT; j++, line++) {
-      // Write value in output files
-      if (fwrite(&(line->pattern), sizeof(uint8_t), 1, chrFile) != 1)
-        return 2;
-      if (fwrite(&(line->color), sizeof(uint8_t), 1, clrFile) != 1)
-        return 3;
+    int i, j;
+    Block *it;
+    Line *line;
+    for (i = 0, it = charset->blocks; i < charset->blockCount; i++, it++) {
+        for (j = 0, line = it->line; j < TILE_HEIGHT; j++, line++) {
+            // Write value in output files
+            if (fwrite(&(line->pattern), sizeof(uint8_t), 1, chrFile) != 1) {
+                return 2;
+            }
+            if (fwrite(&(line->color), sizeof(uint8_t), 1, clrFile) != 1) {
+                return 3;
+            }
+        }
     }
-  }
 
-  return 0;
+    return 0;
 }
 
 void charsetProcessorDone(__attribute__((unused)) CharsetProcessor *this) {
 
-  // nothing to do here
+    // nothing to do here
 }
 
 void charsetDone(Charset *this) {
 
-  if (this->blocks)
-    free(this->blocks);
-  this->blocks = NULL;
+    if (this->blocks) {
+        free(this->blocks);
+    }
+    this->blocks = NULL;
 }
 
 int isSolidBlock(Block *block, uint8_t color) {
 
-  int i;
-  Line *line;
-  for (i = 0, line = block->line; i < TILE_HEIGHT; i++, line++) {
-    if (((line->pattern) != 0xff) && ((line->color & 0x0f) != color))
-      return 0;
-    if (((line->pattern) != 0x00) && ((line->color & 0xf0) != (color << 4)))
-      return 0;
-  }
-  return 1;
+    int i;
+    Line *line;
+    for (i = 0, line = block->line; i < TILE_HEIGHT; i++, line++) {
+        if (((line->pattern) != 0xff) && ((line->color & 0x0f) != color)) {
+            return 0;
+        }
+        if (((line->pattern) != 0x00) && ((line->color & 0xf0) != (color << 4))) {
+            return 0;
+        }
+    }
+    return 1;
 }
 
 int isBlockEquals(Block *this, Block *that) {
 
-  int i;
-  Line *thisLine, *thatLine;
-  for (i = 0, thisLine = this->line, thatLine = that->line; i < TILE_HEIGHT;
-       i++, thisLine++, thatLine++)
-    if (!isLineEquals(thisLine, thatLine))
-      return 0;
+    int i;
+    Line *thisLine, *thatLine;
+    for (i = 0, thisLine = this->line, thatLine = that->line; i < TILE_HEIGHT; i++, thisLine++, thatLine++) {
+        if (!isLineEquals(thisLine, thatLine)) {
+            return 0;
+        }
+    }
 
-  return 1;
+    return 1;
 }
 
 int blockIndex(Charset *charset, Block *block, int stopBefore) {
 
-  int i;
-  Block *it;
-  for (i = 0, it = charset->blocks;
-       (i < charset->blockCount) && (i < stopBefore); i++, it++)
-    if (isBlockEquals(block, it))
-      return i;
+    int i;
+    Block *it;
+    for (i = 0, it = charset->blocks; (i < charset->blockCount) && (i < stopBefore); i++, it++) {
+        if (isBlockEquals(block, it)) {
+            return i;
+        }
+    }
 
-  return -1;
+    return -1;
 }
 
 /* Private function bodies ------------------------------------------------- */
 
 int patternMode(int isForeground, char bit) {
 
-  if ((bit < '0') || (bit > '7'))
-    return PATTERN_MODE_UNSET;
+    if ((bit < '0') || (bit > '7')) {
+        return PATTERN_MODE_UNSET;
+    }
 
-  return (isForeground ? PATTERN_MODE_FOREGROUND : PATTERN_MODE_BACKGROUND) |
-         (bit - '0');
+    return (isForeground ? PATTERN_MODE_FOREGROUND : PATTERN_MODE_BACKGROUND) | (bit - '0');
 }
 
 void charsetProcessorInitForBitmap(CharsetProcessor *this, Bitmap *bitmap) {
 
-  // (before nametable processing)
+    // (before nametable processing)
 
-  // Preferred background ---------------------------------------------------
+    // Preferred background ---------------------------------------------------
 
-  unsigned int count[16] = {0};
-  unsigned int x, y;
-  for (x = 0; x < bitmap->width; x++) {
-    for (y = 0; y < bitmap->height; y++) {
-      count[bitmapGet(bitmap, x, y)]++;
+    unsigned int count[16] = {0};
+    unsigned int x, y;
+    for (x = 0; x < bitmap->width; x++) {
+        for (y = 0; y < bitmap->height; y++) {
+            count[bitmapGet(bitmap, x, y)]++;
+        }
     }
-  }
 
-  uint8_t mostFrequentColor = 0x00;
-  unsigned int maxCount = 0;
-  for (uint8_t color = 0; color < 16; color++) {
-    if (veryVerbose)
-      printf("\tFrequency of color %x (bitmap): %d\n", color, count[color]);
-    if (count[color] > maxCount) {
-      maxCount = count[color];
-      mostFrequentColor = color;
+    uint8_t mostFrequentColor = 0x00;
+    unsigned int maxCount = 0;
+    for (uint8_t color = 0; color < 16; color++) {
+        if (veryVerbose) {
+            printf("\tFrequency of color %x (bitmap): %d\n", color, count[color]);
+        }
+        if (count[color] > maxCount) {
+            maxCount = count[color];
+            mostFrequentColor = color;
+        }
     }
-  }
 
-  this->preferredBackground = mostFrequentColor;
+    this->preferredBackground = mostFrequentColor;
 }
 
 int readLine(CharsetProcessor *this, Line *line, Bitmap *bitmap, int x, int y,
              __attribute__((unused)) Line *previousLine) {
 
-  int i, j;
-  uint8_t colors[TILE_WIDTH];
-  uint8_t pattern = 0x00, bgcandidate = 0xff, fgcandidate = 0xff;
+    int i, j;
+    uint8_t colors[TILE_WIDTH];
+    uint8_t pattern = 0x00, bgcandidate = 0xff, fgcandidate = 0xff;
 
-  // Read the colors
-  for (i = 0; i < TILE_WIDTH; i++) {
-    colors[i] = bitmapGet(bitmap, x + i, y);
-  }
-
-  // Create the pattern
-  for (i = 0, j = TILE_WIDTH - 1; i < TILE_WIDTH; i++, j--) {
-    uint8_t color = colors[j];
-    if (bgcandidate == 0xff) {
-      bgcandidate = color;
-      // pattern |= 0<<i; // (unnecesary)
-    } else if (bgcandidate == color) {
-      // pattern |= 0<<i; // (unnecesary)
-    } else if (fgcandidate == 0xff) {
-      fgcandidate = color;
-      pattern |= 1 << i;
-    } else if (fgcandidate == color) {
-      pattern |= 1 << i;
-    } else {
-      // More than two colors
-      printf("%s: Collision at %d,%d: %x%x%x%x%x%x%x%x\n",
-             this->ignoreCollision ? "WARN" : "ERROR", x, y, colors[0],
-             colors[1], colors[2], colors[3], colors[4], colors[5], colors[6],
-             colors[7]);
-      line->pattern = 0x00;
-      line->color = 0x00;
-      return 0;
+    // Read the colors
+    for (i = 0; i < TILE_WIDTH; i++) {
+        colors[i] = bitmapGet(bitmap, x + i, y);
     }
-  }
 
-  if (fgcandidate == 0xff) {
-    line->pattern = 0xff;
-    line->color = (bgcandidate & 0x0f) << 4 | this->preferredBackground;
-  } else {
-    line->pattern = pattern;
-    line->color = (fgcandidate & 0x0f) << 4 | (bgcandidate & 0x0f);
-  }
+    // Create the pattern
+    for (i = 0, j = TILE_WIDTH - 1; i < TILE_WIDTH; i++, j--) {
+        uint8_t color = colors[j];
+        if (bgcandidate == 0xff) {
+            bgcandidate = color;
+            // pattern |= 0<<i; // (unnecesary)
+        } else if (bgcandidate == color) {
+            // pattern |= 0<<i; // (unnecesary)
+        } else if (fgcandidate == 0xff) {
+            fgcandidate = color;
+            pattern |= 1 << i;
+        } else if (fgcandidate == color) {
+            pattern |= 1 << i;
+        } else {
+            // More than two colors
+            printf("%s: Collision at %d,%d: %x%x%x%x%x%x%x%x\n", this->ignoreCollision ? "WARN" : "ERROR", x, y,
+                   colors[0], colors[1], colors[2], colors[3], colors[4], colors[5], colors[6], colors[7]);
+            line->pattern = 0x00;
+            line->color = 0x00;
+            return 0;
+        }
+    }
 
-  /*
-   * (postProcess delayed after nametable processing)
-   *
-  postProcessLine(this, line, previousLine);
-   */
+    if (fgcandidate == 0xff) {
+        line->pattern = 0xff;
+        line->color = (bgcandidate & 0x0f) << 4 | this->preferredBackground;
+    } else {
+        line->pattern = pattern;
+        line->color = (fgcandidate & 0x0f) << 4 | (bgcandidate & 0x0f);
+    }
 
-  return 1;
+    /*
+     * (postProcess delayed after nametable processing)
+     *
+    postProcessLine(this, line, previousLine);
+     */
+
+    return 1;
 }
 
 void charsetProcessorInitForCharset(CharsetProcessor *this, Charset *charset) {
 
-  // (after nametable processing)
+    // (after nametable processing)
 
-  // Preferred background ---------------------------------------------------
+    // Preferred background ---------------------------------------------------
 
-  unsigned int count[16] = {0};
-  unsigned int evenCount[16] = {0};
-  unsigned int oddCount[16] = {0};
-  int i, j, b;
-  Block *block;
-  Line *evenLine, *oddLine;
-  for (i = 0, block = charset->blocks; i < charset->blockCount; i++, block++) {
-    for (j = 0, evenLine = block->line, oddLine = evenLine + 1; j < TILE_HEIGHT;
-         j += 2, evenLine += 2, oddLine += 2) {
-      for (b = 0; b < 8; b++) {
-        uint8_t evenColor = colorAtBit(evenLine, b);
-        uint8_t oddColor = colorAtBit(oddLine, b);
-        count[evenColor]++;
-        count[oddColor]++;
-        evenCount[evenColor]++;
-        oddCount[oddColor]++;
-      }
+    unsigned int count[16] = {0};
+    unsigned int evenCount[16] = {0};
+    unsigned int oddCount[16] = {0};
+    int i, j, b;
+    Block *block;
+    Line *evenLine, *oddLine;
+    for (i = 0, block = charset->blocks; i < charset->blockCount; i++, block++) {
+        for (j = 0, evenLine = block->line, oddLine = evenLine + 1; j < TILE_HEIGHT;
+             j += 2, evenLine += 2, oddLine += 2) {
+            for (b = 0; b < 8; b++) {
+                uint8_t evenColor = colorAtBit(evenLine, b);
+                uint8_t oddColor = colorAtBit(oddLine, b);
+                count[evenColor]++;
+                count[oddColor]++;
+                evenCount[evenColor]++;
+                oddCount[oddColor]++;
+            }
+        }
     }
-  }
 
-  uint8_t mostFrequentColor = 0x00, mostFrequentEvenColor = 0x00,
-          mostFrequentOddColor = 0x00;
-  unsigned int maxCount = 0, maxEvenCount = 0, maxOddCount = 0;
-  for (uint8_t color = 0; color < 16; color++) {
-    if (veryVerbose)
-      printf("\tFrequency of color %x (charset): %d\n", color, count[color]);
-    if (count[color] > maxCount) {
-      maxCount = count[color];
-      mostFrequentColor = color;
+    uint8_t mostFrequentColor = 0x00, mostFrequentEvenColor = 0x00, mostFrequentOddColor = 0x00;
+    unsigned int maxCount = 0, maxEvenCount = 0, maxOddCount = 0;
+    for (uint8_t color = 0; color < 16; color++) {
+        if (veryVerbose) {
+            printf("\tFrequency of color %x (charset): %d\n", color, count[color]);
+        }
+        if (count[color] > maxCount) {
+            maxCount = count[color];
+            mostFrequentColor = color;
+        }
+        if (evenCount[color] > maxEvenCount) {
+            maxEvenCount = evenCount[color];
+            mostFrequentEvenColor = color;
+        }
+        if (oddCount[color] > maxOddCount) {
+            maxOddCount = oddCount[color];
+            mostFrequentOddColor = color;
+        }
     }
-    if (evenCount[color] > maxEvenCount) {
-      maxEvenCount = evenCount[color];
-      mostFrequentEvenColor = color;
+
+    this->preferredBackground = mostFrequentColor;
+
+    if (veryVerbose) {
+        printf("\tMost frequent color: %x, even lines: %x, odd lines: %x\n", mostFrequentColor, mostFrequentEvenColor,
+               mostFrequentOddColor);
     }
-    if (oddCount[color] > maxOddCount) {
-      maxOddCount = oddCount[color];
-      mostFrequentOddColor = color;
+
+    // Stripped image detection -----------------------------------------------
+
+    // Forced to yes/no?
+    if (this->forceStrippedImage != -1) {
+        this->isStrippedImage = this->forceStrippedImage;
+        return;
     }
-  }
 
-  this->preferredBackground = mostFrequentColor;
+    // Even/odd background is reference background and the other one is not?
+    if ((mostFrequentColor == mostFrequentEvenColor) == (mostFrequentColor == mostFrequentOddColor)) {
+        if (veryVerbose) {
+            printf("\tImage is not stripped\n");
+        }
+        this->isStrippedImage = 0;
+        return;
+    }
 
-  if (veryVerbose)
-    printf("\tMost frequent color: %x, even lines: %x, odd lines: %x\n",
-           mostFrequentColor, mostFrequentEvenColor, mostFrequentOddColor);
-
-  // Stripped image detection -----------------------------------------------
-
-  // Forced to yes/no?
-  if (this->forceStrippedImage != -1) {
-    this->isStrippedImage = this->forceStrippedImage;
+    // Enough excess of reference background representation in even/odd background
+    // (>= 5%)?
+    unsigned int totalBytes = charset->blockCount;
+    unsigned int excess = (mostFrequentColor == mostFrequentEvenColor) ? abs((int)maxEvenCount * 2 - (int)maxCount) / 2
+                                                                       : abs((int)maxOddCount * 2 - (int)maxCount) / 2;
+    unsigned int threshold = 5 * totalBytes / 100;
+    this->isStrippedImage = excess >= threshold;
+    if (veryVerbose) {
+        printf("\tImage is %s: excess of background in %s lines: %d, threshold: %d "
+               "(5%% of %d bytes)\n",
+               this->isStrippedImage ? "stripped" : "not stripped",
+               (mostFrequentColor == mostFrequentEvenColor) ? "even" : "odd", excess, threshold, totalBytes);
+    }
     return;
-  }
-
-  // Even/odd background is reference background and the other one is not?
-  if ((mostFrequentColor == mostFrequentEvenColor) ==
-      (mostFrequentColor == mostFrequentOddColor)) {
-    if (veryVerbose)
-      printf("\tImage is not stripped\n");
-    this->isStrippedImage = 0;
-    return;
-  }
-
-  // Enough excess of reference background representation in even/odd background
-  // (>= 5%)?
-  unsigned int totalBytes = charset->blockCount;
-  unsigned int excess = (mostFrequentColor == mostFrequentEvenColor)
-                            ? abs((int)maxEvenCount * 2 - (int)maxCount) / 2
-                            : abs((int)maxOddCount * 2 - (int)maxCount) / 2;
-  unsigned int threshold = 5 * totalBytes / 100;
-  this->isStrippedImage = excess >= threshold;
-  if (veryVerbose)
-    printf("\tImage is %s: excess of background in %s lines: %d, threshold: %d "
-           "(5%% of %d bytes)\n",
-           this->isStrippedImage ? "stripped" : "not stripped",
-           (mostFrequentColor == mostFrequentEvenColor) ? "even" : "odd",
-           excess, threshold, totalBytes);
-  return;
 }
 
-void postProcessLine(CharsetProcessor *this, int index, Line *line,
-                     Line *previousLine) {
+void postProcessLine(CharsetProcessor *this, int index, Line *line, Line *previousLine) {
 
-  Line copyOfLine = {line->pattern, line->color};
+    Line copyOfLine = {line->pattern, line->color};
 
-  int patternMode = ((this->postProcessRangeFrom == -1) ||
-                     (this->postProcessRangeFrom <= index)) &&
-                            ((this->postProcessRangeTo == -1) ||
-                             (this->postProcessRangeTo >= index))
-                        ? this->patternMode
-                        : PATTERN_MODE_UNSET;
+    int patternMode = ((this->postProcessRangeFrom == -1) || (this->postProcessRangeFrom <= index)) &&
+                              ((this->postProcessRangeTo == -1) || (this->postProcessRangeTo >= index))
+                          ? this->patternMode
+                          : PATTERN_MODE_UNSET;
 
-  // Apply current pattern mode
-  switch (patternMode & PATTERN_MODE_MASK) {
-  case PATTERN_MODE_FOREGROUND:
-    // Force foreground bit
-    if (!(line->pattern & (1 << (this->patternMode & 0x07)))) {
-      negateAndSwap(line);
-      debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                           "Force foreground bit (inverted line)");
-      return;
+    // Apply current pattern mode
+    switch (patternMode & PATTERN_MODE_MASK) {
+    case PATTERN_MODE_FOREGROUND:
+        // Force foreground bit
+        if (!(line->pattern & (1 << (this->patternMode & 0x07)))) {
+            negateAndSwap(line);
+            debugPostProcessLine(this, &copyOfLine, line, previousLine, "Force foreground bit (inverted line)");
+            return;
+        }
+        debugPostProcessLine(this, &copyOfLine, line, previousLine, "Force foreground bit");
+        return;
+
+    case PATTERN_MODE_BACKGROUND:
+        // Force background bit
+        if (line->pattern & (1 << (this->patternMode & 0x07))) {
+            negateAndSwap(line);
+            debugPostProcessLine(this, &copyOfLine, line, previousLine, "Force background bit (inverted line)");
+            return;
+        }
+        debugPostProcessLine(this, &copyOfLine, line, previousLine, "Force background bit");
+        return;
+
+    case PATTERN_MODE_HIGH_LOW:
+        // Force higher color foreground
+        if ((line->color >> 4) < (line->color & 0x0f)) {
+            negateAndSwap(line);
+            debugPostProcessLine(this, &copyOfLine, line, previousLine,
+                                 "Force higher color foreground (inverted line)");
+            return;
+        }
+        if ((line->pattern == 0xff) && ((line->color >> 4) < 2)) {
+            negateAndSwap(line); // WORKAROUND: forces color 0 or 1 always background
+            debugPostProcessLine(this, &copyOfLine, line, previousLine,
+                                 "Force higher color foreground (workaround for 0/1)");
+            return;
+        }
+        debugPostProcessLine(this, &copyOfLine, line, previousLine, "Force higher color foreground");
+        return;
+
+    case PATTERN_MODE_LOW_HIGH:
+        // Force higher color background
+        if ((line->color & 0x0f) < (line->color >> 4)) {
+            negateAndSwap(line);
+            debugPostProcessLine(this, &copyOfLine, line, previousLine,
+                                 "Force higher color background (inverted line)");
+            return;
+        }
+        if ((line->pattern == 0x00) && ((line->color & 0x0f) == 15)) {
+            negateAndSwap(line); // WORKAROUND: forces color 15 always foreground
+            debugPostProcessLine(this, &copyOfLine, line, previousLine,
+                                 "Force higher color background (workaround for 15)");
+            return;
+        }
+        debugPostProcessLine(this, &copyOfLine, line, previousLine, "Force higher color background");
+        return;
+
+    case PATTERN_MODE_LIGHT_DARK:
+        // Force lighter color foreground
+        if (brightness[line->color >> 4] < brightness[line->color & 0x0f]) {
+            negateAndSwap(line);
+            debugPostProcessLine(this, &copyOfLine, line, previousLine,
+                                 "Force lighter color foreground (inverted line)");
+        }
+        debugPostProcessLine(this, &copyOfLine, line, previousLine, "Force lighter color foreground");
+        return;
+
+    case PATTERN_MODE_DARK_LIGHT:
+        // Force darker color foreground
+        if (brightness[line->color & 0x0f] < brightness[line->color >> 4]) {
+            negateAndSwap(line);
+            debugPostProcessLine(this, &copyOfLine, line, previousLine,
+                                 "Force darker color foreground (inverted line)");
+        }
+        debugPostProcessLine(this, &copyOfLine, line, previousLine, "Force darker color foreground");
+        return;
     }
-    debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                         "Force foreground bit");
-    return;
 
-  case PATTERN_MODE_BACKGROUND:
-    // Force background bit
-    if (line->pattern & (1 << (this->patternMode & 0x07))) {
-      negateAndSwap(line);
-      debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                           "Force background bit (inverted line)");
-      return;
+    // PATTERN_MODE_UNSET
+
+    // Choses the best pattern+color combination
+    if (isLineEquals(line, previousLine)) {
+        line->pattern = previousLine->pattern;
+        line->color = previousLine->color;
+        debugPostProcessLine(this, &copyOfLine, line, previousLine, "Same as previous line");
+        return;
     }
-    debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                         "Force background bit");
-    return;
 
-  case PATTERN_MODE_HIGH_LOW:
-    // Force higher color foreground
-    if ((line->color >> 4) < (line->color & 0x0f)) {
-      negateAndSwap(line);
-      debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                           "Force higher color foreground (inverted line)");
-      return;
+    // Single color (no fg candidate)
+    const int singleColor = isLineSingleColor(line);
+    if (singleColor != -1) {
+
+        if (this->isStrippedImage) {
+            // This seems to yield better compression ratios than more complex
+            // algorithms for stripped images that have rapidly changing either
+            // CHRLTBL or CLRTBL bytes (this should be no-op)
+            line->pattern = 0xff;
+            line->color = singleColor << 4 | this->preferredBackground;
+            debugPostProcessLine(this, &copyOfLine, line, previousLine, "Full foreground");
+            return;
+        }
+
+        // Attempts to reuse the previous CLRTBL value
+        if (singleColor == (previousLine->color & 0x0f)) {
+            line->pattern = 0x00;
+            line->color = previousLine->color;
+            debugPostProcessLine(this, &copyOfLine, line, previousLine,
+                                 "Full background (reuses previous line colors)");
+            return;
+        }
+        if (singleColor == (previousLine->color >> 4)) {
+            line->pattern = 0xff;
+            line->color = previousLine->color;
+            debugPostProcessLine(this, &copyOfLine, line, previousLine,
+                                 "Full foreground (reuses previous line colors)");
+            return;
+        }
+
+        // Preferred backround and single color are both on the same light/dark
+        // side:
+        int isBackground = ((brightness[this->preferredBackground] < 8) == (brightness[singleColor] < 8));
+        /*
+         * This seems to yield better compression ratios in particular images only
+         *
+        // Only preferred background:
+        int isBackground = (singleColor == this->preferredBackground);
+         */
+
+        // Attempts to use preferred background
+        if (isBackground) {
+            line->pattern = 0x00;
+            line->color = 0x00 << 4 | singleColor;
+            debugPostProcessLine(this, &copyOfLine, line, previousLine, "Full background");
+            return;
+        }
+
+        // Uses the single color as foreground over the preferred background
+        // (this should be no-op)
+        line->pattern = 0xff;
+        line->color = singleColor << 4 | this->preferredBackground;
+        debugPostProcessLine(this, &copyOfLine, line, previousLine, "Full foreground (over preferred background)");
+        return;
     }
-    if ((line->pattern == 0xff) && ((line->color >> 4) < 2)) {
-      negateAndSwap(line); // WORKAROUND: forces color 0 or 1 always background
-      debugPostProcessLine(
-          this, &copyOfLine, line, previousLine,
-          "Force higher color foreground (workaround for 0/1)");
-      return;
-    }
-    debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                         "Force higher color foreground");
-    return;
 
-  case PATTERN_MODE_LOW_HIGH:
-    // Force higher color background
-    if ((line->color & 0x0f) < (line->color >> 4)) {
-      negateAndSwap(line);
-      debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                           "Force higher color background (inverted line)");
-      return;
-    }
-    if ((line->pattern == 0x00) && ((line->color & 0x0f) == 15)) {
-      negateAndSwap(line); // WORKAROUND: forces color 15 always foreground
-      debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                           "Force higher color background (workaround for 15)");
-      return;
-    }
-    debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                         "Force higher color background");
-    return;
+    // Two colors -------------------------------------------------------------
 
-  case PATTERN_MODE_LIGHT_DARK:
-    // Force lighter color foreground
-    if (brightness[line->color >> 4] < brightness[line->color & 0x0f]) {
-      negateAndSwap(line);
-      debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                           "Force lighter color foreground (inverted line)");
-    }
-    debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                         "Force lighter color foreground");
-    return;
-
-  case PATTERN_MODE_DARK_LIGHT:
-    // Force darker color foreground
-    if (brightness[line->color & 0x0f] < brightness[line->color >> 4]) {
-      negateAndSwap(line);
-      debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                           "Force darker color foreground (inverted line)");
-    }
-    debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                         "Force darker color foreground");
-    return;
-  }
-
-  // PATTERN_MODE_UNSET
-
-  // Choses the best pattern+color combination
-  if (isLineEquals(line, previousLine)) {
-    line->pattern = previousLine->pattern;
-    line->color = previousLine->color;
-    debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                         "Same as previous line");
-    return;
-  }
-
-  // Single color (no fg candidate)
-  const int singleColor = isLineSingleColor(line);
-  if (singleColor != -1) {
-
-    if (this->isStrippedImage) {
-      // This seems to yield better compression ratios than more complex
-      // algorithms for stripped images that have rapidly changing either
-      // CHRLTBL or CLRTBL bytes (this should be no-op)
-      line->pattern = 0xff;
-      line->color = singleColor << 4 | this->preferredBackground;
-      debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                           "Full foreground");
-      return;
-    }
+    const uint8_t fg = (line->color >> 4);
+    const uint8_t bg = (line->color & 0x0f);
 
     // Attempts to reuse the previous CLRTBL value
-    if (singleColor == (previousLine->color & 0x0f)) {
-      line->pattern = 0x00;
-      line->color = previousLine->color;
-      debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                           "Full background (reuses previous line colors)");
-      return;
+    if (line->color == previousLine->color) {
+        debugPostProcessLine(this, &copyOfLine, line, previousLine, "Reuses previous line colors");
+        return;
     }
-    if (singleColor == (previousLine->color >> 4)) {
-      line->pattern = 0xff;
-      line->color = previousLine->color;
-      debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                           "Full foreground (reuses previous line colors)");
-      return;
+    if (((bg << 4) | fg) == previousLine->color) {
+        negateAndSwap(line);
+        debugPostProcessLine(this, &copyOfLine, line, previousLine, "Reuses previous line colors (inverted line)");
+        return;
     }
 
-    // Preferred backround and single color are both on the same light/dark
-    // side:
-    int isBackground = ((brightness[this->preferredBackground] < 8) ==
-                        (brightness[singleColor] < 8));
-    /*
-     * This seems to yield better compression ratios in particular images only
-     *
-    // Only preferred background:
-    int isBackground = (singleColor == this->preferredBackground);
-     */
-
-    // Attempts to use preferred background
-    if (isBackground) {
-      line->pattern = 0x00;
-      line->color = 0x00 << 4 | singleColor;
-      debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                           "Full background");
-      return;
+    // Attempts to use the preferred background
+    if (bg == this->preferredBackground) {
+        debugPostProcessLine(this, &copyOfLine, line, previousLine, "Preferred background");
+        return;
+    }
+    if (fg == this->preferredBackground) {
+        negateAndSwap(line);
+        debugPostProcessLine(this, &copyOfLine, line, previousLine, "Preferred background (inverted line)");
+        return;
     }
 
-    // Uses the single color as foreground over the preferred background
-    // (this should be no-op)
-    line->pattern = 0xff;
-    line->color = singleColor << 4 | this->preferredBackground;
-    debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                         "Full foreground (over preferred background)");
+    // Preferred background not present and cannot reuse previous CLRTBL
+    const int isInverted = (brightness[this->preferredBackground] < 8)
+                               ? (brightness[bg] > brightness[fg])  // light-over-dark if preferred background is dark
+                               : (brightness[bg] < brightness[fg]); // dark-over-light if preferred
+                                                                    // background is light
+
+    if (isInverted) {
+        negateAndSwap(line);
+        debugPostProcessLine(this, &copyOfLine, line, previousLine, "Two colors (inverted line)");
+        return;
+    }
+
+    debugPostProcessLine(this, &copyOfLine, line, previousLine, "Two colors");
     return;
-  }
-
-  // Two colors -------------------------------------------------------------
-
-  const uint8_t fg = (line->color >> 4);
-  const uint8_t bg = (line->color & 0x0f);
-
-  // Attempts to reuse the previous CLRTBL value
-  if (line->color == previousLine->color) {
-    debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                         "Reuses previous line colors");
-    return;
-  }
-  if (((bg << 4) | fg) == previousLine->color) {
-    negateAndSwap(line);
-    debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                         "Reuses previous line colors (inverted line)");
-    return;
-  }
-
-  // Attempts to use the preferred background
-  if (bg == this->preferredBackground) {
-    debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                         "Preferred background");
-    return;
-  }
-  if (fg == this->preferredBackground) {
-    negateAndSwap(line);
-    debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                         "Preferred background (inverted line)");
-    return;
-  }
-
-  // Preferred background not present and cannot reuse previous CLRTBL
-  const int isInverted =
-      (brightness[this->preferredBackground] < 8)
-          ? (brightness[bg] >
-             brightness[fg]) // light-over-dark if preferred background is dark
-          : (brightness[bg] < brightness[fg]); // dark-over-light if preferred
-                                               // background is light
-
-  if (isInverted) {
-    negateAndSwap(line);
-    debugPostProcessLine(this, &copyOfLine, line, previousLine,
-                         "Two colors (inverted line)");
-    return;
-  }
-
-  debugPostProcessLine(this, &copyOfLine, line, previousLine, "Two colors");
-  return;
 }
 
-void debugPostProcessLine(CharsetProcessor *this, Line *from, Line *to,
-                          Line *previousLine, char *message) {
+void debugPostProcessLine(CharsetProcessor *this, Line *from, Line *to, Line *previousLine, char *message) {
 
-  if (!veryVerbose)
-    return;
+    if (!veryVerbose) {
+        return;
+    }
 
-  printf("(pref.bg: %x) ...[%02x %02x], [%02x %02x] %s [%02x %02x] %s\n",
-         this->preferredBackground, previousLine->pattern, previousLine->color,
-         from->pattern, from->color,
-         ((from->pattern == to->pattern) && (from->color == to->color)) ? "=="
-                                                                        : "XX",
-         to->pattern, to->color, message);
+    printf("(pref.bg: %x) ...[%02x %02x], [%02x %02x] %s [%02x %02x] %s\n", this->preferredBackground,
+           previousLine->pattern, previousLine->color, from->pattern, from->color,
+           ((from->pattern == to->pattern) && (from->color == to->color)) ? "==" : "XX", to->pattern, to->color,
+           message);
 }
 
 void negateAndSwap(Line *line) {
 
-  line->pattern ^= 0xff;
-  line->color = ((line->color & 0x0f) << 4) | (line->color >> 4);
+    line->pattern ^= 0xff;
+    line->color = ((line->color & 0x0f) << 4) | (line->color >> 4);
 }
 
 int isLineEquals(Line *thisLine, Line *thatLine) {
 
-  int i;
-  for (i = 0; i < TILE_WIDTH; i++)
-    if (colorAtBit(thisLine, i) != colorAtBit(thatLine, i))
-      return 0;
+    int i;
+    for (i = 0; i < TILE_WIDTH; i++) {
+        if (colorAtBit(thisLine, i) != colorAtBit(thatLine, i)) {
+            return 0;
+        }
+    }
 
-  return 1;
+    return 1;
 }
 
 int isLineSingleColor(Line *line) {
 
-  return (line->pattern == 0x00)                        ? (line->color & 0x0f)
-         : (line->pattern == 0xff)                      ? (line->color >> 4)
-         : ((line->color & 0x0f) == (line->color >> 4)) ? (line->color & 0x0f)
-                                                        : -1;
+    return (line->pattern == 0x00)                        ? (line->color & 0x0f)
+           : (line->pattern == 0xff)                      ? (line->color >> 4)
+           : ((line->color & 0x0f) == (line->color >> 4)) ? (line->color & 0x0f)
+                                                          : -1;
 }
 
 uint8_t colorAtBit(Line *line, char bit) {
 
-  return (line->pattern & (0x01 << bit)) ? (line->color >> 4)
-                                         : (line->color & 0x0f);
+    return (line->pattern & (0x01 << bit)) ? (line->color >> 4) : (line->color & 0x0f);
 }

@@ -28,107 +28,116 @@ void showUsage();
 
 int main(int argc, char **argv) {
 
-  // Shows usage if there are no parameters
-  if (argc == 1) {
-    showUsage();
-    return 11;
-  }
-
-  char *pngFilename = NULL;
-  char *sprFilename = NULL;
-  FILE *sprFile = NULL;
-  Bitmap bitmap = {0};
-  SprWriter writer = {0};
-
-  int i = 0, argi = 0;
-  int dryRun = 0;
-
-  // Parse main arguments
-  veryVerbose = argEquals(argc, argv, "-vv") != -1;
-  verbose = (argEquals(argc, argv, "-v") != -1) | veryVerbose;
-  if (verbose)
-    showTitle();
-  dryRun = argEquals(argc, argv, "-d") != -1;
-
-  if ((argi = argFilename(argc, argv)) != -1) {
-    pngFilename = argv[argi];
-    sprFilename = append(argv[argi], ".spr");
-  }
-
-  if (!pngFilename) {
-    showUsage();
-    i = 12;
-    goto out;
-  }
-
-  if (verbose) {
-    printf("Input file: %s\nOutput file: %s\n", pngFilename, sprFilename);
-  }
-
-  // Initializes bitmap container and chr/clr processor
-  pngReaderInit(argc, argv);
-  bitmapInit(&bitmap, argc, argv);
-  sprWriterInit(&writer, argc, argv);
-
-  // Main code
-  if (verbose)
-    printf("Reading input file...\n");
-  if ((i = pngReaderRead(pngFilename, &bitmap)))
-    goto out;
-
-  if (verbose)
-    printf("Processing sprites...\n");
-  sprWriterReadSprites(&writer, &bitmap);
-
-  if (!dryRun) {
-    if (verbose)
-      printf("Writing output file...\n");
-    if (!(sprFile = fopen(sprFilename, "wb"))) {
-      printf("ERROR: Could not create %s.\n", sprFilename);
-      i = 14;
-      goto out;
+    // Shows usage if there are no parameters
+    if (argc == 1) {
+        showUsage();
+        return 11;
     }
-    if ((i = sprWriterWrite(&writer, sprFile))) {
-      printf("ERROR: Failed writing %s.\n", sprFilename);
-      goto out;
-    }
-  }
 
-  if (verbose)
-    printf("Done!\n");
+    char *pngFilename = NULL;
+    char *sprFilename = NULL;
+    FILE *sprFile = NULL;
+    Bitmap bitmap = {0};
+    SprWriter writer = {0};
+
+    int i = 0, argi = 0;
+    int dryRun = 0;
+
+    // Parse main arguments
+    veryVerbose = argEquals(argc, argv, "-vv") != -1;
+    verbose = (argEquals(argc, argv, "-v") != -1) | veryVerbose;
+    if (verbose) {
+        showTitle();
+    }
+    dryRun = argEquals(argc, argv, "-d") != -1;
+
+    if ((argi = argFilename(argc, argv)) != -1) {
+        pngFilename = argv[argi];
+        sprFilename = append(argv[argi], ".spr");
+    }
+
+    if (!pngFilename) {
+        showUsage();
+        i = 12;
+        goto out;
+    }
+
+    if (verbose) {
+        printf("Input file: %s\nOutput file: %s\n", pngFilename, sprFilename);
+    }
+
+    // Initializes bitmap container and chr/clr processor
+    pngReaderInit(argc, argv);
+    bitmapInit(&bitmap, argc, argv);
+    sprWriterInit(&writer, argc, argv);
+
+    // Main code
+    if (verbose) {
+        printf("Reading input file...\n");
+    }
+    if ((i = pngReaderRead(pngFilename, &bitmap))) {
+        goto out;
+    }
+
+    if (verbose) {
+        printf("Processing sprites...\n");
+    }
+    sprWriterReadSprites(&writer, &bitmap);
+
+    if (!dryRun) {
+        if (verbose) {
+            printf("Writing output file...\n");
+        }
+        if (!(sprFile = fopen(sprFilename, "wb"))) {
+            printf("ERROR: Could not create %s.\n", sprFilename);
+            i = 14;
+            goto out;
+        }
+        if ((i = sprWriterWrite(&writer, sprFile))) {
+            printf("ERROR: Failed writing %s.\n", sprFilename);
+            goto out;
+        }
+    }
+
+    if (verbose) {
+        printf("Done!\n");
+    }
 
 out:
-  // Exit gracefully
-  if (sprFilename)
-    free(sprFilename);
-  if (sprFile)
-    fclose(sprFile);
-  bitmapDone(&bitmap);
-  sprWriterDone(&writer);
-  return i;
+    // Exit gracefully
+    if (sprFilename) {
+        free(sprFilename);
+    }
+    if (sprFile) {
+        fclose(sprFile);
+    }
+    bitmapDone(&bitmap);
+    sprWriterDone(&writer);
+    return i;
 }
 
 /* Function bodies ------------------------------------- */
 
 void showTitle() {
 
-  if (titleShown)
-    return;
-  printf("PNG2SPR: A tool to convert PNG images to TMS9918 sprites\n");
-  titleShown = 1;
+    if (titleShown) {
+        return;
+    }
+    printf("PNG2SPR: A tool to convert PNG images to TMS9918 sprites\n");
+    titleShown = 1;
 }
 
 void showUsage() {
 
-  showTitle();
-  printf("Usage:\n");
-  printf("\tPNG2SPR [options] pngFilename\n");
-  printf("where:\n");
-  printf("\tpngFilename input PNG file\n");
-  printf("options are:\n");
-  printf("\t-v\tverbose execution\n");
-  printf("\t-d\tdry run. Doesn't write output files\n");
-  pngReaderOptions();
-  bitmapOptions();
-  sprWriterOptions();
+    showTitle();
+    printf("Usage:\n");
+    printf("\tPNG2SPR [options] pngFilename\n");
+    printf("where:\n");
+    printf("\tpngFilename input PNG file\n");
+    printf("options are:\n");
+    printf("\t-v\tverbose execution\n");
+    printf("\t-d\tdry run. Doesn't write output files\n");
+    pngReaderOptions();
+    bitmapOptions();
+    sprWriterOptions();
 }

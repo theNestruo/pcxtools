@@ -16,45 +16,47 @@ int asmNewLine(FILE *file) { return fwrite("\n", sizeof(char), 1, file) == 1; }
 
 int asmComment(FILE *file, char *string, int inner) {
 
-  int i = 0;
+    int i = 0;
 
-  char *buffer = append(inner ? "\t; " : "; ", string);
-  if (fwrite(buffer, sizeof(char), strlen(buffer), file) != strlen(buffer))
-    goto out;
-  i = asmNewLine(file);
+    char *buffer = append(inner ? "\t; " : "; ", string);
+    if (fwrite(buffer, sizeof(char), strlen(buffer), file) != strlen(buffer)) {
+        goto out;
+    }
+    i = asmNewLine(file);
 out:
-  free(buffer);
-  return i;
+    free(buffer);
+    return i;
 }
 
 int asmLabel(FILE *file, char *string) {
 
-  int i = 0;
+    int i = 0;
 
-  char *buffer = append(string, ":");
-  if (fwrite(buffer, sizeof(char), strlen(buffer), file) != strlen(buffer))
-    goto out;
-  i = asmNewLine(file);
+    char *buffer = append(string, ":");
+    if (fwrite(buffer, sizeof(char), strlen(buffer), file) != strlen(buffer)) {
+        goto out;
+    }
+    i = asmNewLine(file);
 out:
-  free(buffer);
-  return i;
+    free(buffer);
+    return i;
 }
 
 int asmBytes(FILE *file, uint8_t *bytes, int byteCount) {
 
-  int i = 0;
+    int i = 0;
 
-  char *init = "\tdb\t0x%02x", *cont = ", 0x%02x",
-       *buffer = (char *)calloc(16, sizeof(char));
-  int j;
-  uint8_t *b;
-  for (j = 0, b = bytes; j < byteCount; j++, b++) {
-    sprintf(buffer, j ? cont : init, *b);
-    if (fwrite(buffer, sizeof(char), strlen(buffer), file) != strlen(buffer))
-      goto out;
-  }
-  i = asmNewLine(file);
+    char *init = "\tdb\t0x%02x", *cont = ", 0x%02x", *buffer = (char *)calloc(16, sizeof(char));
+    int j;
+    uint8_t *b;
+    for (j = 0, b = bytes; j < byteCount; j++, b++) {
+        sprintf(buffer, j ? cont : init, *b);
+        if (fwrite(buffer, sizeof(char), strlen(buffer), file) != strlen(buffer)) {
+            goto out;
+        }
+    }
+    i = asmNewLine(file);
 out:
-  free(buffer);
-  return i;
+    free(buffer);
+    return i;
 }

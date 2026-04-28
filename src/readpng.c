@@ -21,14 +21,14 @@
 
 typedef struct {
 
-  // The RGBA values
-  uint8_t r;
-  uint8_t g;
-  uint8_t b;
-  uint8_t a;
+    // The RGBA values
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t a;
 
-  // The assigned index
-  uint8_t index;
+    // The assigned index
+    uint8_t index;
 } Color;
 
 /* Constant values --------------------------------------------------------- */
@@ -159,243 +159,245 @@ extern int veryVerbose;
 
 /* Private function prototypes --------------------------------------------- */
 
-Color *guessPalette(unsigned int pngWidth, unsigned int pngHeight,
-                    uint8_t *pngImage);
-int paletteDistance(Color palette[], unsigned int pngWidth,
-                    unsigned int pngHeight, uint8_t *pngImage);
-int closestColorDistance(Color palette[], uint8_t r, uint8_t g, uint8_t b,
-                         uint8_t a);
-uint8_t paletteIndex(Color palette[], uint8_t r, uint8_t g, uint8_t b,
-                     uint8_t a);
+Color *guessPalette(unsigned int pngWidth, unsigned int pngHeight, uint8_t *pngImage);
+int paletteDistance(Color palette[], unsigned int pngWidth, unsigned int pngHeight, uint8_t *pngImage);
+int closestColorDistance(Color palette[], uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+uint8_t paletteIndex(Color palette[], uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 int euclideanDistance(Color *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 int weightedDistance(Color *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
-int (*distance)(Color *color, uint8_t r, uint8_t g, uint8_t b,
-                uint8_t a) = euclideanDistance;
+int (*distance)(Color *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a) = euclideanDistance;
 
 /* Function bodies --------------------------------------------------------- */
 
 void pngReaderOptions() {
 
-  printf("\t-e\tindex color by euclidean distance (default)\n");
-  printf("\t-g\tindex color by weighted distance\n");
+    printf("\t-e\tindex color by euclidean distance (default)\n");
+    printf("\t-g\tindex color by weighted distance\n");
 }
 
 void pngReaderInit(int argc, char **argv) {
 
-  // Read arguments
-  if (argEquals(argc, argv, "-e") != -1)
-    distance = euclideanDistance;
-  if (argEquals(argc, argv, "-g") != -1)
-    distance = weightedDistance;
+    // Read arguments
+    if (argEquals(argc, argv, "-e") != -1) {
+        distance = euclideanDistance;
+    }
+    if (argEquals(argc, argv, "-g") != -1) {
+        distance = weightedDistance;
+    }
 }
 
 int pngReaderRead(char *pngFilename, Bitmap *bitmap) {
 
-  if (!pngFilename)
-    return 1;
-
-  if (!bitmap)
-    return 2;
-
-  int i = 0;
-
-  // Reads the PNG file (as 32-bit RGBA raw)
-  uint8_t *pngImage = 0;
-  unsigned int pngWidth, pngHeight;
-  unsigned int pngError =
-      lodepng_decode32_file(&pngImage, &pngWidth, &pngHeight, pngFilename);
-  if (pngError) {
-    printf("ERROR: Could not read PNG: %u: %s\n", pngError,
-           lodepng_error_text(pngError));
-    i = 2 + pngError;
-    goto out;
-  }
-
-  // Guesses the palette
-  Color *palette = guessPalette(pngWidth, pngHeight, pngImage);
-  if (verbose)
-    printf("Using %s...\n",
-           palette == meiseiTms9218Palette
-               ? "TI TMS9219 palette, from hap's meisei emulator"
-           : palette == meiseiV9938Palette
-               ? "V9938 palette, from hap's meisei emulator"
-           : palette == reidracToshibaPalette
-               ? "TOSHIBA palette, from reidrac's MSX Pixel Tools"
-           : palette == wikipediaTms9918Palette
-               ? "TI TMS9918 palette, according Wikipedia"
-           : palette == yaziohPalette ? "Yazioh palette"
-                                      : "unknown palette");
-
-  // Allocate space for the bitmap
-  bitmap->width = pngWidth;
-  bitmap->height = pngHeight;
-  bitmap->bitmap =
-      (uint8_t *)calloc(bitmap->width * bitmap->height, sizeof(uint8_t));
-
-  // Populates the bitmap
-  unsigned int y;
-  uint8_t *source, *target;
-  for (source = pngImage, target = bitmap->bitmap, y = 0; y < bitmap->height;
-       y++) {
-    for (unsigned int x = 0; x < bitmap->width; x++) {
-      uint8_t r = *(source++);
-      uint8_t g = *(source++);
-      uint8_t b = *(source++);
-      uint8_t a = *(source++);
-      *(target++) = paletteIndex(palette, r, g, b, a);
+    if (!pngFilename) {
+        return 1;
     }
-  }
+
+    if (!bitmap) {
+        return 2;
+    }
+
+    int i = 0;
+
+    // Reads the PNG file (as 32-bit RGBA raw)
+    uint8_t *pngImage = 0;
+    unsigned int pngWidth, pngHeight;
+    unsigned int pngError = lodepng_decode32_file(&pngImage, &pngWidth, &pngHeight, pngFilename);
+    if (pngError) {
+        printf("ERROR: Could not read PNG: %u: %s\n", pngError, lodepng_error_text(pngError));
+        i = 2 + pngError;
+        goto out;
+    }
+
+    // Guesses the palette
+    Color *palette = guessPalette(pngWidth, pngHeight, pngImage);
+    if (verbose) {
+        printf("Using %s...\n", palette == meiseiTms9218Palette      ? "TI TMS9219 palette, from hap's meisei emulator"
+                                : palette == meiseiV9938Palette      ? "V9938 palette, from hap's meisei emulator"
+                                : palette == reidracToshibaPalette   ? "TOSHIBA palette, from reidrac's MSX Pixel Tools"
+                                : palette == wikipediaTms9918Palette ? "TI TMS9918 palette, according Wikipedia"
+                                : palette == yaziohPalette           ? "Yazioh palette"
+                                                                     : "unknown palette");
+    }
+
+    // Allocate space for the bitmap
+    bitmap->width = pngWidth;
+    bitmap->height = pngHeight;
+    bitmap->bitmap = (uint8_t *)calloc(bitmap->width * bitmap->height, sizeof(uint8_t));
+
+    // Populates the bitmap
+    unsigned int y;
+    uint8_t *source, *target;
+    for (source = pngImage, target = bitmap->bitmap, y = 0; y < bitmap->height; y++) {
+        for (unsigned int x = 0; x < bitmap->width; x++) {
+            uint8_t r = *(source++);
+            uint8_t g = *(source++);
+            uint8_t b = *(source++);
+            uint8_t a = *(source++);
+            *(target++) = paletteIndex(palette, r, g, b, a);
+        }
+    }
 
 out:
-  // Exit gracefully
-  if (pngImage)
-    free(pngImage);
-  return i;
+    // Exit gracefully
+    if (pngImage) {
+        free(pngImage);
+    }
+    return i;
 }
 
 /* Private function bodies ------------------------------------------------- */
 
-Color *guessPalette(unsigned int pngWidth, unsigned int pngHeight,
-                    uint8_t *pngImage) {
+Color *guessPalette(unsigned int pngWidth, unsigned int pngHeight, uint8_t *pngImage) {
 
-  Color *closestPalette = meiseiTms9218Palette;
-  int minDistance =
-      paletteDistance(meiseiTms9218Palette, pngWidth, pngHeight, pngImage);
-  if (veryVerbose)
-    printf("Distance %u: TI TMS9219 palette, from hap's meisei emulator\n",
-           minDistance);
-  if (minDistance == 0)
-    return meiseiTms9218Palette;
-
-  int dist = paletteDistance(meiseiV9938Palette, pngWidth, pngHeight, pngImage);
-  if (veryVerbose)
-    printf("Distance %u: V9938 palette, from hap's meisei emulator\n", dist);
-  if (dist == 0)
-    return meiseiV9938Palette;
-  if (dist < minDistance)
-    closestPalette = meiseiV9938Palette;
-
-  dist = paletteDistance(reidracToshibaPalette, pngWidth, pngHeight, pngImage);
-  if (veryVerbose)
-    printf("Distance %u: TOSHIBA palette, from reidrac's MSX Pixel Tools\n",
-           dist);
-  if (dist == 0)
-    return reidracToshibaPalette;
-  if (dist < minDistance)
-    closestPalette = reidracToshibaPalette;
-
-  dist =
-      paletteDistance(wikipediaTms9918Palette, pngWidth, pngHeight, pngImage);
-  if (veryVerbose)
-    printf("Distance %u: TI TMS9918 palette, according Wikipedia\n", dist);
-  if (dist == 0)
-    return wikipediaTms9918Palette;
-  if (dist < minDistance)
-    closestPalette = wikipediaTms9918Palette;
-
-  dist = paletteDistance(yaziohPalette, pngWidth, pngHeight, pngImage);
-  if (veryVerbose)
-    printf("Distance %u: Yazioh palette\n", dist);
-  if (dist == 0)
-    return yaziohPalette;
-  if (dist < minDistance)
-    closestPalette = yaziohPalette;
-
-  return closestPalette;
-}
-
-int paletteDistance(Color palette[], unsigned int pngWidth,
-                    unsigned int pngHeight, uint8_t *pngImage) {
-
-  int totalDistance = 0;
-  unsigned int y, x;
-  uint8_t *source;
-  for (source = pngImage, y = 0; y < pngHeight; y++) {
-    for (x = 0; x < pngWidth; x++) {
-      uint8_t r = *(source++);
-      uint8_t g = *(source++);
-      uint8_t b = *(source++);
-      uint8_t a = *(source++);
-      int dist = closestColorDistance(palette, r, g, b, a);
-      if (dist > 0)
-        totalDistance += dist;
+    Color *closestPalette = meiseiTms9218Palette;
+    int minDistance = paletteDistance(meiseiTms9218Palette, pngWidth, pngHeight, pngImage);
+    if (veryVerbose) {
+        printf("Distance %u: TI TMS9219 palette, from hap's meisei emulator\n", minDistance);
     }
-  }
-  return totalDistance;
-}
+    if (minDistance == 0) {
+        return meiseiTms9218Palette;
+    }
 
-int closestColorDistance(Color palette[], uint8_t r, uint8_t g, uint8_t b,
-                         uint8_t a) {
-
-  int i;
-  Color *it;
-  int minDistance = -1;
-  for (i = 0, it = palette; i < paletteLength; i++, it++) {
-    int dist = distance(it, r, g, b, a);
-    if (dist < 0)
-      continue;
-    if (dist == 0)
-      return 0;
-    if ((minDistance == -1) || (dist < minDistance))
-      minDistance = dist;
-  }
-  return minDistance;
-}
-
-uint8_t paletteIndex(Color palette[], uint8_t r, uint8_t g, uint8_t b,
-                     uint8_t a) {
-
-  int i;
-  Color *it;
-  Color *closestColor = 0;
-  int minDistance = -1;
-  for (i = 0, it = palette; i < paletteLength; i++, it++) {
-    int dist = distance(it, r, g, b, a);
-    if (dist < 0)
-      continue;
+    int dist = paletteDistance(meiseiV9938Palette, pngWidth, pngHeight, pngImage);
+    if (veryVerbose) {
+        printf("Distance %u: V9938 palette, from hap's meisei emulator\n", dist);
+    }
     if (dist == 0) {
-      return it->index;
+        return meiseiV9938Palette;
     }
-    if ((minDistance == -1) || (dist < minDistance)) {
-      closestColor = it;
-      minDistance = dist;
+    if (dist < minDistance) {
+        closestPalette = meiseiV9938Palette;
     }
-  }
-  return closestColor->index;
+
+    dist = paletteDistance(reidracToshibaPalette, pngWidth, pngHeight, pngImage);
+    if (veryVerbose) {
+        printf("Distance %u: TOSHIBA palette, from reidrac's MSX Pixel Tools\n", dist);
+    }
+    if (dist == 0) {
+        return reidracToshibaPalette;
+    }
+    if (dist < minDistance) {
+        closestPalette = reidracToshibaPalette;
+    }
+
+    dist = paletteDistance(wikipediaTms9918Palette, pngWidth, pngHeight, pngImage);
+    if (veryVerbose) {
+        printf("Distance %u: TI TMS9918 palette, according Wikipedia\n", dist);
+    }
+    if (dist == 0) {
+        return wikipediaTms9918Palette;
+    }
+    if (dist < minDistance) {
+        closestPalette = wikipediaTms9918Palette;
+    }
+
+    dist = paletteDistance(yaziohPalette, pngWidth, pngHeight, pngImage);
+    if (veryVerbose) {
+        printf("Distance %u: Yazioh palette\n", dist);
+    }
+    if (dist == 0) {
+        return yaziohPalette;
+    }
+    if (dist < minDistance) {
+        closestPalette = yaziohPalette;
+    }
+
+    return closestPalette;
 }
 
-int euclideanDistance(Color *color, uint8_t r, uint8_t g, uint8_t b,
-                      uint8_t a) {
+int paletteDistance(Color palette[], unsigned int pngWidth, unsigned int pngHeight, uint8_t *pngImage) {
 
-  // (transparent hack)
-  if (color->a == 0x00)
-    return (a == 0x00) ? 0 : -1;
+    int totalDistance = 0;
+    unsigned int y, x;
+    uint8_t *source;
+    for (source = pngImage, y = 0; y < pngHeight; y++) {
+        for (x = 0; x < pngWidth; x++) {
+            uint8_t r = *(source++);
+            uint8_t g = *(source++);
+            uint8_t b = *(source++);
+            uint8_t a = *(source++);
+            int dist = closestColorDistance(palette, r, g, b, a);
+            if (dist > 0) {
+                totalDistance += dist;
+            }
+        }
+    }
+    return totalDistance;
+}
 
-  int deltaR = (int)color->r - (int)r;
-  int deltaG = (int)color->g - (int)g;
-  int deltaB = (int)color->b - (int)b;
+int closestColorDistance(Color palette[], uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 
-  return sqrt((deltaR * deltaR) + (deltaG * deltaG) + (deltaB * deltaB));
+    int i;
+    Color *it;
+    int minDistance = -1;
+    for (i = 0, it = palette; i < paletteLength; i++, it++) {
+        int dist = distance(it, r, g, b, a);
+        if (dist < 0) {
+            continue;
+        }
+        if (dist == 0) {
+            return 0;
+        }
+        if ((minDistance == -1) || (dist < minDistance)) {
+            minDistance = dist;
+        }
+    }
+    return minDistance;
+}
+
+uint8_t paletteIndex(Color palette[], uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+
+    int i;
+    Color *it;
+    Color *closestColor = 0;
+    int minDistance = -1;
+    for (i = 0, it = palette; i < paletteLength; i++, it++) {
+        int dist = distance(it, r, g, b, a);
+        if (dist < 0) {
+            continue;
+        }
+        if (dist == 0) {
+            return it->index;
+        }
+        if ((minDistance == -1) || (dist < minDistance)) {
+            closestColor = it;
+            minDistance = dist;
+        }
+    }
+    return closestColor->index;
+}
+
+int euclideanDistance(Color *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+
+    // (transparent hack)
+    if (color->a == 0x00) {
+        return (a == 0x00) ? 0 : -1;
+    }
+
+    int deltaR = (int)color->r - (int)r;
+    int deltaG = (int)color->g - (int)g;
+    int deltaB = (int)color->b - (int)b;
+
+    return sqrt((deltaR * deltaR) + (deltaG * deltaG) + (deltaB * deltaB));
 }
 
 int weightedDistance(Color *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 
-  // (transparent hack)
-  if (color->a == 0x00)
-    return (a == 0x00) ? 0 : -1;
+    // (transparent hack)
+    if (color->a == 0x00) {
+        return (a == 0x00) ? 0 : -1;
+    }
 
-  int deltaR = (int)color->r - (int)r;
-  int deltaG = (int)color->g - (int)g;
-  int deltaB = (int)color->b - (int)b;
+    int deltaR = (int)color->r - (int)r;
+    int deltaG = (int)color->g - (int)g;
+    int deltaB = (int)color->b - (int)b;
 
-  float averageR = (color->r + r) / 2.0f;
+    float averageR = (color->r + r) / 2.0f;
 
-  float weightR = 2.0f + (averageR / 255.0f);
-  float weightG = 4.0f;
-  float weightB = 3.0f - (averageR / 255.0f);
+    float weightR = 2.0f + (averageR / 255.0f);
+    float weightG = 4.0f;
+    float weightB = 3.0f - (averageR / 255.0f);
 
-  return sqrt((int)(weightR * deltaR * deltaR) +
-              (int)(weightG * deltaG * deltaG) +
-              (int)(weightB * deltaB * deltaB));
+    return sqrt((int)(weightR * deltaR * deltaR) + (int)(weightG * deltaG * deltaG) + (int)(weightB * deltaB * deltaB));
 }

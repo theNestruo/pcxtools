@@ -4,22 +4,20 @@
 		"*.makefile": "makefile"
 	},
 
-    // Code style preferences
-	"C_Cpp.formatting": "clangFormat",
-	"C_Cpp.clang_format_style": "LLVM",
-	"[c]": {
-		"editor.formatOnSave": true,
-	},
-	"editor.insertSpaces": false,
-	"editor.tabSize": 4,
-	"editor.rulers": [
-		80, 120
-	],
-
 	"files.exclude": {
 		"**/*.o": { "when": "$(basename).c" },
 		"~tmppre.?": true,
 	},
+
+    // Code style preferences
+	"C_Cpp.formatting": "clangFormat",
+	"C_Cpp.clang_format_style": "file",
+	"[c]": {
+		"editor.formatOnSave": true,
+	},
+	"editor.insertSpaces": false,	// (matches .clang-format)
+	"editor.tabSize": 4,			// (matches .clang-format)
+	"editor.rulers": [ 120 ],		// (matches .clang-format)
 
 	// No AI
 	"chat.disableAIFeatures": true

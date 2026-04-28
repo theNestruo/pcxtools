@@ -17,34 +17,34 @@
 /* Data structures --------------------------------------------------------- */
 
 typedef struct {
-  uint8_t pattern;
-  uint8_t color;
+    uint8_t pattern;
+    uint8_t color;
 } Line;
 
 typedef struct {
-  Line line[TILE_HEIGHT];
+    Line line[TILE_HEIGHT];
 } Block;
 
 typedef struct {
-  // Data container
-  Block *blocks;
-  int blockCount;
+    // Data container
+    Block *blocks;
+    int blockCount;
 
-  unsigned int width, height; // (in chars)
+    unsigned int width, height; // (in chars)
 } Charset;
 
 typedef struct {
-  // Arguments
-  int ignoreCollision;
-  int forceStrippedImage;
-  int patternMode;
-  int postProcessRangeFrom;
-  int postProcessRangeTo;
-  int traverseHorizontally;
+    // Arguments
+    int ignoreCollision;
+    int forceStrippedImage;
+    int patternMode;
+    int postProcessRangeFrom;
+    int postProcessRangeTo;
+    int traverseHorizontally;
 
-  // State
-  uint8_t preferredBackground;
-  int isStrippedImage;
+    // State
+    uint8_t preferredBackground;
+    int isStrippedImage;
 } CharsetProcessor;
 
 /* Function prototypes ----------------------------------------------------- */
@@ -68,13 +68,11 @@ void charsetProcessorOptions();
 
 void charsetProcessorInit(CharsetProcessor *instance, int argc, char **argv);
 
-int charsetProcessorRead(CharsetProcessor *instance, Charset *charset,
-                         Bitmap *bitmap);
+int charsetProcessorRead(CharsetProcessor *instance, Charset *charset, Bitmap *bitmap);
 
 void charsetProcessorPostProcess(CharsetProcessor *instance, Charset *charset);
 
-int charsetProcessorWrite(CharsetProcessor *instance, Charset *charset,
-                          FILE *chrFile, FILE *clrFile);
+int charsetProcessorWrite(CharsetProcessor *instance, Charset *charset, FILE *chrFile, FILE *clrFile);
 
 void charsetProcessorDone(CharsetProcessor *instance);
 

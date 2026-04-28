@@ -12,20 +12,20 @@
 /* Data structures --------------------------------------------------------- */
 
 typedef struct {
-  // Data container
-  int *namtbl;
-  int namtblSize;
+    // Data container
+    int *namtbl;
+    int namtblSize;
 } NameTable;
 
 typedef struct {
-  // Arguments
-  int namtblOffset;
-  int generateBlank;
-  int blankAt;
-  int removeRepeated;
-  int removeEmpty;
-  uint8_t emptyColorRemoved;
-  int traverseHorizontally; // (see CharsetProcessor)
+    // Arguments
+    int namtblOffset;
+    int generateBlank;
+    int blankAt;
+    int removeRepeated;
+    int removeEmpty;
+    uint8_t emptyColorRemoved;
+    int traverseHorizontally; // (see CharsetProcessor)
 } NameTableProcessor;
 
 /* Function prototypes ----------------------------------------------------- */
@@ -37,23 +37,18 @@ typedef struct {
 // -rm<0..f>	remove solid tiles of <n> color
 void nameTableProcessorOptions();
 
-void nameTableProcessorInit(NameTableProcessor *instance, int argc,
-                            char **argv);
+void nameTableProcessorInit(NameTableProcessor *instance, int argc, char **argv);
 
-void nameTableProcessorGenerate(NameTableProcessor *instance,
-                                NameTable *nametable, Charset *charset);
+void nameTableProcessorGenerate(NameTableProcessor *instance, NameTable *nametable, Charset *charset);
 
-void nameTableProcessorGenerateUsing(NameTableProcessor *instance,
-                                     NameTable *nametable, Charset *charset,
+void nameTableProcessorGenerateUsing(NameTableProcessor *instance, NameTable *nametable, Charset *charset,
                                      Charset *screen);
 
 void nameTableProcessorApplyTo(NameTable *nametable, Charset *charset);
 
-void nameTableProcessorPostProcess(NameTableProcessor *instance,
-                                   NameTable *nametable);
+void nameTableProcessorPostProcess(NameTableProcessor *instance, NameTable *nametable);
 
-int nameTableProcessorWrite(NameTableProcessor *instance, NameTable *nametable,
-                            FILE *namFile);
+int nameTableProcessorWrite(NameTableProcessor *instance, NameTable *nametable, FILE *namFile);
 
 void nameTableProcessorDone(NameTableProcessor *instance);
 
