@@ -1,4 +1,5 @@
 {
+    "version": 4,
     "configurations": [
         {
             "name": "Win32",
@@ -10,8 +11,7 @@
                 "UNICODE",
                 "_UNICODE"
             ],
-            "intelliSenseMode": "${default}"
+            "intelliSenseMode": "${default}",
         }
-    ],
-    "version": 4
+    ]
 }
