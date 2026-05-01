@@ -35,12 +35,13 @@ typedef struct {
 
 const int paletteLength = 15 + 3;
 
-Color smspowerTms9918aPalette[] = {
+Color seanYoungTms9918aPalette[] = {
     // transparent values
     {0x00, 0x00, 0x00, 0x00, 0}, // actually transparent
     {0xFF, 0x00, 0xFF, 0xFF, 0}, // fuchsia
     {0x40, 0x40, 0x40, 0xFF, 0}, // dark grey (PCX2MSX reference files)
-    // NTSC TMS9918a (SG-1000/SC-3000) palette, according SMS Power
+    // TI TMS9918a palette, according Sean Young and SMS Power
+    // (http://bifi.msxnet.org/msxnet/tech/tms9918a.txt)
     // (https://www.smspower.org/Development/Palette)
     {0x00, 0x00, 0x00, 0xFF, 1},  // 1 black
     {0x21, 0xC8, 0x42, 0xFF, 2},  // 2 medium green
@@ -236,7 +237,7 @@ int pngReaderRead(char *pngFilename, Bitmap *bitmap) {
     // Guesses the palette
     Color *palette = guessPalette(pngWidth, pngHeight, pngImage);
     if (verbose) {
-        printf("Using %s...\n", palette == smspowerTms9918aPalette   ? "NTSC TMS9918a palette, according SMS Power"
+        printf("Using %s...\n", palette == seanYoungTms9918aPalette  ? "TI TMS9918a palette, according Sean Young"
                                 : palette == meiseiTms9219Palette    ? "TI TMS9219 palette, from hap's meisei emulator"
                                 : palette == meiseiV9938Palette      ? "V9938 palette, from hap's meisei emulator"
                                 : palette == reidracToshibaPalette   ? "TOSHIBA palette, from reidrac's MSX Pixel Tools"
@@ -275,13 +276,13 @@ out:
 
 Color *guessPalette(unsigned int pngWidth, unsigned int pngHeight, uint8_t *pngImage) {
 
-    Color *closestPalette = smspowerTms9918aPalette;
-    int minDistance = paletteDistance(smspowerTms9918aPalette, pngWidth, pngHeight, pngImage);
+    Color *closestPalette = seanYoungTms9918aPalette;
+    int minDistance = paletteDistance(seanYoungTms9918aPalette, pngWidth, pngHeight, pngImage);
     if (veryVerbose) {
-        printf("Distance %u: NTSC TMS9918a palette, according SMS Power\n", minDistance);
+        printf("Distance %u: TI TMS9918a palette, according Sean Young\n", minDistance);
     }
     if (minDistance == 0) {
-        return smspowerTms9918aPalette;
+        return seanYoungTms9918aPalette;
     }
 
     int dist = paletteDistance(meiseiTms9219Palette, pngWidth, pngHeight, pngImage);
