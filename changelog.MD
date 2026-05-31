@@ -1,7 +1,9 @@
 ## Version history
 
-* 25/02/2026 v5.2 (unreleased)
+* 31/05/2026 v6.0
 	* -th and -tv (traverse image horizontally/vertically) options in `PNG2MSX`
+	* LodePNG updated to latest version (20250506)
+	* TI TMS9918a palette, according Sean Young and SMS Power
 
 * 08/02/2026 v5.1
 	* Fixes stripped image detection
